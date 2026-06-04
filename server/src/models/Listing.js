@@ -1,0 +1,47 @@
+import mongoose from "mongoose";
+
+const listingSchema =
+  new mongoose.Schema(
+    {
+      title: {
+        type: String,
+        required: true
+      },
+
+      description: {
+        type: String,
+        required: true
+      },
+
+      price: {
+        type: Number,
+        required: true
+      },
+
+      images: [String],
+
+      city: String,
+
+      category: String,
+
+      views: {
+        type: Number,
+        default: 0
+      },
+
+      seller: {
+        type:
+          mongoose.Schema.Types.ObjectId,
+
+        ref: "User"
+      }
+    },
+    {
+      timestamps: true
+    }
+  );
+
+export default mongoose.model(
+  "Listing",
+  listingSchema
+);
