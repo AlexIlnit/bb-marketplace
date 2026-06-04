@@ -9,6 +9,7 @@ import Profile from "../pages/Profile/Profile";
 
 import ProtectedRoute from "./ProtectedRoute";
 import GuestRoute from "./GuestRoute";
+import Favorites from "../pages/Favorites/Favorites";
 
 export default function AppRouter() {
   return (
@@ -19,6 +20,9 @@ export default function AppRouter() {
       <Route path="/listing/:id" element={<GuestRoute><Listing /></GuestRoute>} />
       <Route path="/create-listing" element={<ProtectedRoute><CreateListing /></ProtectedRoute>} />
       <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>}/>
+      <Route path="/favorites" element={<ProtectedRoute><Favorites /></ProtectedRoute>
+  }
+/>
     </Routes>
   );
 }

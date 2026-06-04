@@ -5,6 +5,7 @@ import authRoutes from "./routes/authRoutes.js";
 import listingRoutes from "./routes/listingRoutes.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
+import favoriteRoutes from "./routes/favoriteRoutes.js";
 
 const app = express();
 
@@ -21,6 +22,8 @@ app.use("/api/listings",listingRoutes);
 app.use("/api/upload", uploadRoutes);
 
 app.use("/api/users", userRoutes);
+
+app.use("/api/favorites", favoriteRoutes);
 
 app.get("/", (req, res) => {
   res.json({
