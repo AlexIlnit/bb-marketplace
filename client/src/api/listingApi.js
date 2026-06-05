@@ -11,3 +11,15 @@ export const getListingById = (id) =>
 
 export const createListing = (data) =>
   api.post("/listings", data);
+
+export const deleteListing = (id) =>
+  api.delete(`/listings/${id}`);
+
+export const updateListing = (
+  id,
+  data
+) =>
+  api.put(
+    `/listings/${id}`,
+    data
+  );

@@ -75,3 +75,75 @@ export const getListingById = async (req, res) => {
     });
   }
 };
+export const deleteListing = async (req, res) => {
+  try {
+    const listing = await Listing.findById(req.params.id);
+
+    if (!listing) {
+      return res.status(404).json({
+        message: "Объявление не найдено"
+      });
+    }
+
+    if (
+      listing.seller.toString() !==
+      req.user._id.toString()
+    ) {
+      return res.status(403).json({
+        message: "Нет доступа"
+      });
+    }
+
+    await listing.deleteOne();
+
+    res.json({
+      message: "Объявление удалено"
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      message: error.message
+    });
+  }
+};
+export const updateListing = async (
+  req,
+  res
+) => {
+  try {
+
+    const listing =
+      await Listing.findById(
+        req.params.id
+      );
+
+    if (!listing) {
+      return res.status(404).json({
+        message: "Не найдено"
+      });
+    }
+
+    if (
+      listing.seller.toString() !==
+      req.user._id.toString()
+    ) {
+      return res.status(403).json({
+        message: "Нет доступа"
+      });
+    }
+
+    const updated =
+      await Listing.findByIdAndUpdate(
+        req.params.id,
+        req.body,
+        { new: true }
+      );
+
+    res.json(updated);
+
+  } catch (error) {
+    res.status(500).json({
+      message: error.message
+    });
+  }
+};
