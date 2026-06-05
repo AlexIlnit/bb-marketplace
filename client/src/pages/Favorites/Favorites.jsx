@@ -45,14 +45,15 @@ export default function Favorites() {
         gap-6
       "
       >
-        {favorites.map(
-          fav => (
-            <ListingCard
-              key={fav._id}
-              listing={fav.listing}
-            />
-          )
-        )}
+ {/* {favorites.map((id) => (
+  <ListingCard key={id} listing={{ _id: id }} />
+))} */}
+{favorites.map((fav) => (
+  <ListingCard
+    key={fav._id}
+    listing={fav.listing}
+  />
+))}
       </div>
 
     </MainLayout>

@@ -1,16 +1,10 @@
-import {
-  useEffect
-} from "react";
+import { useEffect } from "react";
 
-import MainLayout
-from "../../layouts/MainLayout";
+import MainLayout from "../../layouts/MainLayout";
 
-import ListingCard
-from "../../components/listing/ListingCard";
+import ListingCard from "../../components/listing/ListingCard";
 
-import {
-  useListingStore
-} from "../../store/listingStore";
+import { useListingStore } from "../../store/listingStore";
 
 import { Link } from "react-router-dom";
 

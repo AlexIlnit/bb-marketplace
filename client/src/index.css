@@ -70,9 +70,9 @@ body {
 /* IMPORTANT: REMOVE fixed width (it breaks layout) */
 #root {
   width: 100%;
-  max-width: 1126px;
-  margin: 0 auto;
-  min-height: 100svh;
+  
+
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;

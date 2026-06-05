@@ -1,36 +1,63 @@
+// import { create } from "zustand";
+// import { toggleFavorite as toggleFavoriteApi } from "../api/favoriteApi";
+
+// export const useFavoriteStore = create((set) => ({
+//   favorites: [],
+
+//   toggleFavorite: async (id) => {
+//     const { data } = await toggleFavoriteApi(id);
+
+//     set((state) => {
+//       let updated;
+
+//       if (data.isFavorite) {
+//         updated = [...state.favorites, id];
+//       } else {
+//         updated = state.favorites.filter((f) => f !== id);
+//       }
+
+//       return { favorites: updated };
+//     });
+//   }
+// }));
+
+
+
+
 import { create } from "zustand";
+import { toggleFavorite } from "../api/favoriteApi";
 
-import {
-  getFavorites,
-  addFavorite,
-  removeFavorite
-} from "../api/favoriteApi";
+export const useFavoriteStore = create((set, get) => ({
+  favorites: [], // <-- только ID
 
-export const useFavoriteStore =
-create((set) => ({
-  favorites: [],
+  fetchFavorites: async () => {
+    const res = await fetch("http://localhost:5000/api/favorites", {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
 
-  fetchFavorites:
-  async () => {
-    const { data } =
-      await getFavorites();
+    const data = await res.json();
 
     set({
-      favorites: data
+      favorites: data,
+    //   data.map((f) => f.listing._id),
     });
   },
 
-addToFavorites: async (id) => {
-  try {
-    const res = await addFavorite(id);
-    console.log("FAVORITE:", res.data);
-  } catch (err) {
-    console.log(err.response?.data);
-  }
-},
+  toggleFavorite: async (id) => {
+    const { data } = await toggleFavorite(id);
 
-  removeFromFavorites:
-  async (id) => {
-    await removeFavorite(id);
-  }
+    set((state) => {
+      if (data.isFavorite) {
+        return {
+          favorites: [...state.favorites, id],
+        };
+      }
+
+      return {
+        favorites: state.favorites.filter((f) => f !== id),
+      };
+    });
+  },
 }));

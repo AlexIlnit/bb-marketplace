@@ -19,10 +19,8 @@ export default function AppRouter() {
       <Route path="/register" element={<GuestRoute><Register /></GuestRoute>} />
       <Route path="/listing/:id" element={<GuestRoute><Listing /></GuestRoute>} />
       <Route path="/create-listing" element={<ProtectedRoute><CreateListing /></ProtectedRoute>} />
-      <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>}/>
-      <Route path="/favorites" element={<ProtectedRoute><Favorites /></ProtectedRoute>
-  }
-/>
+      <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+      <Route path="/favorites" element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
     </Routes>
   );
 }

@@ -3,6 +3,7 @@ import { getMyListings } from "../../api/userApi";
 import { useAuthStore } from "../../store/authStore";
 import ListingCard from "../../components/listing/ListingCard";
 import { Link } from "react-router-dom";
+import MainLayout from "../../layouts/MainLayout";
 
 export default function Profile() {
   const user = useAuthStore((s) => s.user);
@@ -34,6 +35,7 @@ export default function Profile() {
   }
 
   return (
+    <MainLayout>
     <div className="max-w-7xl mx-auto p-6">
 
       <div className="bg-white p-6 rounded-2xl shadow-sm mb-8">
@@ -96,5 +98,6 @@ export default function Profile() {
       )}
 
     </div>
+    </MainLayout>
   );
 }

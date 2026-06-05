@@ -26,15 +26,16 @@ export default function Header() {
 
   return (
     <>
-      <header className="bg-white border-b sticky top-0 z-50">
+      <header className="w-full bg-white border-b sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
 
           {/* LEFT */}
           <div className="flex items-center gap-8">
+            <Link to="/">
             <h2 className="text-green-600 font-bold text-2xl">
               BB
             </h2>
-
+            </Link>
             <div className="hidden md:flex items-center bg-gray-100 px-4 rounded-xl w-[450px]">
               <Search size={18} />
               <input

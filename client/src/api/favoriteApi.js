@@ -1,12 +1,9 @@
 import api from "./axios";
 
-export const getFavorites =
-  () => api.get("/favorites");
+// ❤️ добавить / убрать из избранного (toggle)
+export const toggleFavorite = (id) =>
+  api.post(`/favorites/${id}`);
 
-export const addFavorite =
-  (id) =>
-    api.post(`/favorites/${id}`);
-
-export const removeFavorite =
-  (id) =>
-    api.delete(`/favorites/${id}`);
+// 📄 получить все избранные объявления пользователя
+export const getFavorites = () =>
+  api.get("/favorites");

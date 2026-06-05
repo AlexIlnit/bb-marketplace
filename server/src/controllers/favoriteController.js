@@ -47,14 +47,45 @@ export const removeFavorite = async (
   });
 };
 
-export const getFavorites = async (
-  req,
-  res
-) => {
-  const favorites =
-    await Favorite.find({
+export const getFavorites = async (req, res) => {
+  try {
+    const favorites = await Favorite.find({
       user: req.user._id
-    }).populate("listing");
+    }).populate({
+  path: "listing",
+  model: "Listing"
+});
+    res.json(favorites);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
-  res.json(favorites);
+export const toggleFavorite = async (req, res) => {
+  try {
+    const existing = await Favorite.findOne({
+      user: req.user._id,
+      listing: req.params.id
+    });
+
+    if (existing) {
+      await existing.deleteOne();
+
+      return res.json({
+        isFavorite: false
+      });
+    }
+
+    await Favorite.create({
+      user: req.user._id,
+      listing: req.params.id
+    });
+
+    return res.json({
+      isFavorite: true
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
