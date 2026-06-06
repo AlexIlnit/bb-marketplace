@@ -1,7 +1,7 @@
 import cloudinary from "../config/cloudinary.js";
 
 export const uploadImage = async (req, res) => {
-     console.log("FILE:", req.file); // 🔥 ОБЯЗАТЕЛЬНО
+    //  console.log("FILE:", req.file);
   try {
     const file = req.file;
 
