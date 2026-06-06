@@ -9,6 +9,9 @@ import FilterSidebar from "../../components/filters/FilterSidebar";
 
 import { useFavoriteStore } from "../../store/favoriteStore";
 
+import CategoriesBar from "../../components/categories/CategoriesBar";
+
+
 export default function Home() {
   
 
@@ -80,6 +83,7 @@ useEffect(() => {
 
   return (
 <MainLayout>
+  <CategoriesBar />
 
   <div className="flex gap-8">
 
