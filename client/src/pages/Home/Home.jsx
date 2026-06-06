@@ -1,33 +1,101 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import MainLayout from "../../layouts/MainLayout";
-
 import ListingCard from "../../components/listing/ListingCard";
 
 import { useListingStore } from "../../store/listingStore";
 
-import { Link } from "react-router-dom";
+import FilterSidebar from "../../components/filters/FilterSidebar";
+
+import { useFavoriteStore } from "../../store/favoriteStore";
 
 export default function Home() {
+  
 
+  const [page, setPage] = useState(1);
+
+  const ITEMS_PER_PAGE = 24;
   const {
-    listings,
-    fetchListings
-  } =
-    useListingStore();
+  listings,
+  fetchListings,
+
+  search,
+  category,
+  priceFrom,
+  priceTo
+} = useListingStore();
+
+ const { fetchFavorites } =
+  useFavoriteStore();
+
+useEffect(() => {
+  fetchListings();
+  fetchFavorites();
+}, []);
 
   useEffect(() => {
-    fetchListings();
-  }, []);
+  setPage(1);
+}, [search, category, priceFrom, priceTo]);
+  
+
+  const filteredListings =
+  listings.filter((listing) => {
+
+    const matchSearch =
+      listing.title
+        ?.toLowerCase()
+        .includes(search?.toLowerCase() || "");
+
+    const matchCategory =
+      !category ||
+      listing.category === category;
+
+    const matchPriceFrom =
+      !priceFrom ||
+      listing.price >= Number(priceFrom);
+
+    const matchPriceTo =
+      !priceTo ||
+      listing.price <= Number(priceTo);
+
+    return (
+      matchSearch &&
+      matchCategory &&
+      matchPriceFrom &&
+      matchPriceTo
+    );
+  });
+
+  const totalPages = Math.ceil(
+    filteredListings.length/ ITEMS_PER_PAGE
+  );
+
+  const paginatedListings =
+  filteredListings.slice(
+    (page - 1) * ITEMS_PER_PAGE,
+    page * ITEMS_PER_PAGE
+  );
+
+
 
   return (
-    <MainLayout>
+<MainLayout>
+
+  <div className="flex gap-8">
+
+    {/* FILTERS */}
+    <div className="w-1/4">
+      <FilterSidebar />
+    </div>
+
+    {/* LISTINGS */}
+    <section className="w-3/4">
 
       <h1
         className="
-        text-3xl
-        font-bold
-        mb-8
+          text-3xl
+          font-bold
+          mb-8
         "
       >
         Свежие объявления
@@ -35,14 +103,13 @@ export default function Home() {
 
       <div
         className="
-        grid
-        md:grid-cols-2
-        lg:grid-cols-4
-        gap-6
+          grid
+          grid-cols-4
+          gap-6
         "
       >
-        {listings.map(
-          listing => (
+        {paginatedListings.map(
+          (listing) => (
             <ListingCard
               key={listing._id}
               listing={listing}
@@ -51,6 +118,45 @@ export default function Home() {
         )}
       </div>
 
-    </MainLayout>
+      {totalPages > 1 && (
+        <div
+          className="
+            flex
+            justify-center
+            gap-2
+            mt-10
+          "
+        >
+          {[...Array(totalPages)].map(
+            (_, index) => (
+              <button
+                key={index}
+                onClick={() =>
+                  setPage(index + 1)
+                }
+                className={`
+                  px-4
+                  py-2
+                  rounded-xl
+                  border
+                  ${
+                    page === index + 1
+                      ? "bg-green-600 text-white"
+                      : "bg-white"
+                  }
+                `}
+              >
+                {index + 1}
+              </button>
+            )
+          )}
+        </div>
+      )}
+
+    </section>
+
+  </div>
+
+</MainLayout>
   );
 }

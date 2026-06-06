@@ -9,6 +9,23 @@ create((set) => ({
 
   listings: [],
 
+  search: "",
+  category: "",
+  priceFrom: "",
+  priceTo: "",
+
+  setSearch: (value) =>
+    set({ search: value }),
+
+  setCategory: (value) =>
+    set({ category: value }),
+
+  setPriceFrom: (value) =>
+    set({ priceFrom: value }),
+
+  setPriceTo: (value) =>
+    set({ priceTo: value }),
+
   totalPages: 1,
 
   loading: false,

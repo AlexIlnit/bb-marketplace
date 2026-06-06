@@ -6,7 +6,10 @@ export default function ListingCard({ listing }) {
 
   const { favorites, toggleFavorite } = useFavoriteStore();
 
-  const isFavorite = favorites.includes(listing._id);
+  // const isFavorite = favorites.includes(listing._id);
+  const isFavorite = favorites.some(
+  (fav) => fav.listing?._id === listing._id
+);
 
   return (
     <div className="relative">
@@ -25,15 +28,25 @@ export default function ListingCard({ listing }) {
         />
       </button>
 
-      <img
-        src={listing.images?.[0] || "https://placehold.co/600x400"}
-        className="h-56 w-full object-cover"
-      />
+      <div className="overflow-hidden rounded-2xl">
+  <img
+    src={listing.images?.[0] || "https://placehold.co/600x400"}
+    alt={listing.title}
+    className="
+      h-56
+      w-56
+      
+      object-cover
+      transition-transform
+      duration-300
+    "
+  />
+</div>
 
       <div className="p-4">
-        <h3 className="font-semibold mb-2">
+        <p className="font-semibold mb-2">
           {listing.title}
-        </h3>
+        </p>
 
         <div className="text-green-600 font-bold text-xl">
           {listing.price} BYN
