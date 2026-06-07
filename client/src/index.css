@@ -122,3 +122,11 @@ code {
   background: var(--code-bg);
   color: var(--text-h);
 }
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}

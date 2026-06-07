@@ -11,9 +11,10 @@ export default function MainLayout({
 
       <main
         className="
+        w-full
         max-w-7xl
         mx-auto
-        p-4
+        px-4
       "
       >
         {children}

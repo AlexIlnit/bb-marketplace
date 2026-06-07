@@ -21,37 +21,37 @@ export default function CategoriesBar() {
       <h2 className="text-xl font-semibold mb-4">
         Категории
       </h2>
-      <div className="grid grid-cols-4 md:grid-cols-8 gap-4">
+      {/* <div className="grid grid-cols-4 md:grid-cols-8 gap-4"> */}
+      <div className="w-full overflow-x-auto scrollbar-hide overscroll-x-contain">
+  <div className="flex gap-3  pr-4">
 <button
-  onClick={() => setCategory(null)}
+  onClick={() => setCategory("")}
   className={`
-    relative
+    flex-shrink-0
+    w-24 sm:w-28 lg:w-32
+    h-16 sm:h-20
+    rounded-xl
     overflow-hidden
-    rounded-2xl
-    h-24
-    shadow-sm
-    hover:shadow-lg
-    transition
+    relative
+
+    border-2
     ${
       !activeCategory
-        ? "ring-4 ring-green-500"
-        : ""
+        ? "border-green-500 shadow-lg"
+        : "border-transparent"
     }
+
+    transition
+    duration-200
   `}
 >
   <img
     src="https://images.unsplash.com/photo-1483985988355-763728e1935b"
     alt="Все категории"
-    className="
-      absolute
-      inset-0
-      w-full
-      h-full
-      object-cover
-    "
+    className="absolute inset-0 w-full h-full object-cover"
   />
 
-  <div className="absolute inset-0 bg-black/50" />
+  <div className="absolute inset-0 bg-gradient-to-br from-green-700/70 to-black/60" />
 
   <div
     className="
@@ -64,6 +64,8 @@ export default function CategoriesBar() {
       text-white
       font-semibold
       text-sm
+      text-center
+      px-2
     "
   >
     Все категории
@@ -76,72 +78,45 @@ export default function CategoriesBar() {
 
           return (
             <button
-              key={cat._id}
-              onClick={() =>
-                setCategory(
-                  isActive
-                    ? null
-                    : cat.slug
-                )
-              }
-              className={`
-                relative
-                overflow-hidden
-                rounded-2xl
-                h-24
-                shadow-sm
-                hover:shadow-lg
-                transition
-                ${
-                  isActive
-                    ? "ring-4 ring-green-500 scale-105"
-                    : "hover:scale-105"
-                }
-              `}
-            >
+  key={cat._id}
+  onClick={() =>
+    setCategory(
+      activeCategory === cat.slug ? null : cat.slug
+    )
+  }
+  className={`
+    flex-shrink-0
+    relative
+    w-24 sm:w-28 lg:w-32
+    h-16 sm:h-20
+    rounded-xl
+    overflow-hidden
+    transition
+    duration-200
+    shadow-sm
+    hover:shadow-lg
+    ${activeCategory === cat.slug ? "border-2 border-green-500" : "border border-transparent"}
+  `}
+>
               <img
-                src={
-                  cat.image ||
-                  "https://placehold.co/300x200"
-                }
-                alt={cat.name}
-                className="
-                  absolute
-                  inset-0
-                  w-full
-                  h-full
-                  object-cover
-                "
-              />
+    src={cat.image}
+    alt={cat.name}
+    className="absolute inset-0 w-full h-full object-cover"
+  />
 
-              <div className="absolute inset-0 bg-black/50" />
+  <div className="absolute inset-0 bg-black/40" />
 
-              <div
-                className="
-                  relative
-                  z-10
-                  flex
-                  flex-col
-                  items-center
-                  justify-center
-                  h-full
-                  text-white
-                "
-              >
-                {Icon && (
-                  <Icon
-                    size={22}
-                    className="mb-1"
-                  />
-                )}
+  <div className="relative z-10 flex flex-col items-center justify-center h-full text-white">
+    <span className="text-sm font-semibold text-center px-1">
+      {cat.name}
+    </span>
+  </div>
+</button>
 
-                <span className="text-xs font-semibold text-center px-1">
-                  {cat.name}
-                </span>
-              </div>
-            </button>
           );
+          
         })}
+      </div>
       </div>
     </div>
   );

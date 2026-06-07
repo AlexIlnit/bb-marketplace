@@ -85,15 +85,15 @@ useEffect(() => {
 <MainLayout>
   <CategoriesBar />
 
-  <div className="flex gap-8">
+  <div className="flex flex-col lg:flex-row gap-8">
 
     {/* FILTERS */}
-    <div className="w-1/4">
+    <div className="hidden lg:block lg:w-1/4">
       <FilterSidebar />
     </div>
 
     {/* LISTINGS */}
-    <section className="w-3/4">
+    <section className="w-full ">
 
       <h1
         className="
@@ -104,12 +104,19 @@ useEffect(() => {
       >
         Свежие объявления
       </h1>
+      {/* Фильтр сверху на планшетах и телефонах */}
+    <div className="lg:hidden mb-6">
+      <FilterSidebar />
+    </div>
 
       <div
         className="
           grid
-          grid-cols-4
-          gap-6
+    grid-cols-1
+    sm:grid-cols-2
+    md:grid-cols-3
+    xl:grid-cols-4
+    gap-6
         "
       >
         {paginatedListings.map(

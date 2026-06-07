@@ -1,7 +1,10 @@
+import { useEffect } from "react";
+
 import { useListingStore } from "../../store/listingStore";
+import { useCategoryStore } from "../../store/categoryStore";
 
 export default function FilterSidebar() {
-    const {
+  const {
     search,
     category,
     priceFrom,
@@ -12,6 +15,29 @@ export default function FilterSidebar() {
     setPriceFrom,
     setPriceTo
   } = useListingStore();
+
+  const {
+    categories,
+    fetchCategories
+  } = useCategoryStore();
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+const fieldClass = `
+  border
+  border-gray-300
+  rounded-xl
+  p-3
+  w-full
+
+  transition-all
+  duration-200
+
+  focus:outline-none
+  focus:border-green-500
+  focus:shadow-md
+`;
   return (
     <aside
       className="
@@ -31,20 +57,25 @@ export default function FilterSidebar() {
         Фильтры
       </h2>
 
-      <div className="space-y-4">
+      <div
+        className="
+          flex
+          flex-col
+          gap-4
 
+          lg:flex-col
+
+          md:flex-row
+          md:overflow-x-auto
+        "
+      >
         <input
           value={search}
           onChange={(e) =>
             setSearch(e.target.value)
           }
           placeholder="Поиск..."
-          className="
-            w-full
-            border
-            rounded-xl
-            p-3
-          "
+          className={fieldClass}
         />
 
         <select
@@ -52,28 +83,20 @@ export default function FilterSidebar() {
           onChange={(e) =>
             setCategory(e.target.value)
           }
-          className="
-            w-full
-            border
-            rounded-xl
-            p-3
-          "
+          className={fieldClass}
         >
           <option value="">
             Все категории
           </option>
 
-          <option value="Авто">
-            Авто
-          </option>
-
-          <option value="Недвижимость">
-            Недвижимость
-          </option>
-
-          <option value="Электроника">
-            Электроника
-          </option>
+          {categories.map((cat) => (
+            <option
+              key={cat._id}
+              value={cat.slug}
+            >
+              {cat.name}
+            </option>
+          ))}
         </select>
 
         <input
@@ -83,12 +106,7 @@ export default function FilterSidebar() {
             setPriceFrom(e.target.value)
           }
           placeholder="Цена от"
-          className="
-            w-full
-            border
-            rounded-xl
-            p-3
-          "
+          className={fieldClass}
         />
 
         <input
@@ -98,16 +116,9 @@ export default function FilterSidebar() {
             setPriceTo(e.target.value)
           }
           placeholder="Цена до"
-          className="
-            w-full
-            border
-            rounded-xl
-            p-3
-          "
+          className={fieldClass}
         />
-
       </div>
-
     </aside>
   );
 }
