@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createListing } from "../../api/listingApi";
 import { uploadImage } from "../../api/uploadApi";
 import { useNavigate } from "react-router-dom";
+import { useCategoryStore } from "../../store/categoryStore";
 
 export default function CreateListing() {
   const navigate = useNavigate();
@@ -13,6 +14,12 @@ export default function CreateListing() {
     city: "",
     category: ""
   });
+
+  const { categories, fetchCategories } = useCategoryStore();
+
+useEffect(() => {
+  fetchCategories();
+}, []);  
 
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -106,12 +113,27 @@ export default function CreateListing() {
           onChange={handleChange}
         />
 
-        <input
-          name="category"
-          placeholder="Категория"
-          className="w-full p-3 border rounded-xl"
-          onChange={handleChange}
-        />
+       <div>
+  <select
+    name="category"
+    value={form.category}
+    onChange={handleChange}
+    className="w-full p-3 border rounded-xl"
+  >
+    <option value="">
+      Выберите категорию
+    </option>
+
+    {categories.map((cat) => (
+      <option
+        key={cat._id}
+        value={cat.slug}
+      >
+        {cat.name}
+      </option>
+    ))}
+  </select>
+</div>
 
         {/* 📸 IMAGE UPLOAD */}
         <div className="space-y-3 border p-4 rounded-xl">

@@ -6,6 +6,7 @@ import listingRoutes from "./routes/listingRoutes.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import favoriteRoutes from "./routes/favoriteRoutes.js";
+import categoryRoutes from "./routes/categoryRoutes.js";
 
 const app = express();
 
@@ -24,6 +25,8 @@ app.use("/api/upload", uploadRoutes);
 app.use("/api/users", userRoutes);
 
 app.use("/api/favorites", favoriteRoutes);
+
+app.use("/api/categories", categoryRoutes);
 
 app.get("/", (req, res) => {
   res.json({
