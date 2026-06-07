@@ -3,6 +3,7 @@ import { createListing } from "../../api/listingApi";
 import { uploadImage } from "../../api/uploadApi";
 import { useNavigate } from "react-router-dom";
 import { useCategoryStore } from "../../store/categoryStore";
+import MainLayout from "../../layouts/MainLayout";
 
 export default function CreateListing() {
   const navigate = useNavigate();
@@ -17,15 +18,15 @@ export default function CreateListing() {
 
   const { categories, fetchCategories } = useCategoryStore();
 
-useEffect(() => {
-  fetchCategories();
-}, []);  
-
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
 
   const [imageFile, setImageFile] = useState(null);
   const [imageUrl, setImageUrl] = useState("");
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
 
   const handleChange = (e) => {
     setForm({
@@ -34,7 +35,6 @@ useEffect(() => {
     });
   };
 
-  // 📸 UPLOAD
   const handleUpload = async () => {
     if (!imageFile) return;
 
@@ -50,7 +50,6 @@ useEffect(() => {
     }
   };
 
-  // 📦 SUBMIT
   const submit = async (e) => {
     e.preventDefault();
 
@@ -77,6 +76,7 @@ useEffect(() => {
   };
 
   return (
+   <MainLayout>
     <div className="max-w-2xl mx-auto p-6">
 
       <h1 className="text-2xl font-bold mb-6">
@@ -113,29 +113,28 @@ useEffect(() => {
           onChange={handleChange}
         />
 
-       <div>
-  <select
-    name="category"
-    value={form.category}
-    onChange={handleChange}
-    className="w-full p-3 border rounded-xl"
-  >
-    <option value="">
-      Выберите категорию
-    </option>
+        {/* CATEGORY SELECT */}
+        <select
+          name="category"
+          value={form.category}
+          onChange={handleChange}
+          className="w-full p-3 border rounded-xl"
+        >
+          <option value="">
+            Выберите категорию
+          </option>
 
-    {categories.map((cat) => (
-      <option
-        key={cat._id}
-        value={cat.slug}
-      >
-        {cat.name}
-      </option>
-    ))}
-  </select>
-</div>
+          {categories.map((cat) => (
+            <option
+              key={cat._id}
+              value={cat.slug}
+            >
+              {cat.name}
+            </option>
+          ))}
+        </select>
 
-        {/* 📸 IMAGE UPLOAD */}
+        {/* IMAGE UPLOAD */}
         <div className="space-y-3 border p-4 rounded-xl">
 
           <input
@@ -152,7 +151,6 @@ useEffect(() => {
             {uploading ? "Загрузка..." : "Загрузить фото"}
           </button>
 
-          {/* 📸 PREVIEW */}
           {imageUrl && (
             <div className="mt-3">
               <img
@@ -177,5 +175,6 @@ useEffect(() => {
 
       </form>
     </div>
+    </MainLayout> 
   );
 }

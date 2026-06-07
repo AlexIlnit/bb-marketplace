@@ -1,10 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createListing } from "../../api/listingApi";
 import { uploadImage } from "../../api/uploadApi";
 import { useNavigate } from "react-router-dom";
+import { useCategoryStore } from "../../store/categoryStore";
 
 export default function CreateListing() {
   const navigate = useNavigate();
+
+  const { categories, fetchCategories } = useCategoryStore();
 
   const [form, setForm] = useState({
     title: "",
@@ -20,6 +23,10 @@ export default function CreateListing() {
   const [imageFile, setImageFile] = useState(null);
   const [imageUrl, setImageUrl] = useState("");
 
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
   const handleChange = (e) => {
     setForm({
       ...form,
@@ -27,7 +34,6 @@ export default function CreateListing() {
     });
   };
 
-  // 📸 UPLOAD
   const handleUpload = async () => {
     if (!imageFile) return;
 
@@ -43,7 +49,6 @@ export default function CreateListing() {
     }
   };
 
-  // 📦 SUBMIT
   const submit = async (e) => {
     e.preventDefault();
 
@@ -78,42 +83,64 @@ export default function CreateListing() {
 
       <form onSubmit={submit} className="space-y-4">
 
+        {/* TITLE */}
         <input
           name="title"
           placeholder="Название"
-          className="w-full p-3 border rounded-xl"
+          value={form.title}
           onChange={handleChange}
+          className="w-full p-3 border rounded-xl"
         />
 
+        {/* DESCRIPTION */}
         <textarea
           name="description"
           placeholder="Описание"
-          className="w-full p-3 border rounded-xl"
+          value={form.description}
           onChange={handleChange}
+          className="w-full p-3 border rounded-xl"
         />
 
+        {/* PRICE */}
         <input
           name="price"
           placeholder="Цена"
-          className="w-full p-3 border rounded-xl"
+          value={form.price}
           onChange={handleChange}
+          className="w-full p-3 border rounded-xl"
         />
 
+        {/* CITY */}
         <input
           name="city"
           placeholder="Город"
-          className="w-full p-3 border rounded-xl"
+          value={form.city}
           onChange={handleChange}
+          className="w-full p-3 border rounded-xl"
         />
 
-        <input
+        {/* CATEGORY (API + slug) */}
+        <select
           name="category"
-          placeholder="Категория"
-          className="w-full p-3 border rounded-xl"
+          value={form.category}
           onChange={handleChange}
-        />
+          className="w-full p-3 border rounded-xl"
+        >
+          <option value="">
+            Выберите категорию
+          </option>
 
-        {/* 📸 IMAGE UPLOAD */}
+          {categories.map((cat) => (
+            <option
+              key={cat._id}
+              value={cat.slug}
+            >
+              {cat.name}
+            </option>
+          ))}
+        </select>
+
+        {/* IMAGE UPLOAD */}
         <div className="space-y-3 border p-4 rounded-xl">
 
           <input
@@ -130,14 +157,12 @@ export default function CreateListing() {
             {uploading ? "Загрузка..." : "Загрузить фото"}
           </button>
 
-          {/* 📸 PREVIEW */}
           {imageUrl && (
             <div className="mt-3">
               <img
                 src={imageUrl}
                 className="w-full h-64 object-cover rounded-xl border"
               />
-
               <p className="text-green-600 text-sm mt-2">
                 Фото загружено ✓
               </p>
@@ -146,6 +171,7 @@ export default function CreateListing() {
 
         </div>
 
+        {/* SUBMIT */}
         <button
           disabled={loading}
           className="w-full bg-green-600 text-white py-3 rounded-xl"
