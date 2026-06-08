@@ -12,7 +12,8 @@ export const createListing = async (req, res) => {
       city,
       category,
       images,
-      seller: req.user._id
+      user: req.user._id,
+      status: "pending"
     });
 
     res.status(201).json(listing);
@@ -33,9 +34,9 @@ async (req, res) => {
     const skip =
       (page - 1) * limit;
 
-    const listings =
-      await Listing.find()
-        .sort({
+    const listings = await Listing.find({
+      status: "approved"
+    }).sort({
           createdAt: -1
         })
         .skip(skip)
@@ -60,7 +61,7 @@ async (req, res) => {
 export const getListingById = async (req, res) => {
   try {
     const listing = await Listing.findById(req.params.id)
-      .populate("seller", "name email");
+      .populate("user", "name email");
 
     if (!listing) {
       return res.status(404).json({
@@ -86,7 +87,7 @@ export const deleteListing = async (req, res) => {
     }
 
     if (
-      listing.seller.toString() !==
+      listing.user.toString() !==
       req.user._id.toString()
     ) {
       return res.status(403).json({
@@ -124,7 +125,7 @@ export const updateListing = async (
     }
 
     if (
-      listing.seller.toString() !==
+      listing.user.toString() !==
       req.user._id.toString()
     ) {
       return res.status(403).json({
@@ -133,11 +134,16 @@ export const updateListing = async (
     }
 
     const updated =
-      await Listing.findByIdAndUpdate(
-        req.params.id,
-        req.body,
-        { new: true }
-      );
+  await Listing.findByIdAndUpdate(
+    req.params.id,
+    {
+      ...req.body,
+      status: "pending"
+    },
+    {
+      new: true
+    }
+  );
 
     res.json(updated);
 

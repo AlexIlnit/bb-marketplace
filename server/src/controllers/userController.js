@@ -3,7 +3,7 @@ import Listing from "../models/Listing.js";
 export const getMyListings = async (req, res) => {
   try {
     const listings = await Listing.find({
-      seller: req.user._id
+      user: req.user._id
     }).sort({
       createdAt: -1
     });
