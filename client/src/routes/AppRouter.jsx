@@ -11,6 +11,11 @@ import ProtectedRoute from "./ProtectedRoute";
 import GuestRoute from "./GuestRoute";
 import Favorites from "../pages/Favorites/Favorites";
 
+import AdminDashboard from "../pages/admin/AdminDashboard";
+import AdminListings from "../pages/admin/AdminListings";
+import AdminUsers from "../pages/admin/AdminUsers";
+import AdminRoute from "./AdminRoute";
+
 export default function AppRouter() {
   return (
     <Routes>
@@ -21,6 +26,9 @@ export default function AppRouter() {
       <Route path="/create-listing" element={<ProtectedRoute><CreateListing /></ProtectedRoute>} />
       <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
       <Route path="/favorites" element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
+      <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>}/>
+      <Route path="/admin/listings" element={<AdminRoute><AdminListings /></AdminRoute>}/>
+      <Route path="/admin/users" element={<AdminRoute><AdminUsers /></AdminRoute>}/>
     </Routes>
   );
 }

@@ -29,6 +29,12 @@ const listingSchema =
         default: 0
       },
 
+      status: {
+        type: String,
+        enum: ["pending", "approved", "rejected"],
+        default: "pending"
+      },
+
       seller: {
         type:
           mongoose.Schema.Types.ObjectId,
