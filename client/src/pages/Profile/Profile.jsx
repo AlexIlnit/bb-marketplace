@@ -87,7 +87,8 @@ const handleUpdate = async () => {
     await updateListing(editItem._id, {
       ...form,
       price: Number(form.price),
-      images: imageUrl ? [imageUrl] : []
+      images: imageUrl ? [imageUrl] : [],
+      status: "pending" // ← ВАЖНО
     });
 
     setListings((prev) =>
@@ -96,6 +97,7 @@ const handleUpdate = async () => {
           ? {
               ...item,
               ...form,
+              status: "pending",
               images: imageUrl ? [imageUrl] : item.images
             }
           : item
@@ -168,6 +170,27 @@ const handleUpdate = async () => {
               <div key={listing._id} className="relative">
 
                 <ListingCard listing={listing} />
+                <div className="mt-2">
+
+  {listing.status === "pending" && (
+    <div className="bg-yellow-100 text-yellow-700 px-3 py-2 rounded-lg text-sm">
+      ⏳ Объявление находится на модерации
+    </div>
+  )}
+
+  {listing.status === "approved" && (
+    <div className="bg-green-100 text-green-700 px-3 py-2 rounded-lg text-sm">
+      ✅ Объявление опубликовано
+    </div>
+  )}
+
+  {listing.status === "rejected" && (
+    <div className="bg-red-100 text-red-700 px-3 py-2 rounded-lg text-sm">
+      ❌ Объявление отклонено модератором
+    </div>
+  )}
+
+</div>
 
                 {/* ACTIONS */}
                 <div className="flex gap-2 mt-2">
