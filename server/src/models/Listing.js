@@ -35,7 +35,7 @@ const listingSchema =
         default: "pending"
       },
 
-      seller: {
+      user: {
         type:
           mongoose.Schema.Types.ObjectId,
 

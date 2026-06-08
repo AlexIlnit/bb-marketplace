@@ -1,6 +1,6 @@
 import { approveListing, rejectListing, deleteListing } from "../../api/adminApi";
 
-export function ListingsTable({ listings, reload }) {
+export default function ListingsTable({ listings, reload }) {
   return (
     <div className="space-y-4">
 

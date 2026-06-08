@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { getAdminUsers, getAdminListings } from "../../api/adminApi";
+import ListingsTable from "../../components/admin/ListingsTable";
+import UsersTable from "../../components/admin/UsersTable";
 
 export default function AdminDashboard() {
   const [tab, setTab] = useState("listings");

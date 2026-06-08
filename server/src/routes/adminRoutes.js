@@ -9,6 +9,7 @@ const router = express.Router();
 
 router.get("/users", adminOnly, async (req, res) => {
   const users = await User.find().sort({ createdAt: -1 });
+  console.log("ADMIN CHECK USER:", req.user);
   res.json(users);
 });
 

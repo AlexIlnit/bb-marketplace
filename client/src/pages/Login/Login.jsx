@@ -14,41 +14,45 @@ export default function Login() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const [isLoggedIn, setIsLoggedIn] = useState(false); 
   
 
-  const submit = async (e) => {
+const submit = async (e) => {
   e.preventDefault();
 
   setError("");
   setLoading(true);
 
   try {
-    const { data } = await loginUser({ email, password });
+    const { data } = await loginUser({
+      email,
+      password
+    });
 
     setUser(
       {
         id: data._id,
         name: data.name,
-        email: data.email
+        email: data.email,
+        role: data.role
       },
       data.token
     );
 
-    // 👇 ВАЖНО: просто флаг, без navigate
-    setIsLoggedIn(true);
+    if (data.role === "admin") {
+      navigate("/admin");
+    } else {
+      navigate("/profile");
+    }
 
   } catch (err) {
-    setError(err.response?.data?.message || "Ошибка входа");
+    setError(
+      err.response?.data?.message ||
+      "Ошибка входа"
+    );
   } finally {
     setLoading(false);
   }
 };
-useEffect(() => {
-  if (isLoggedIn) {
-    navigate("/");
-  }
-}, [isLoggedIn, navigate]);
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">

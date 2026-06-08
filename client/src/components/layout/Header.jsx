@@ -64,7 +64,7 @@ export default function Header() {
               <div className="flex items-center gap-4">
 
     <Link
-      to="/profile"
+      to={user?.role === "admin" ? "/admin" : "/profile"}
       className="
         flex
         items-center

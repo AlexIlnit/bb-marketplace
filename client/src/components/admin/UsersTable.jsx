@@ -1,6 +1,6 @@
 import { deleteUser } from "../../api/adminApi";
 
-export function UsersTable({ users, reload }) {
+export default function UsersTable({ users, reload }) {
   return (
     <div className="space-y-4">
 
