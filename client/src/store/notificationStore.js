@@ -21,5 +21,47 @@ fetchNotifications: async () => {
   } catch (err) {
     console.error("FETCH ERROR:", err);
   }
+},
+
+markAsRead: async (id) => {
+  try {
+    const token = localStorage.getItem("token");
+
+    await api.patch(
+      `/notifications/${id}/read`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    set((state) => ({
+      notifications: state.notifications.map((n) =>
+        n._id === id ? { ...n, isRead: true } : n
+      )
+    }));
+  } catch (err) {
+    console.error(err);
+  }
+},
+markAllAsRead: async () => {
+  const token = localStorage.getItem("token");
+
+  await api.patch(
+    "/notifications/read-all",
+    {},
+    {
+      headers: { Authorization: `Bearer ${token}` }
+    }
+  );
+
+  set((state) => ({
+    notifications: state.notifications.map((n) => ({
+      ...n,
+      isRead: true
+    }))
+  }));
 }
 }));

@@ -17,7 +17,7 @@ export default function Header() {
   const [openNotif, setOpenNotif] = useState(false);
 
   const navigate = useNavigate();
-  const { notifications, fetchNotifications } =
+  const { notifications, fetchNotifications, markAsRead  } =
     useNotificationStore();
 
   const user = useAuthStore((s) => s.user);
@@ -37,6 +37,7 @@ export default function Header() {
 
     return () => clearInterval(interval);
   }, [user]);
+
 
   // CLOSE ON OUTSIDE CLICK
   useEffect(() => {
@@ -63,6 +64,40 @@ export default function Header() {
     logout();
     navigate("/");
   };
+
+  const soundRef = useRef(null);
+  const [soundEnabled, setSoundEnabled] = useState(false);
+  const lastPlayed = useRef(0);
+useEffect(() => {
+  soundRef.current = new Audio("/sounds/notification.mp3");
+
+  const unlock = () => {
+    setSoundEnabled(true);
+    document.removeEventListener("click", unlock);
+  };
+
+  document.addEventListener("click", unlock);
+
+  return () => {
+    document.removeEventListener("click", unlock);
+  };
+}, []);
+
+const prevCount = useRef(0);
+soundRef.current = new Audio("/sounds/notification.mp3");
+soundRef.current.volume = 0.5;
+
+useEffect(() => {
+  if (!soundEnabled) return;
+
+  const currentCount = notifications.length;
+
+  if (currentCount > prevCount.current) {
+    soundRef.current?.play().catch(() => {});
+  }
+
+  prevCount.current = currentCount;
+}, [notifications, soundEnabled]);
 
   const unreadCount = (notifications || []).filter(
     (n) => !n.isRead
@@ -127,20 +162,21 @@ export default function Header() {
                         </p>
                       ) : (
                         notifications.map((n) => (
-                          <div
-                            key={n._id}
-                            className="p-3 border-b hover:bg-gray-50"
-                          >
-                            <p className="text-sm">
-                              {n.message}
-                            </p>
+                         <div
+  key={n._id}
+  onClick={() => markAsRead(n._id)}
+  className={`
+    p-3 border-b cursor-pointer transition-all duration-300
+    hover:bg-gray-50
+    ${n.isRead ? "opacity-50 bg-gray-100" : "bg-white font-medium"}
+  `}
+>
+  <p className="text-sm">{n.message}</p>
 
-                            <span className="text-xs text-gray-400">
-                              {new Date(
-                                n.createdAt
-                              ).toLocaleString()}
-                            </span>
-                          </div>
+  <span className="text-xs text-gray-400">
+    {new Date(n.createdAt).toLocaleString()}
+  </span>
+</div>
                         ))
                       )}
                     </div>
