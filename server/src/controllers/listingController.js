@@ -1,5 +1,5 @@
 import Listing from "../models/Listing.js";
-
+import { createNotification } from "../utils/createNotification.js";
 // CREATE LISTING
 export const createListing = async (req, res) => {
   try {
@@ -15,7 +15,11 @@ export const createListing = async (req, res) => {
       user: req.user._id,
       status: "pending"
     });
-
+await createNotification(
+  req.user._id,
+  "Ваше объявление отправлено на модерацию ⏳",
+  "info"
+);
     res.status(201).json(listing);
   } catch (error) {
     res.status(500).json({
@@ -107,49 +111,34 @@ export const deleteListing = async (req, res) => {
     });
   }
 };
-export const updateListing = async (
-  req,
-  res
-) => {
+export const updateListing = async (req, res) => {
   try {
-
-    const listing =
-      await Listing.findById(
-        req.params.id
-      );
+    const listing = await Listing.findById(req.params.id);
 
     if (!listing) {
-      return res.status(404).json({
-        message: "Не найдено"
-      });
+      return res.status(404).json({ message: "Не найдено" });
     }
 
-    if (
-      listing.user.toString() !==
-      req.user._id.toString()
-    ) {
-      return res.status(403).json({
-        message: "Нет доступа"
-      });
+    if (listing.user.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: "Нет доступа" });
     }
 
-    const updated =
-  await Listing.findByIdAndUpdate(
-    req.params.id,
-    {
-      ...req.body,
-      status: "pending"
-    },
-    {
-      new: true
-    }
-  );
+    // обновляем поля
+    Object.assign(listing, req.body);
 
-    res.json(updated);
+    listing.status = "pending";
+
+    await listing.save();
+
+    await createNotification(
+      listing.user,
+      "Ваше объявление отправлено на повторную модерацию ⏳",
+      "info"
+    );
+
+    res.json(listing);
 
   } catch (error) {
-    res.status(500).json({
-      message: error.message
-    });
+    res.status(500).json({ message: error.message });
   }
 };

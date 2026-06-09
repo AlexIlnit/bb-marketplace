@@ -6,23 +6,67 @@ import {
   LogOut
 } from "lucide-react";
 
-import { useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import MobileMenu from "./MobileMenu";
 import { useAuthStore } from "../../store/authStore";
+import { useNotificationStore } from "../../store/notificationStore.js";
 
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [openNotif, setOpenNotif] = useState(false);
 
   const navigate = useNavigate();
+  const { notifications, fetchNotifications } =
+    useNotificationStore();
 
   const user = useAuthStore((s) => s.user);
   const logout = useAuthStore((s) => s.logout);
+
+  const dropdownRef = useRef();
+
+  // FETCH NOTIFICATIONS
+  useEffect(() => {
+    if (!user) return;
+
+    fetchNotifications();
+
+    const interval = setInterval(() => {
+      fetchNotifications();
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [user]);
+
+  // CLOSE ON OUTSIDE CLICK
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target)
+      ) {
+        setOpenNotif(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener(
+        "mousedown",
+        handleClickOutside
+      );
+    };
+  }, []);
 
   const handleLogout = () => {
     logout();
     navigate("/");
   };
+
+  const unreadCount = (notifications || []).filter(
+    (n) => !n.isRead
+  ).length;
 
   return (
     <>
@@ -32,10 +76,11 @@ export default function Header() {
           {/* LEFT */}
           <div className="flex items-center gap-8">
             <Link to="/">
-            <h2 className="text-green-600 font-bold text-2xl">
-              BB
-            </h2>
+              <h2 className="text-green-600 font-bold text-2xl">
+                BB
+              </h2>
             </Link>
+
             <div className="hidden md:flex items-center bg-gray-100 px-4 rounded-xl w-[450px]">
               <Search size={18} />
               <input
@@ -52,7 +97,59 @@ export default function Header() {
               <Heart className="cursor-pointer" />
             </Link>
 
-            {/* AUTH BLOCK */}
+            {/* 🔔 NOTIFICATIONS */}
+            {user && (
+              <div className="relative" ref={dropdownRef}>
+                <button
+                  onClick={() => setOpenNotif(!openNotif)}
+                  className="relative"
+                >
+                  🔔
+
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-2 rounded-full">
+                      {unreadCount}
+                    </span>
+                  )}
+                </button>
+
+                {/* DROPDOWN */}
+                {openNotif && (
+                  <div className="absolute right-0 mt-3 w-80 bg-white border shadow-xl rounded-xl z-50">
+                    <div className="p-3 border-b font-semibold">
+                      Уведомления
+                    </div>
+
+                    <div className="max-h-80 overflow-y-auto">
+                      {notifications.length === 0 ? (
+                        <p className="p-4 text-gray-500 text-sm">
+                          Нет уведомлений
+                        </p>
+                      ) : (
+                        notifications.map((n) => (
+                          <div
+                            key={n._id}
+                            className="p-3 border-b hover:bg-gray-50"
+                          >
+                            <p className="text-sm">
+                              {n.message}
+                            </p>
+
+                            <span className="text-xs text-gray-400">
+                              {new Date(
+                                n.createdAt
+                              ).toLocaleString()}
+                            </span>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* AUTH */}
             {!user ? (
               <Link to="/login">
                 <div className="flex items-center gap-2 cursor-pointer">
@@ -63,25 +160,24 @@ export default function Header() {
             ) : (
               <div className="flex items-center gap-4">
 
-    <Link
-      to={user?.role === "admin" ? "/admin" : "/profile"}
-      className="
-        flex
-        items-center
-        gap-2
-        hover:text-green-600
-      "
-    >
-      <User size={20} />
-      <span>{user.name}</span>
-    </Link>
+                <Link
+                  to={
+                    user?.role === "admin"
+                      ? "/admin"
+                      : "/profile"
+                  }
+                  className="flex items-center gap-2 hover:text-green-600"
+                >
+                  <User size={20} />
+                  <span>{user.name}</span>
+                </Link>
 
-    <LogOut
-      className="cursor-pointer text-red-500"
-      onClick={handleLogout}
-    />
-  </div>
-)}
+                <LogOut
+                  className="cursor-pointer text-red-500"
+                  onClick={handleLogout}
+                />
+              </div>
+            )}
 
             {/* BUTTON */}
             {user && (
@@ -91,10 +187,9 @@ export default function Header() {
                 </button>
               </Link>
             )}
-
           </div>
 
-          {/* MOBILE MENU */}
+          {/* MOBILE */}
           <button
             onClick={() => setMobileOpen(true)}
             className="md:hidden"

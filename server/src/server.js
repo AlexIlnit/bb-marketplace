@@ -6,10 +6,10 @@ import app from "./app.js";
 import { connectDB } from "./config/db.js";
 import { seedCategories } from "./seeds/categorySeed.js";
 import adminRoutes from "./routes/adminRoutes.js";
+import notificationRoutes from "./routes/notificationRoutes.js";
 
 const PORT = process.env.PORT;
 
-connectDB();
 connectDB().then(() => {
   seedCategories();
 });
@@ -18,6 +18,8 @@ app.use("/api/admin", adminRoutes);
 
 // ✅ ВАЖНО: подключаем ДО запуска сервера
 app.use("/api/favorites", favoriteRoutes);
+
+app.use("/api/notifications",notificationRoutes);
 
 const server = http.createServer(app);
 

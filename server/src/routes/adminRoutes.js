@@ -2,6 +2,7 @@ import express from "express";
 import User from "../models/User.js";
 import Listing from "../models/Listing.js";
 import { adminOnly } from "../middleware/adminMiddleware.js";
+import { createNotification } from "../utils/createNotification.js";
 
 const router = express.Router();
 
@@ -9,8 +10,7 @@ const router = express.Router();
 
 router.get("/users", adminOnly, async (req, res) => {
   const users = await User.find().sort({ createdAt: -1 });
-  console.log("ADMIN CHECK USER:", req.user);
-  res.json(users);
+    res.json(users);
 });
 
 router.delete("/users/:id", adminOnly, async (req, res) => {
@@ -29,23 +29,52 @@ router.get("/listings", adminOnly, async (req, res) => {
 });
 
 router.patch("/listings/:id/approve", adminOnly, async (req, res) => {
-  const listing = await Listing.findByIdAndUpdate(
-    req.params.id,
-    { status: "approved" },
-    { new: true }
-  );
+  try {
+    const listing = await Listing.findById(req.params.id);
 
-  res.json(listing);
+    if (!listing) {
+      return res.status(404).json({ message: "Listing не найден" });
+    }
+
+    listing.status = "approved";
+    await listing.save();
+
+    await createNotification(
+      listing.user,
+      "Ваше объявление опубликовано ✅",
+      "success"
+    );
+
+    res.json(listing);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: err.message });
+  }
 });
 
 router.patch("/listings/:id/reject", adminOnly, async (req, res) => {
-  const listing = await Listing.findByIdAndUpdate(
-    req.params.id,
-    { status: "rejected" },
-    { new: true }
-  );
+  try {
+    const listing = await Listing.findById(req.params.id);
 
-  res.json(listing);
+    if (!listing) {
+      return res.status(404).json({ message: "Listing не найден" });
+    }
+
+    listing.status = "rejected";
+    await listing.save();
+
+    await createNotification(
+      listing.user,
+      "Ваше объявление отклонено ❌. Исправьте его и отправьте снова.",
+      "error"
+    );
+
+    res.json(listing);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: err.message });
+  }
 });
 
 router.delete("/listings/:id", adminOnly, async (req, res) => {
