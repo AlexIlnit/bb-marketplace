@@ -19,25 +19,50 @@ router.get("/", authMiddleware, async (req, res) => {
     });
   }
 });
+// router.patch("/:id/read", authMiddleware, async (req, res) => {
+//   try {
+//     const notification = await Notification.findById(req.params.id);
+
+//     if (!notification) {
+//       return res.status(404).json({ message: "Не найдено" });
+//     }
+
+//     if (notification.user.toString() !== req.user._id.toString()) {
+//       return res.status(403).json({ message: "Нет доступа" });
+//     }
+
+//     notification.isRead = true;
+//     await notification.save();
+
+//     res.json(notification);
+//   } catch (err) {
+//     res.status(500).json({ message: err.message });
+//   }
+// });
 router.patch("/:id/read", authMiddleware, async (req, res) => {
   try {
-    const notification = await Notification.findById(req.params.id);
+    await Notification.findByIdAndUpdate(req.params.id, {
+      isRead: true
+    });
 
-    if (!notification) {
-      return res.status(404).json({ message: "Не найдено" });
+    // 🔥 чистим старые прочитанные
+    const readNotifications = await Notification.find({
+      user: req.user._id,
+      isRead: true
+    })
+      .sort({ createdAt: -1 });
+
+    if (readNotifications.length > 3) {
+      const toDelete = readNotifications.slice(3);
+
+      await Notification.deleteMany({
+        _id: { $in: toDelete.map(n => n._id) }
+      });
     }
 
-    if (notification.user.toString() !== req.user._id.toString()) {
-      return res.status(403).json({ message: "Нет доступа" });
-    }
-
-    notification.isRead = true;
-    await notification.save();
-
-    res.json(notification);
+    res.json({ success: true });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 });
-
 export default router;
