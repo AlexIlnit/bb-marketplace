@@ -67,10 +67,13 @@ export default function Header() {
 
   const soundRef = useRef(null);
   const [soundEnabled, setSoundEnabled] = useState(false);
-  const lastPlayed = useRef(0);
+  
+  const prevIdsRef = useRef(new Set());
+  const firstLoadRef = useRef(true);
+
 useEffect(() => {
   soundRef.current = new Audio("/sounds/notification.mp3");
-
+  soundRef.current.volume = 0.5;
   const unlock = () => {
     setSoundEnabled(true);
     document.removeEventListener("click", unlock);
@@ -83,21 +86,32 @@ useEffect(() => {
   };
 }, []);
 
-const prevCount = useRef(0);
-soundRef.current = new Audio("/sounds/notification.mp3");
-soundRef.current.volume = 0.5;
-
 useEffect(() => {
   if (!soundEnabled) return;
 
-  const currentCount = notifications.length;
+  const currentIds = new Set(
+  (notifications || []).map(n => n._id)
+);
 
-  if (currentCount > prevCount.current) {
+  // первый запрос после входа
+  if (firstLoadRef.current) {
+    prevIdsRef.current = currentIds;
+    firstLoadRef.current = false;
+    return;
+  }
+
+  const hasNewNotification = (notifications || []).some(
+  n => !prevIdsRef.current.has(n._id)
+);
+
+  if (hasNewNotification) {
     soundRef.current?.play().catch(() => {});
   }
 
-  prevCount.current = currentCount;
+  prevIdsRef.current = currentIds;
+
 }, [notifications, soundEnabled]);
+
 
   const unreadCount = (notifications || []).filter(
     (n) => !n.isRead
