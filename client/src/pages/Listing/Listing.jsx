@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getListingById } from "../../api/listingApi";
+import MainLayout from "../../layouts/MainLayout";
 
 export default function Listing() {
   const { id } = useParams();
@@ -40,6 +41,7 @@ export default function Listing() {
   }
 
   return (
+    <MainLayout>
     <div className="max-w-6xl mx-auto p-6">
 
       <div className="grid md:grid-cols-2 gap-8">
@@ -119,7 +121,32 @@ export default function Listing() {
         </p>
 
       </div>
+            {/* Характеристики */}
+      <div className="mt-10 bg-white p-6 rounded-2xl border">
+
+        <h2 className="text-2xl font-bold mb-4">
+         Характеристики
+        </h2>
+
+        <p className="leading-7 text-gray-700">
+          
+        </p>
+
+      </div>
+      {/* О продавце */}
+      <div className="mt-10 bg-white p-6 rounded-2xl border">
+
+        <h2 className="text-2xl font-bold mb-4">
+         О продавце 
+        </h2>
+
+        <p className="leading-7 text-gray-700">
+          
+        </p>
+
+      </div>
 
     </div>
+    </MainLayout>
   );
 }

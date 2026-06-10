@@ -116,6 +116,11 @@ useEffect(() => {
   const unreadCount = (notifications || []).filter(
     (n) => !n.isRead
   ).length;
+  let audioEnabled = false;
+
+document.addEventListener("click", () => {
+  audioEnabled = true;
+});
 
   return (
     <>
