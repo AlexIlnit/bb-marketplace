@@ -193,11 +193,11 @@ const handleUpdate = async () => {
 </div>
 
                 {/* ACTIONS */}
-                <div className="flex gap-2 mt-2">
+                <div className="flex flex-wrap gap-2 mt-2 w-full">
 
   <button
     onClick={() => setDeleteItem(listing)}
-    className="bg-red-500 text-white px-3 py-1 rounded"
+    className="bg-red-500 text-white px-2 py-1 text-xs rounded"
   >
     Удалить
   </button>
@@ -205,14 +205,14 @@ const handleUpdate = async () => {
   {listing.status === "rejected" ? (
     <button
       onClick={() => openEditModal(listing)}
-      className="bg-orange-500 text-white px-3 py-1 rounded"
+      className="bg-orange-500 text-white px-2 py-1 text-xs rounded"
     >
       Исправить
     </button>
   ) : (
     <button
       onClick={() => openEditModal(listing)}
-      className="bg-blue-500 text-white px-3 py-1 rounded"
+      className="bg-blue-500 text-white px-2 py-1 text-xs rounded"
     >
       Редактировать
     </button>
