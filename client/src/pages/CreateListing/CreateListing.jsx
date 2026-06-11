@@ -13,7 +13,10 @@ export default function CreateListing() {
     description: "",
     price: "",
     city: "",
-    category: ""
+    category: "",
+    condition: "used",
+    sellerType: "private"
+
   });
 
   const { categories, fetchCategories } = useCategoryStore();
@@ -133,6 +136,31 @@ export default function CreateListing() {
             </option>
           ))}
         </select>
+
+        <select
+  name="condition"
+  value={form.condition}
+  onChange={handleChange}
+  className="w-full p-3 border rounded-xl"
+>
+  <option value="used">Б/У</option>
+  <option value="new">Новое</option>
+</select>
+
+<select
+  name="sellerType"
+  value={form.sellerType}
+  onChange={handleChange}
+  className="w-full p-3 border rounded-xl"
+>
+  <option value="private">
+    Частное лицо
+  </option>
+
+  <option value="company">
+    Компания
+  </option>
+</select>
 
         {/* IMAGE UPLOAD */}
         <div className="space-y-3 border p-4 rounded-xl">

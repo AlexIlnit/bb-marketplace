@@ -27,35 +27,56 @@ await createNotification(
     });
   }
 };
-export const getListings =
-async (req, res) => {
+export const getListings = async (req, res) => {
   try {
-    const page =
-      Number(req.query.page) || 1;
-
+    const page = Number(req.query.page) || 1;
     const limit = 12;
+    const skip = (page - 1) * limit;
 
-    const skip =
-      (page - 1) * limit;
-
-    const listings = await Listing.find({
+    const filter = {
       status: "approved"
-    }).sort({
-          createdAt: -1
-        })
-        .skip(skip)
-        .limit(limit);
+    };
 
-    const total =
-      await Listing.countDocuments();
+    // CATEGORY
+    if (req.query.category) {
+      filter.category = req.query.category;
+    }
+
+    // CONDITION (НОВОЕ / БУ)
+    if (req.query.condition) {
+      filter.condition = req.query.condition;
+    }
+
+    // SELLER TYPE (private / company)
+    if (req.query.sellerType) {
+      filter.sellerType = req.query.sellerType;
+    }
+
+    // PRICE
+    if (req.query.priceFrom || req.query.priceTo) {
+      filter.price = {};
+
+      if (req.query.priceFrom) {
+        filter.price.$gte = Number(req.query.priceFrom);
+      }
+
+      if (req.query.priceTo) {
+        filter.price.$lte = Number(req.query.priceTo);
+      }
+    }
+
+    const listings = await Listing.find(filter)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      
+
+    const total = await Listing.countDocuments(filter);
 
     res.json({
       listings,
-      totalPages:
-        Math.ceil(
-          total / limit
-        )
+      totalPages: Math.ceil(total / limit)
     });
+
   } catch (error) {
     res.status(500).json({
       message: error.message

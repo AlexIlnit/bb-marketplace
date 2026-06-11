@@ -1,20 +1,24 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import { useListingStore } from "../../store/listingStore";
 import { useCategoryStore } from "../../store/categoryStore";
 
 export default function FilterSidebar() {
   const {
-    search,
-    category,
-    priceFrom,
-    priceTo,
+  search,
+  category,
+  priceFrom,
+  priceTo,
+  condition,
+  sellerType,
 
-    setSearch,
-    setCategory,
-    setPriceFrom,
-    setPriceTo
-  } = useListingStore();
+  setSearch,
+  setCategory,
+  setPriceFrom,
+  setPriceTo,
+  setCondition,
+  setSellerType
+} = useListingStore();
 
   const {
     categories,
@@ -43,20 +47,10 @@ const fieldClass = `
       className="
         bg-white
         rounded-2xl
-        p-5
+        p-4
         shadow-sm
       "
     >
-      <h2
-        className="
-          text-xl
-          font-bold
-          mb-4
-        "
-      >
-        Фильтры
-      </h2>
-
       <div
         className="
           flex
@@ -69,6 +63,7 @@ const fieldClass = `
           md:overflow-x-auto
         "
       >
+        <p>Поиск по названию</p>
         <input
           value={search}
           onChange={(e) =>
@@ -77,7 +72,7 @@ const fieldClass = `
           placeholder="Поиск..."
           className={fieldClass}
         />
-
+<p>Категории</p>
         <select
           value={category}
           onChange={(e) =>
@@ -98,26 +93,68 @@ const fieldClass = `
             </option>
           ))}
         </select>
+ <p>Цена</p>
+<div className="flex gap-2">
+    <input
+    type="number"
+    value={priceFrom}
+    onChange={(e) => setPriceFrom(e.target.value)}
+    placeholder="от"
+    className={`${fieldClass} flex-1`}
+  />
 
-        <input
-          type="number"
-          value={priceFrom}
-          onChange={(e) =>
-            setPriceFrom(e.target.value)
-          }
-          placeholder="Цена от"
-          className={fieldClass}
-        />
+  <input
+    type="number"
+    value={priceTo}
+    onChange={(e) => setPriceTo(e.target.value)}
+    placeholder="до"
+    className={`${fieldClass} flex-1`}
+  />
+</div>
+<p>Состояние</p>
 
-        <input
-          type="number"
-          value={priceTo}
-          onChange={(e) =>
-            setPriceTo(e.target.value)
-          }
-          placeholder="Цена до"
-          className={fieldClass}
-        />
+<select
+  value={condition}
+  onChange={(e) => setCondition(e.target.value)}
+  className={fieldClass}
+>
+  <option value="">Любое</option>
+  <option value="new">Новое</option>
+  <option value="used">Б/У</option>
+</select>
+
+<p>Продавец</p>
+
+<select
+  value={sellerType}
+  onChange={(e) => setSellerType(e.target.value)}
+  className={fieldClass}
+>
+  <option value="">Любой</option>
+  <option value="private">Частное лицо</option>
+  <option value="company">Компания</option>
+</select>
+
+<button
+  onClick={() => {
+    setSearch("");
+    setCategory("");
+    setPriceFrom("");
+    setPriceTo("");
+    setCondition("");
+    setSellerType("");
+  }}
+  className="
+    bg-gray-200
+    hover:bg-gray-300
+    px-4
+    py-2
+    rounded-xl
+    transition
+  "
+>
+  Сброс
+</button>
       </div>
     </aside>
   );

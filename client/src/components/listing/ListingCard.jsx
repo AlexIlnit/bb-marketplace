@@ -39,13 +39,27 @@ export default function ListingCard({ listing }) {
       />
 
       <div className="p-4">
-        <p className="font-semibold">{listing.title}</p>
-        <div className="text-green-600 font-bold text-xl">
-          {listing.price} BYN
-        </div>
-        <div className="text-gray-500">{listing.city}</div>
+      <div className="text-green-600 font-bold text-xl">
+        {listing.price} р.
+      </div>
+      <p className="font-semibold">{listing.title}</p>
+
+  
+
+      <div className="text-gray-500">
+      {listing.city}
       </div>
 
-    </div>
+  <div className="text-xs text-gray-400 mt-2">
+    {new Date(listing.createdAt).toLocaleString("ru-RU", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    })}
+  </div>
+</div>
+</div>
   );
 }

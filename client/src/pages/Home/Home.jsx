@@ -25,7 +25,9 @@ export default function Home() {
   search,
   category,
   priceFrom,
-  priceTo
+  priceTo,
+  condition,
+  sellerType
 } = useListingStore();
 
  const { fetchFavorites } =
@@ -61,11 +63,19 @@ useEffect(() => {
       !priceTo ||
       listing.price <= Number(priceTo);
 
+      const matchesCondition =
+    !condition || listing.condition === condition;
+
+   const matchesSeller =
+    !sellerType || listing.sellerType === sellerType;
+
     return (
       matchSearch &&
       matchCategory &&
       matchPriceFrom &&
-      matchPriceTo
+      matchPriceTo &&
+      matchesCondition &&
+      matchesSeller
     );
   });
 

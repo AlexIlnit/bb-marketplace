@@ -5,7 +5,7 @@ import {
 } from "../api/listingApi";
 
 export const useListingStore =
-create((set) => ({
+create((set, get) => ({
 
   listings: [],
 
@@ -13,6 +13,8 @@ create((set) => ({
   category: "",
   priceFrom: "",
   priceTo: "",
+  condition: "",
+  sellerType: "",
 
   setSearch: (value) =>
     set({ search: value }),
@@ -25,29 +27,36 @@ create((set) => ({
 
   setPriceTo: (value) =>
     set({ priceTo: value }),
+  
+  setCondition: (value) => set({ condition: value }),
+
+  setSellerType: (value) =>
+  set({ sellerType: value }),
+  
 
   totalPages: 1,
 
   loading: false,
 
-  fetchListings:
-    async (page = 1) => {
+fetchListings: async (page = 1) => {
+  set({ loading: true });
 
-      set({
-        loading: true
-      });
+  const state = get(); // 👈 ВАЖНО ДОБАВИТЬ
 
-      const { data } =
-        await getListings(page);
+  const { data } = await getListings({
+    page,
+    search: state.search,
+    category: state.category,
+    priceFrom: state.priceFrom,
+    priceTo: state.priceTo,
+    condition: state.condition,
+    sellerType: state.sellerType
+  });
 
-      set({
-        listings:
-          data.listings,
-
-        totalPages:
-          data.totalPages,
-
-        loading: false
-      });
-    }
+  set({
+    listings: data.listings,
+    totalPages: data.totalPages,
+    loading: false
+  });
+}
 }));
