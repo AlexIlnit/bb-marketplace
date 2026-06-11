@@ -1,10 +1,21 @@
 import api from "./axios";
 
-export const getListings =
-(page = 1) =>
-  api.get(
-    `/listings?page=${page}`
+export const getListings = (params) => {
+  const cleanParams = Object.fromEntries(
+    Object.entries(params).filter(
+      ([_, v]) => v !== "" && v !== null && v !== undefined
+    )
   );
+
+  console.log("API PARAMS 👉", cleanParams);
+
+  return api.get("/listings", {
+    params: cleanParams
+  });
+};
+// export const getListings = (params) =>
+//   api.get("/listings", { params });
+
 // получить ВСЕ объявления (для админки)
 export const getAllListings = () => {
   return api.get("/listings");

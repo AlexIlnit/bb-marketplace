@@ -3,7 +3,7 @@ import { createNotification } from "../utils/createNotification.js";
 // CREATE LISTING
 export const createListing = async (req, res) => {
   try {
-    const { title, description, price, city, category, images } = req.body;
+    const { title, description, price, city, category, images, condition, sellerType  } = req.body;
 
     const listing = await Listing.create({
       title,
@@ -12,6 +12,8 @@ export const createListing = async (req, res) => {
       city,
       category,
       images,
+      condition: condition || "used",
+      sellerType: sellerType || "private",
       user: req.user._id,
       status: "pending"
     });
@@ -37,22 +39,18 @@ export const getListings = async (req, res) => {
       status: "approved"
     };
 
-    // CATEGORY
     if (req.query.category) {
       filter.category = req.query.category;
     }
 
-    // CONDITION (НОВОЕ / БУ)
     if (req.query.condition) {
       filter.condition = req.query.condition;
     }
 
-    // SELLER TYPE (private / company)
     if (req.query.sellerType) {
       filter.sellerType = req.query.sellerType;
     }
 
-    // PRICE
     if (req.query.priceFrom || req.query.priceTo) {
       filter.price = {};
 
@@ -65,10 +63,19 @@ export const getListings = async (req, res) => {
       }
     }
 
+    if (req.query.search) {
+      filter.title = {
+        $regex: req.query.search,
+        $options: "i"
+      };
+    }
+
+    console.log("FINAL FILTER 👉", filter);
+
     const listings = await Listing.find(filter)
       .sort({ createdAt: -1 })
       .skip(skip)
-      
+      .limit(limit);
 
     const total = await Listing.countDocuments(filter);
 
@@ -78,9 +85,7 @@ export const getListings = async (req, res) => {
     });
 
   } catch (error) {
-    res.status(500).json({
-      message: error.message
-    });
+    res.status(500).json({ message: error.message });
   }
 };
 export const getListingById = async (req, res) => {

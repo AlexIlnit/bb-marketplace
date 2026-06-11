@@ -12,171 +12,83 @@ import { useFavoriteStore } from "../../store/favoriteStore";
 import CategoriesBar from "../../components/categories/CategoriesBar";
 
 export default function Home() {
-  
-
   const [page, setPage] = useState(1);
 
-  const ITEMS_PER_PAGE = 24;
   const {
-  listings,
-  fetchListings,
-
-  search,
-  category,
-  priceFrom,
-  priceTo,
-  condition,
-  sellerType
-} = useListingStore();
-
- const { fetchFavorites } =
-  useFavoriteStore();
-
-useEffect(() => {
-  fetchListings();
-  fetchFavorites();
-}, []);
+    listings,
+    fetchListings,
+    search,
+    category,
+    priceFrom,
+    priceTo,
+    condition,
+    sellerType,
+    totalPages
+  } = useListingStore();
 
   useEffect(() => {
-  setPage(1);
-}, [search, category, priceFrom, priceTo]);
-  
-
-  const filteredListings =
-  listings.filter((listing) => {
-
-    const matchSearch =
-      listing.title
-        ?.toLowerCase()
-        .includes(search?.toLowerCase() || "");
-
-    const matchCategory =
-      !category ||
-      listing.category === category;
-
-    const matchPriceFrom =
-      !priceFrom ||
-      listing.price >= Number(priceFrom);
-
-    const matchPriceTo =
-      !priceTo ||
-      listing.price <= Number(priceTo);
-
-      const matchesCondition =
-    !condition || listing.condition === condition;
-
-   const matchesSeller =
-    !sellerType || listing.sellerType === sellerType;
-
-    return (
-      matchSearch &&
-      matchCategory &&
-      matchPriceFrom &&
-      matchPriceTo &&
-      matchesCondition &&
-      matchesSeller
-    );
-  });
-
-  const totalPages = Math.ceil(
-    filteredListings.length/ ITEMS_PER_PAGE
-  );
-
-  const paginatedListings =
-  filteredListings.slice(
-    (page - 1) * ITEMS_PER_PAGE,
-    page * ITEMS_PER_PAGE
-  );
-
-
+    fetchListings(page);
+  }, [
+    page,
+    search,
+    category,
+    priceFrom,
+    priceTo,
+    condition,
+    sellerType
+  ]);
 
   return (
-<MainLayout>
-  <CategoriesBar />
+    <MainLayout>
+      <CategoriesBar />
 
-  <div className="flex flex-col lg:flex-row gap-8">
+      <div className="flex flex-col lg:flex-row gap-8">
 
-    {/* FILTERS */}
-    <div className="hidden lg:block lg:w-1/4">
-      <FilterSidebar />
-    </div>
+        <div className="hidden lg:block lg:w-1/4">
+          <FilterSidebar />
+        </div>
 
-    {/* LISTINGS */}
-    <section className="w-full ">
+        <section className="w-full">
 
-      <h1
-        className="
-          text-3xl
-          font-bold
-          mb-8
-        "
-      >
-        Свежие объявления
-      </h1>
-      {/* Фильтр сверху на планшетах и телефонах */}
-    <div className="lg:hidden mb-6">
-      <FilterSidebar />
-    </div>
+          <h1 className="text-3xl font-bold mb-8">
+            Свежие объявления
+          </h1>
 
-      <div
-        className="
-          grid
-    grid-cols-1
-    sm:grid-cols-2
-    md:grid-cols-3
-    xl:grid-cols-4
-    gap-6
-        "
-      >
-        {paginatedListings.map(
-          (listing) => (
-            <ListingCard
-              key={listing._id}
-              listing={listing}
-            />
-          )
-        )}
-      </div>
+          <div className="lg:hidden mb-6">
+            <FilterSidebar />
+          </div>
 
-      {totalPages > 1 && (
-        <div
-          className="
-            flex
-            justify-center
-            gap-2
-            mt-10
-          "
-        >
-          {[...Array(totalPages)].map(
-            (_, index) => (
-              <button
-                key={index}
-                onClick={() =>
-                  setPage(index + 1)
-                }
-                className={`
-                  px-4
-                  py-2
-                  rounded-xl
-                  border
-                  ${
+          {/* ✔️ ВОТ ТУТ ГЛАВНОЕ ИЗМЕНЕНИЕ */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+            {listings.map((listing) => (
+              <ListingCard
+                key={listing._id}
+                listing={listing}
+              />
+            ))}
+          </div>
+
+          {/* PAGINATION */}
+          {totalPages > 1 && (
+            <div className="flex justify-center gap-2 mt-10">
+              {[...Array(totalPages)].map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setPage(index + 1)}
+                  className={`px-4 py-2 rounded-xl border ${
                     page === index + 1
                       ? "bg-green-600 text-white"
                       : "bg-white"
-                  }
-                `}
-              >
-                {index + 1}
-              </button>
-            )
+                  }`}
+                >
+                  {index + 1}
+                </button>
+              ))}
+            </div>
           )}
-        </div>
-      )}
 
-    </section>
-
-  </div>
-
-</MainLayout>
+        </section>
+      </div>
+    </MainLayout>
   );
 }

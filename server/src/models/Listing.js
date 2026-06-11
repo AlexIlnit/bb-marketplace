@@ -34,6 +34,17 @@ const listingSchema =
         enum: ["pending", "approved", "rejected"],
         default: "pending"
       },
+      condition: {
+        type: String,
+        enum: ["new", "used"],
+        default: "used"
+      },
+
+      sellerType: {
+        type: String,
+        enum: ["private", "company"],
+        default: "private"
+      },
 
       user: {
         type:

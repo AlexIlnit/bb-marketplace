@@ -53,30 +53,42 @@ export default function CreateListing() {
     }
   };
 
-  const submit = async (e) => {
-    e.preventDefault();
+ const submit = async (e) => {
+  e.preventDefault();
 
-    if (!imageUrl) {
-      alert("Сначала загрузите фото");
-      return;
-    }
+  if (!imageUrl) {
+    alert("Сначала загрузите фото");
+    return;
+  }
 
-    setLoading(true);
+  setLoading(true);
 
-    try {
-      await createListing({
-        ...form,
-        price: Number(form.price),
-        images: [imageUrl]
-      });
+  try {
+    const payload = {
+      title: form.title,
+      description: form.description,
+      price: Number(form.price),
+      city: form.city,
+      category: form.category,
 
-      navigate("/");
-    } catch (err) {
-      alert(err.response?.data?.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+      // 🔥 ВАЖНО — явно задаём
+      condition: form.condition || "used",
+      sellerType: form.sellerType || "private",
+
+      images: [imageUrl]
+    };
+
+    console.log("CREATE LISTING 👉", payload);
+
+    await createListing(payload);
+
+    navigate("/");
+  } catch (err) {
+    alert(err.response?.data?.message);
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
    <MainLayout>
