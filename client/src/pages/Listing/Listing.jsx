@@ -88,6 +88,15 @@ export default function Listing() {
             <p>
               👤 {listing.seller?.name}
             </p>
+            <div className="text-xs text-gray-500 mt-1">
+  {listing.condition === "new" ? "🆕 Новое" : "♻️ Б/У"}
+</div>
+
+<div className="text-xs text-gray-500">
+  {listing.sellerType === "company"
+    ? "🏢 Компания"
+    : "👤 Частное лицо"}
+</div>
 
           </div>
 

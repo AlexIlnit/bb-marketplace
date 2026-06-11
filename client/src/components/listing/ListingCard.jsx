@@ -33,10 +33,14 @@ export default function ListingCard({ listing }) {
         />
       </button>
 
-      <img
-        src={listing.images?.[0] || "https://placehold.co/600x400"}
-        className="w-full h-48 object-cover"
-      />
+<div className="aspect-[3/2] relative overflow-hidden">
+  <img
+  src={listing.images?.[0]}
+    loading="lazy"
+    decoding="async"
+    className="absolute inset-0 w-full h-full object-cover"
+  />
+</div>
 
       <div className="p-4">
       <div className="text-green-600 font-bold text-xl">

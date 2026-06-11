@@ -11,7 +11,6 @@ import { useFavoriteStore } from "../../store/favoriteStore";
 
 import CategoriesBar from "../../components/categories/CategoriesBar";
 
-
 export default function Home() {
   
 
