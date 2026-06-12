@@ -1,17 +1,21 @@
 import { useEffect, useState } from "react";
+import { lazy, Suspense } from "react";
 
 import MainLayout from "../../layouts/MainLayout";
 import ListingCard from "../../components/listing/ListingCard";
 
 import { useListingStore } from "../../store/listingStore";
 
-import FilterSidebar from "../../components/filters/FilterSidebar";
+// import FilterSidebar from "../../components/filters/FilterSidebar";
 
 import { useFavoriteStore } from "../../store/favoriteStore";
 
-import CategoriesBar from "../../components/categories/CategoriesBar";
+// import CategoriesBar from "../../components/categories/CategoriesBar";
+const CategoriesBar = lazy(() => import("../../components/categories/CategoriesBar"));
+const FilterSidebar = lazy(() => import("../../components/filters/FilterSidebar"));
 
 export default function Home() {
+  
   const [page, setPage] = useState(1);
 
   const {
@@ -50,9 +54,9 @@ export default function Home() {
 
         <section className="w-full">
 
-          <h1 className="text-3xl font-bold mb-8">
+          <h3 className="text-3xl font-bold mb-8">
             Свежие объявления
-          </h1>
+          </h3>
 
           <div className="lg:hidden mb-6">
             <FilterSidebar />

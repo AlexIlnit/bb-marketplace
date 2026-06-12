@@ -31,6 +31,10 @@ export default function FilterSidebar() {
 const fieldClass = `
   border
   border-gray-300
+  bg-white
+  text-gray-900
+  placeholder:text-gray-500
+
   rounded-xl
   p-3
   w-full
@@ -40,7 +44,8 @@ const fieldClass = `
 
   focus:outline-none
   focus:border-green-500
-  focus:shadow-md
+  focus:ring-2
+  focus:ring-green-200
 `;
   return (
     <aside
@@ -63,7 +68,8 @@ const fieldClass = `
           md:overflow-x-auto
         "
       >
-        <p>Поиск по названию</p>
+       <label className="block text-sm font-medium">
+        Поиск по названию</label>
         <input
           value={search}
           onChange={(e) =>
@@ -72,7 +78,9 @@ const fieldClass = `
           placeholder="Поиск..."
           className={fieldClass}
         />
-<p>Категории</p>
+<label className="block text-sm font-medium">
+  Категория
+</label>
         <select
           value={category}
           onChange={(e) =>
@@ -93,8 +101,10 @@ const fieldClass = `
             </option>
           ))}
         </select>
- <p>Цена</p>
-<div className="flex gap-2">
+ <label className="block text-sm font-medium">
+  Цена от
+</label>
+
     <input
     type="number"
     value={priceFrom}
@@ -102,7 +112,9 @@ const fieldClass = `
     placeholder="от"
     className={`${fieldClass} flex-1`}
   />
-
+<label className="block text-sm font-medium">
+  Цена до
+</label>
   <input
     type="number"
     value={priceTo}
@@ -110,8 +122,10 @@ const fieldClass = `
     placeholder="до"
     className={`${fieldClass} flex-1`}
   />
-</div>
-<p>Состояние</p>
+
+<label className="block text-sm font-medium">
+  Состояние
+</label>
 
 <select
   value={condition}
@@ -123,7 +137,9 @@ const fieldClass = `
   <option value="used">Б/У</option>
 </select>
 
-<p>Продавец</p>
+<label className="block text-sm font-medium">
+  Продавец
+</label>
 
 <select
   value={sellerType}

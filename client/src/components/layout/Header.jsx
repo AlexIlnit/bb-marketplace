@@ -130,9 +130,9 @@ document.addEventListener("click", () => {
           {/* LEFT */}
           <div className="flex items-center gap-8">
             <Link to="/">
-              <h2 className="text-green-600 font-bold text-2xl">
+              <h1 className="text-green-600 font-bold text-2xl">
                 BB
-              </h2>
+              </h1>
             </Link>
 
             <div className="hidden md:flex items-center bg-gray-100 px-4 rounded-xl w-[450px]">
@@ -147,7 +147,7 @@ document.addEventListener("click", () => {
           {/* RIGHT */}
           <div className="hidden md:flex items-center gap-6">
 
-            <Link to="/favorites">
+            <Link to="/favorites" aria-label="Избранное">
               <Heart className="cursor-pointer" />
             </Link>
 

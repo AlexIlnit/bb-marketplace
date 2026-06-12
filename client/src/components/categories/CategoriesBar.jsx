@@ -22,6 +22,8 @@ function CategoriesBar() {
         <div className="flex gap-3 pr-4">
 
           <button
+            aria-label="Все категории"
+            aria-pressed={!activeCategory}
             onClick={() => setCategory("")}
             className={`
               flex-shrink-0
@@ -36,6 +38,7 @@ function CategoriesBar() {
           >
             <img
               src="/categories/all.webp"
+              alt="Все категории"
               className="absolute inset-0 w-full h-full object-cover"
             />
           </button>
@@ -46,6 +49,8 @@ function CategoriesBar() {
             return (
               <button
                 key={cat._id}
+                aria-label={`Категория ${cat.name}`}
+                aria-pressed={activeCategory === cat.slug}
                 onClick={() =>
                   setCategory(isActive ? "" : cat.slug)
                 }
@@ -62,7 +67,10 @@ function CategoriesBar() {
               >
                 <img
                   src={cat.image}
+                  alt={cat.name}
                   loading="lazy"
+                  width="200"
+                  height="120"
                   className="absolute inset-0 w-full h-full object-cover"
                 />
 

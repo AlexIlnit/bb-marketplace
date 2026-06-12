@@ -5,25 +5,42 @@ import { useNavigate } from "react-router-dom";
 export default function ListingCard({ listing, priority = false }) {
   if (!listing) return null;
 
-  const navigate = useNavigate();
-  const { favorites, toggleFavorite } = useFavoriteStore();
-
-  const isFavorite = favorites.some(
-    (fav) => fav.listing?._id === listing._id
-  );
-  const imageUrl = listing.images?.[0]?.replace(
-  "/upload/",
-  "/upload/f_auto,q_auto,w_500/"
+  const handleClick = () => {
+  navigate(`/listing/${listing._id}`);
+};
+  const isFavorite = useFavoriteStore(
+  (state) =>
+    state.favorites.some(
+      (fav) => fav.listing?._id === listing._id
+    )
 );
 
+const toggleFavorite = useFavoriteStore(
+  (state) => state.toggleFavorite
+);
+
+  // const isFavorite = favorites.some(
+  //   (fav) => fav.listing?._id === listing._id
+  // );
+const imageUrl = listing.images?.[0]?.includes("/upload/")
+  ? listing.images[0].replace(
+      "/upload/",
+      "/upload/f_auto,q_auto,w_500/"
+    )
+  : listing.images?.[0];
+
   return (
-    <div
-      onClick={() => navigate(`/listing/${listing._id}`)}
+    <div onClick={handleClick}
       
       className="relative w-full bg-white rounded-2xl shadow-sm overflow-hidden cursor-pointer"
     >
 
       <button
+        aria-label={
+        isFavorite
+          ? "Убрать из избранного"
+          : "Добавить в избранное"
+        }
         onClick={(e) => {
           e.stopPropagation(); // ❗ важно
           toggleFavorite(listing._id);
