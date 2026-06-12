@@ -2,7 +2,7 @@ import { Heart } from "lucide-react";
 import { useFavoriteStore } from "../../store/favoriteStore";
 import { useNavigate } from "react-router-dom";
 
-export default function ListingCard({ listing }) {
+export default function ListingCard({ listing, priority = false }) {
   if (!listing) return null;
 
   const navigate = useNavigate();
@@ -11,6 +11,10 @@ export default function ListingCard({ listing }) {
   const isFavorite = favorites.some(
     (fav) => fav.listing?._id === listing._id
   );
+  const imageUrl = listing.images?.[0]?.replace(
+  "/upload/",
+  "/upload/f_auto,q_auto,w_500/"
+);
 
   return (
     <div
@@ -35,11 +39,15 @@ export default function ListingCard({ listing }) {
 
 <div className="aspect-[3/2] relative overflow-hidden">
   <img
-  src={listing.images?.[0]}
-    loading="lazy"
-    decoding="async"
-    className="absolute inset-0 w-full h-full object-cover"
-  />
+  src={imageUrl}
+  alt={listing.title}
+  width="500"
+  height="333"
+  loading={priority ? "eager" : "lazy"}
+  fetchPriority={priority ? "high" : "auto"}
+  decoding="async"
+  className="absolute inset-0 w-full h-full object-cover"
+/>
 </div>
 
       <div className="p-4">

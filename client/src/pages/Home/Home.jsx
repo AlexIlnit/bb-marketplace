@@ -60,10 +60,11 @@ export default function Home() {
 
           {/* ✔️ ВОТ ТУТ ГЛАВНОЕ ИЗМЕНЕНИЕ */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
-            {listings.map((listing) => (
+            {listings.map((listing, index) => (
               <ListingCard
                 key={listing._id}
                 listing={listing}
+                priority={index < 4}
               />
             ))}
           </div>

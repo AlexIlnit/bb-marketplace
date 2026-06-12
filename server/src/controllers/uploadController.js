@@ -10,20 +10,32 @@ export const uploadImage = async (req, res) => {
     }
 
     const result = await new Promise((resolve, reject) => {
-      cloudinary.uploader.upload_stream(
+  cloudinary.uploader.upload_stream(
+    {
+      folder: "listings",
+
+      format: "webp",
+
+      transformation: [
         {
-          folder: "listings"
+          width: 1200,
+          crop: "limit"
         },
-        (error, result) => {
-  if (error) {
-    console.error("CLOUDINARY ERROR:", error);
-    reject(error);
-  } else {
-    resolve(result);
-  }
-}
-      ).end(file.buffer);
-    });
+        {
+          quality: "auto:good"
+        }
+      ]
+    },
+    (error, result) => {
+      if (error) {
+        console.error("CLOUDINARY ERROR:", error);
+        reject(error);
+      } else {
+        resolve(result);
+      }
+    }
+  ).end(file.buffer);
+});
 
     res.json({
       url: result.secure_url
