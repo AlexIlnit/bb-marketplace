@@ -118,6 +118,13 @@ useEffect(() => {
   ).length;
   let audioEnabled = false;
 
+  const navItems = [
+  { to: "/favorites", label: "Избранное" },
+  { to: "/create-listing", label: "Подать объявление", auth: true },
+  { to: "/profile", label: "Профиль", auth: true },
+  { to: "/admin", label: "Админ", role: "admin" }
+];
+
 document.addEventListener("click", () => {
   audioEnabled = true;
 });
@@ -257,6 +264,7 @@ document.addEventListener("click", () => {
       <MobileMenu
         open={mobileOpen}
         onClose={() => setMobileOpen(false)}
+        user={user}
       />
     </>
   );
