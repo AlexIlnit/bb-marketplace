@@ -35,7 +35,7 @@ function CategoriesBar() {
             `}
           >
             <img
-              src="https://images.unsplash.com/photo-1483985988355-763728e1935b"
+              src="/categories/all.webp"
               className="absolute inset-0 w-full h-full object-cover"
             />
           </button>

@@ -7,8 +7,6 @@ export const getListings = (params) => {
     )
   );
 
-  console.log("API PARAMS 👉", cleanParams);
-
   return api.get("/listings", {
     params: cleanParams
   });

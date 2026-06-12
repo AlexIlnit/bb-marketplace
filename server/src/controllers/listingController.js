@@ -70,7 +70,7 @@ export const getListings = async (req, res) => {
       };
     }
 
-    console.log("FINAL FILTER 👉", filter);
+    // console.log("FINAL FILTER 👉", filter);
 
     const listings = await Listing.find(filter)
       .sort({ createdAt: -1 })
