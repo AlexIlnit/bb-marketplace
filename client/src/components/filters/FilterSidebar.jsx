@@ -78,10 +78,11 @@ const fieldClass = `
           placeholder="Поиск..."
           className={fieldClass}
         />
-<label className="block text-sm font-medium">
+<label htmlFor="category" className="block text-sm font-medium">
   Категория
 </label>
         <select
+          id="category"
           value={category}
           onChange={(e) =>
             setCategory(e.target.value)
@@ -123,11 +124,12 @@ const fieldClass = `
     className={`${fieldClass} flex-1`}
   />
 
-<label className="block text-sm font-medium">
+<label htmlFor="condition" className="block text-sm font-medium">
   Состояние
 </label>
 
 <select
+  id="condition"
   value={condition}
   onChange={(e) => setCondition(e.target.value)}
   className={fieldClass}
@@ -137,11 +139,12 @@ const fieldClass = `
   <option value="used">Б/У</option>
 </select>
 
-<label className="block text-sm font-medium">
+<label htmlFor="sellerType" className="block text-sm font-medium">
   Продавец
 </label>
 
 <select
+  id="sellerType"
   value={sellerType}
   onChange={(e) => setSellerType(e.target.value)}
   className={fieldClass}
