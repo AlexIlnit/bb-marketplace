@@ -3,6 +3,8 @@ import { useFavoriteStore } from "../../store/favoriteStore";
 import { useNavigate } from "react-router-dom";
 
 export default function ListingCard({ listing, priority = false }) {
+if (!listing) return null;
+
   const navigate = useNavigate(); // ✅ ВОТ ЭТОГО НЕ ХВАТАЛО
   
 
@@ -19,16 +21,15 @@ export default function ListingCard({ listing, priority = false }) {
 const toggleFavorite = useFavoriteStore(
   (state) => state.toggleFavorite
 );
-if (!listing) return null;
+
   // const isFavorite = favorites.some(
   //   (fav) => fav.listing?._id === listing._id
   // );
-const imageUrl = listing.images?.[0]?.includes("/upload/")
-  ? listing.images[0].replace(
-      "/upload/",
-      "/upload/f_auto,q_auto,w_500/"
-    )
-  : listing.images?.[0];
+const imageUrl = listing.images?.[0]
+  ? listing.images[0].includes("/upload/")
+    ? listing.images[0].replace("/upload/", "/upload/f_auto,q_auto,w_500/")
+    : listing.images[0]
+  : "";
 
   return (
     <div onClick={handleClick}

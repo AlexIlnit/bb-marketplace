@@ -43,7 +43,7 @@ fetchListings: async (page = 1) => {
 
   const state = get(); // 👈 ВАЖНО ДОБАВИТЬ
 
-  set({ loading: true });
+  // set({ loading: true });
   const { data } = await getListings({
     page,
     search: state.search,
