@@ -145,6 +145,7 @@ document.addEventListener("click", () => {
             <div className="hidden md:flex items-center bg-gray-100 px-4 rounded-xl w-[450px]">
               <Search size={18} />
               <input
+                name="searchTop"
                 placeholder="Поиск товаров"
                 className="bg-transparent p-3 w-full outline-none"
               />

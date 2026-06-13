@@ -35,16 +35,20 @@ export default function FilterSidebar() {
   const FiltersContent = () => (
     <div className="flex flex-col gap-4">
       
-      <label>Поиск</label>
+      <label className="flex flex-col gap-1">
+      <span>Поиск</span>
       <input
+        name="search"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         className={fieldClass}
         placeholder="Поиск..."
-      />
+      /></label>
 
-      <label>Категория</label>
+      <label className="flex flex-col gap-1">
+       <span>Категория</span>
       <select
+        name="category"
         value={category}
         onChange={(e) => setCategory(e.target.value)}
         className={fieldClass}
@@ -55,26 +59,32 @@ export default function FilterSidebar() {
             {c.name}
           </option>
         ))}
-      </select>
+      </select></label>
 
-      <label>Цена от</label>
+      <label className="flex flex-col gap-1">
+      <span>Цена от</span>
       <input
+        name="priceFrom"
         type="number"
         value={priceFrom}
         onChange={(e) => setPriceFrom(e.target.value)}
         className={fieldClass}
-      />
+      /></label>
 
-      <label>Цена до</label>
+      <label className="flex flex-col gap-1">
+      <span>Цена до</span>
       <input
+        name="priceTo"
         type="number"
         value={priceTo}
         onChange={(e) => setPriceTo(e.target.value)}
         className={fieldClass}
-      />
+      /></label>
 
-      <label>Состояние</label>
+      <label className="flex flex-col gap-1">
+      <span>Состояние</span>
       <select
+        name="condition"
         value={condition}
         onChange={(e) => setCondition(e.target.value)}
         className={fieldClass}
@@ -82,10 +92,12 @@ export default function FilterSidebar() {
         <option value="">Любое</option>
         <option value="new">Новое</option>
         <option value="used">Б/У</option>
-      </select>
+      </select></label>
 
-      <label>Продавец</label>
+      <label className="flex flex-col gap-1">
+      <span>Продавец</span>
       <select
+        name="sellerType"
         value={sellerType}
         onChange={(e) => setSellerType(e.target.value)}
         className={fieldClass}
@@ -93,7 +105,7 @@ export default function FilterSidebar() {
         <option value="">Любой</option>
         <option value="private">Частное лицо</option>
         <option value="company">Компания</option>
-      </select>
+      </select></label>
 
       <button
         onClick={() => {
