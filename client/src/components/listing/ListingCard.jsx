@@ -3,7 +3,8 @@ import { useFavoriteStore } from "../../store/favoriteStore";
 import { useNavigate } from "react-router-dom";
 
 export default function ListingCard({ listing, priority = false }) {
-  if (!listing) return null;
+  const navigate = useNavigate(); // ✅ ВОТ ЭТОГО НЕ ХВАТАЛО
+  
 
   const handleClick = () => {
   navigate(`/listing/${listing._id}`);
@@ -18,7 +19,7 @@ export default function ListingCard({ listing, priority = false }) {
 const toggleFavorite = useFavoriteStore(
   (state) => state.toggleFavorite
 );
-
+if (!listing) return null;
   // const isFavorite = favorites.some(
   //   (fav) => fav.listing?._id === listing._id
   // );
