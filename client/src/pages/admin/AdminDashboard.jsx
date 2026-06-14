@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { getAdminUsers, getAdminListings } from "../../api/adminApi";
 import ListingsTable from "../../components/admin/ListingsTable";
 import UsersTable from "../../components/admin/UsersTable";
+import MainLayout from "../../layouts/MainLayout";
 
 export default function AdminDashboard() {
   const [tab, setTab] = useState("listings");
@@ -22,6 +23,7 @@ export default function AdminDashboard() {
   };
 
   return (
+    <MainLayout>
     <div className="max-w-7xl mx-auto p-6">
 
       {/* NAV */}
@@ -58,5 +60,6 @@ export default function AdminDashboard() {
       )}
 
     </div>
+    </MainLayout>
   );
 }

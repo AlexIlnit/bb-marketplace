@@ -23,6 +23,7 @@ router.delete("/users/:id", adminOnly, async (req, res) => {
 router.get("/listings", adminOnly, async (req, res) => {
   const listings = await Listing.find()
     .populate("user")
+    .populate("category", "name slug") // 👈 ДОБАВИТЬ
     .sort({ createdAt: -1 });
 
   res.json(listings);
@@ -39,11 +40,18 @@ router.patch("/listings/:id/approve", adminOnly, async (req, res) => {
     listing.status = "approved";
     await listing.save();
 
-    await createNotification(
-      listing.user,
-      "Ваше объявление опубликовано ✅",
-      "success"
-    );
+    // await createNotification(
+    //   listing.user,
+    //   "Ваше объявление опубликовано ✅",
+    //   "success"
+    // );
+    const userId = listing.user._id || listing.user;
+
+await createNotification(
+  userId,
+  "Ваше объявление опубликовано ✅",
+  "success"
+);
 
     res.json(listing);
 

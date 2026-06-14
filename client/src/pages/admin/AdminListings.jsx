@@ -1,62 +1,3 @@
-// import { approveListing, rejectListing, deleteListing } from "../../api/adminApi";
-
-// export function ListingsTable({ listings, reload }) {
-//   return (
-//     <div className="space-y-4">
-
-//       {listings.map((l) => (
-//         <div
-//           key={l._id}
-//           className="bg-white p-4 rounded-xl shadow-sm flex justify-between"
-//         >
-
-//           <div>
-//             <p className="font-bold">{l.title}</p>
-//             <p className="text-sm text-gray-500">
-//               {l.price} BYN • {l.status}
-//             </p>
-//           </div>
-
-//           <div className="flex gap-2">
-
-//             <button
-//               onClick={async () => {
-//                 await approveListing(l._id);
-//                 reload();
-//               }}
-//               className="bg-green-600 text-white px-3 py-1 rounded"
-//             >
-//               Approve
-//             </button>
-
-//             <button
-//               onClick={async () => {
-//                 await rejectListing(l._id);
-//                 reload();
-//               }}
-//               className="bg-yellow-500 text-white px-3 py-1 rounded"
-//             >
-//               Reject
-//             </button>
-
-//             <button
-//               onClick={async () => {
-//                 await deleteListing(l._id);
-//                 reload();
-//               }}
-//               className="bg-red-600 text-white px-3 py-1 rounded"
-//             >
-//               Delete
-//             </button>
-
-//           </div>
-//         </div>
-//       ))}
-
-//     </div>
-//   );
-// }
-
 import { useEffect, useState } from "react";
 import { getAllListings, deleteListing } from "../../api/listingApi";
 
@@ -83,43 +24,99 @@ export default function AdminListings() {
         Listings
       </h1>
 
-      <div className="bg-white rounded-xl shadow overflow-hidden">
+      <div className="bg-white rounded-xl shadow overflow-x-auto">
+  <table className="w-full min-w-[1000px]">
+    <thead className="bg-gray-100">
+      <tr>
+        <th className="p-3 text-left">Фото</th>
+        <th className="p-3 text-left">Название</th>
+        <th className="p-3 text-left">Цена</th>
+        <th className="p-3 text-left">Город</th>
+        <th className="p-3 text-left">Категория</th>
+        <th className="p-3 text-left">Автор</th>
+        <th className="p-3 text-left">Фото</th>
+        <th className="p-3 text-left">Дата</th>
+        <th className="p-3 text-left">Действия</th>
+      </tr>
+    </thead>
 
-        <table className="w-full">
+    <tbody>
+      {listings.map((l) => (
+        <tr
+          key={l._id}
+          className="border-t hover:bg-gray-50"
+        >
+          <td className="p-3">
+            <img
+              src={l.images?.[0]}
+              alt={l.title}
+              className="
+                w-20
+                h-20
+                rounded-lg
+                object-cover
+                bg-gray-100
+              "
+            />
+          </td>
 
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="p-3 text-left">Title</th>
-              <th>Price</th>
-              <th>City</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
+          <td className="p-3 font-medium">
+            {l.title}
+          </td>
 
-          <tbody>
-            {listings.map((l) => (
-              <tr key={l._id} className="border-t">
+          <td className="p-3 text-green-600 font-bold">
+            {l.price} ₽
+          </td>
 
-                <td className="p-3">{l.title}</td>
-                <td>{l.price}</td>
-                <td>{l.city}</td>
+          <td className="p-3">
+            {l.city || "-"}
+          </td>
 
-                <td className="p-3 flex gap-2">
-                  <button
-                    onClick={() => remove(l._id)}
-                    className="text-red-500"
-                  >
-                    Delete
-                  </button>
-                </td>
+          <td className="p-3">
+            {l.category?.name || "-"}
+          </td>
 
-              </tr>
-            ))}
-          </tbody>
+          <td className="p-3">
+            {l.user?.name || "-"}
+          </td>
 
-        </table>
+          <td className="p-3">
+            {l.images?.length || 0}
+          </td>
 
-      </div>
+          <td className="p-3 text-sm text-gray-500">
+            {new Date(l.createdAt).toLocaleString(
+              "ru-RU",
+              {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+              }
+            )}
+          </td>
+
+          <td className="p-3">
+            <button
+              onClick={() => remove(l._id)}
+              className="
+                bg-red-500
+                hover:bg-red-600
+                text-white
+                px-3
+                py-1
+                rounded-lg
+              "
+            >
+              Удалить
+            </button>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
     </div>
   );
 }
