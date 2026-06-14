@@ -109,7 +109,7 @@ export default function AdminDashboard() {
 
         {/* USERS */}
         {tab === "users" && (
-          <UsersTable users={users} reload={loadData} />
+          <UsersTable users={users} setUsers={setUsers} reload={loadData} />
         )}
       </div>
     </MainLayout>

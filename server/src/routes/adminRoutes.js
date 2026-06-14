@@ -18,6 +18,30 @@ router.delete("/users/:id", adminOnly, async (req, res) => {
   res.json({ success: true });
 });
 
+router.patch("/users/:id/block", adminOnly, async (req, res) => {
+  console.log("BLOCK REQUEST HIT:", req.params.id);
+  try {
+    const user = await User.findById(req.params.id);
+
+    if (!user) {
+      return res.status(404).json({
+        message: "Пользователь не найден"
+      });
+    }
+
+    user.isBlocked = !user.isBlocked;
+
+    await user.save();
+
+    res.json(user);
+
+  } catch (err) {
+    res.status(500).json({
+      message: err.message
+    });
+  }
+});
+
 /* ================= LISTINGS ================= */
 
 router.get("/listings", adminOnly, async (req, res) => {
@@ -89,5 +113,7 @@ router.delete("/listings/:id", adminOnly, async (req, res) => {
   await Listing.findByIdAndDelete(req.params.id);
   res.json({ success: true });
 });
+
+
 
 export default router;
