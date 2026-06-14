@@ -8,166 +8,165 @@ export default function ListingsTable({
   listings,
   reload,
 }) {
-  return (
-    <div className="space-y-4">
+  if (!listings.length) {
+    return (
+      <div className="bg-white rounded-xl p-4 text-gray-500">
+        Нет объявлений
+      </div>
+    );
+  }
 
+  const getStatusBadge = (status) => {
+    switch (status) {
+      case "approved":
+        return (
+          <span className="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full">
+            Одобрено
+          </span>
+        );
+
+      case "rejected":
+        return (
+          <span className="bg-red-100 text-red-700 text-xs px-2 py-1 rounded-full">
+            Отклонено
+          </span>
+        );
+
+      default:
+        return (
+          <span className="bg-yellow-100 text-yellow-700 text-xs px-2 py-1 rounded-full">
+            Модерация
+          </span>
+        );
+    }
+  };
+
+  return (
+    <div
+      className="
+        grid
+    grid-cols-1
+    sm:grid-cols-2
+    lg:grid-cols-3
+    xl:grid-cols-4
+    gap-4
+      "
+    >
       {listings.map((l) => (
         <div
           key={l._id}
           className="
             bg-white
-            rounded-2xl
+            rounded-xl
             shadow-sm
-            p-4
-            flex
-            flex-col
-            lg:flex-row
-            gap-4
+            overflow-hidden
+            border
           "
         >
-          {/* PHOTO */}
-          <div className="shrink-0">
+          {/* Фото */}
+          <div className="relative">
             <img
               src={
                 l.images?.[0] ||
-                "https://via.placeholder.com/160x120?text=No+Photo"
+                "https://via.placeholder.com/400x250?text=No+Photo"
               }
               alt={l.title}
-              className="
-                w-full
-                lg:w-40
-                h-40
-                object-cover
-                rounded-xl
-                bg-gray-100
-              "
+              className="w-full h-32 object-cover"
             />
+
+            <div className="absolute top-2 right-2">
+              {getStatusBadge(l.status)}
+            </div>
           </div>
 
-          {/* INFO */}
-          <div className="flex-1">
-            <h3 className="font-bold text-lg">
+          {/* Контент */}
+          <div className="p-3">
+            <h3 className="font-semibold text-sm line-clamp-1">
               {l.title}
             </h3>
 
-            <p className="text-green-600 font-semibold text-xl">
+            <p className="text-green-600 font-bold text-lg">
               {l.price} BYN
             </p>
 
-            <div className="mt-2 text-sm text-gray-600 space-y-1">
+            <div className="mt-2 text-xs text-gray-600 space-y-1">
+              <p>📍 {l.city || "Не указан"}</p>
+
               <p>
-                <strong>Статус:</strong>{" "}
-                {l.status}
+                👤 {l.user?.name || "Неизвестно"}
               </p>
 
               <p>
-                <strong>Город:</strong>{" "}
-                {l.city || "Не указан"}
+                🖼 {l.images?.length || 0} фото
               </p>
 
               <p>
-                <strong>Категория:</strong>{" "}
-                {l.category?.name || "-"}
-              </p>
-
-              <p>
-                <strong>Автор:</strong>{" "}
-                {l.user?.name || "-"}
-              </p>
-
-              <p>
-                <strong>Телефон:</strong>{" "}
-                {l.phone || "-"}
-              </p>
-
-              <p>
-                <strong>Фото:</strong>{" "}
-                {l.images?.length || 0}
-              </p>
-
-              <p>
-                <strong>Дата:</strong>{" "}
+                📅{" "}
                 {new Date(
                   l.createdAt
-                ).toLocaleString("ru-RU")}
+                ).toLocaleDateString("ru-RU")}
               </p>
             </div>
 
             {l.description && (
-              <div className="mt-3">
-                <p className="text-sm text-gray-700 line-clamp-3">
-                  {l.description}
-                </p>
-              </div>
+              <p className="mt-2 text-xs text-gray-500 line-clamp-2">
+                {l.description}
+              </p>
             )}
-          </div>
 
-          {/* ACTIONS */}
-          <div
-            className="
-              flex
-              lg:flex-col
-              gap-2
-              lg:min-w-[140px]
-            "
-          >
-            <button
-              onClick={async () => {
-                await approveListing(l._id);
-                reload();
-              }}
-              className="
-                bg-green-600
-                hover:bg-green-700
-                text-white
-                px-4
-                py-2
-                rounded-xl
-              "
-            >
-              Одобрить
-            </button>
+            {/* Кнопки */}
+            <div className="grid grid-cols-3 gap-2 mt-3">
+              <button
+                onClick={async () => {
+                  await approveListing(l._id);
+                  reload();
+                }}
+                className="
+                  bg-green-600
+                  text-white
+                  text-xs
+                  py-2
+                  rounded-lg
+                "
+              >
+                ✓
+              </button>
 
-            <button
-              onClick={async () => {
-                await rejectListing(l._id);
-                reload();
-              }}
-              className="
-                bg-yellow-500
-                hover:bg-yellow-600
-                text-white
-                px-4
-                py-2
-                rounded-xl
-              "
-            >
-              Отклонить
-            </button>
+              <button
+                onClick={async () => {
+                  await rejectListing(l._id);
+                  reload();
+                }}
+                className="
+                  bg-yellow-500
+                  text-white
+                  text-xs
+                  py-2
+                  rounded-lg
+                "
+              >
+                ✕
+              </button>
 
-            <button
-              onClick={async () => {
-                if (
-                  !window.confirm(
-                    "Удалить объявление?"
-                  )
-                )
-                  return;
+              <button
+                onClick={async () => {
+                  if (!window.confirm("Удалить?"))
+                    return;
 
-                await deleteListing(l._id);
-                reload();
-              }}
-              className="
-                bg-red-600
-                hover:bg-red-700
-                text-white
-                px-4
-                py-2
-                rounded-xl
-              "
-            >
-              Удалить
-            </button>
+                  await deleteListing(l._id);
+                  reload();
+                }}
+                className="
+                  bg-red-600
+                  text-white
+                  text-xs
+                  py-2
+                  rounded-lg
+                "
+              >
+                🗑
+              </button>
+            </div>
           </div>
         </div>
       ))}

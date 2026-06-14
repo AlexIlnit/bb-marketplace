@@ -17,6 +17,7 @@ const FilterSidebar = lazy(() => import("../../components/filters/FilterSidebar"
 export default function Home() {
   
   const [page, setPage] = useState(1);
+  
 
   const {
     listings,
