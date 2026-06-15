@@ -286,11 +286,17 @@ const handleToggleBlock = async (id) => {
         </p>
 
         <p>
-          <strong>Статус:</strong>{" "}
-          {selectedUser.isBlocked
-            ? "Заблокирован"
-            : "Активен"}
-        </p>
+  <strong>Статус:</strong>{" "}
+  <span
+    className={
+      selectedUser.isBlocked
+        ? "text-red-600 font-semibold"
+        : "text-green-600 font-semibold"
+    }
+  >
+    {selectedUser.isBlocked ? "Заблокирован" : "Активен"}
+  </span>
+</p>
 
         <p>
           <strong>Регистрация:</strong>{" "}
