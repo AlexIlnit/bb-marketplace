@@ -20,7 +20,7 @@ router.delete("/users/:id", adminOnly, async (req, res) => {
 });
 
 router.patch("/users/:id/block", adminOnly, async (req, res) => {
-  console.log("BLOCK REQUEST HIT:", req.params.id);
+  // console.log("BLOCK REQUEST HIT:", req.params.id);
   try {
     const user = await User.findById(req.params.id);
 
