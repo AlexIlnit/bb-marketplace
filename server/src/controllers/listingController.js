@@ -1,8 +1,16 @@
 import Listing from "../models/Listing.js";
 import { createNotification } from "../utils/createNotification.js";
+import User from "../models/User.js";
 // CREATE LISTING
 export const createListing = async (req, res) => {
   try {
+    const user = await User.findById(req.user._id);
+
+if (user?.isBlocked) {
+  return res.status(403).json({
+    message: "Ваш аккаунт заблокирован. Размещение объявлений недоступно."
+  });
+}
     const { title, description, price, city, category, images, condition, sellerType  } = req.body;
 
     const listing = await Listing.create({
@@ -109,6 +117,13 @@ export const getListingById = async (req, res) => {
 export const deleteListing = async (req, res) => {
   try {
     const listing = await Listing.findById(req.params.id);
+    const user = await User.findById(req.user._id);
+
+if (user?.isBlocked) {
+  return res.status(403).json({
+    message: "Ваш аккаунт заблокирован."
+  });
+}
 
     if (!listing) {
       return res.status(404).json({
@@ -139,6 +154,13 @@ export const deleteListing = async (req, res) => {
 };
 export const updateListing = async (req, res) => {
   try {
+    const user = await User.findById(req.user._id);
+
+if (user?.isBlocked) {
+  return res.status(403).json({
+    message: "Ваш аккаунт заблокирован."
+  });
+}
     const listing = await Listing.findById(req.params.id);
 
     if (!listing) {

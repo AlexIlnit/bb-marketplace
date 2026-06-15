@@ -28,7 +28,8 @@ export const register = async (req, res) => {
       name: user.name,
       email: user.email,
       token: generateToken(user._id),
-      role: user.role
+      role: user.role,
+      isBlocked: user.isBlocked
     });
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -64,7 +65,8 @@ export const login = async (req, res) => {
       name: user.name,
       email: user.email,
       token: generateToken(user._id),
-      role: user.role
+      role: user.role,
+      isBlocked: user.isBlocked
     });
   } catch (err) {
     res.status(500).json({ message: err.message });

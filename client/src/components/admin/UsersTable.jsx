@@ -24,8 +24,6 @@ export default function UsersTable({ users, reload, setUsers}) {
 const handleToggleBlock = async (id) => {
   const res = await toggleUserBlock(id);
 
-  console.log("BLOCK RESPONSE:", res.data);
-
   setUsers((prev) =>
     prev.map((u) =>
       u._id === id ? res.data : u

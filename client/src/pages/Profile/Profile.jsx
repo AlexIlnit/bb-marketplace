@@ -7,6 +7,7 @@ import MainLayout from "../../layouts/MainLayout";
 import { updateListing, deleteListing } from "../../api/listingApi";
 import { useCategoryStore } from "../../store/categoryStore";
 import { uploadImage } from "../../api/uploadApi";
+import { getMe } from "../../api/userApi";
 
 export default function Profile() {
   const user = useAuthStore((s) => s.user);
@@ -25,6 +26,16 @@ export default function Profile() {
   city: "",
   description: "",
     });
+const setUser = useAuthStore((s) => s.setUser);
+
+const refreshUser = async () => {
+  try {
+    const { data } = await getMe();
+    setUser(data, localStorage.getItem("token"));
+  } catch (err) {
+    console.log("GET ME ERROR", err);
+  }
+  }
 
  const openEditModal = (listing) => {
   setEditItem(listing);
@@ -57,6 +68,7 @@ const handleUpload = async () => {
   useEffect(() => {
     loadListings();
     fetchCategories();
+    refreshUser();
   }, []);
 
   const loadListings = async () => {
@@ -118,8 +130,7 @@ const handleUpdate = async () => {
     );
   }
 
-
-  return (
+ return (
     <MainLayout>
     <div className="max-w-7xl mx-auto p-6">
 
@@ -130,29 +141,54 @@ const handleUpdate = async () => {
         </h1>
 
         <div className="mt-4">
-          <p>
-            <strong>Имя:</strong> {user?.name}
-          </p>
+  <p>
+    <strong>Имя:</strong> {user?.name}
+  </p>
 
-          <p>
-            <strong>Email:</strong> {user?.email}
-          </p>
-        </div>
+  <p>
+    <strong>Email:</strong> {user?.email}
+  </p>
+</div>
 
-        <Link
-          to="/create-listing"
-          className="
-            inline-block
-            mt-4
-            bg-green-600
-            text-white
-            px-5
-            py-3
-            rounded-xl
-          "
-        >
-          Создать объявление
-        </Link>
+{user?.isBlocked && (
+  <div
+    className="
+      mt-4
+      bg-red-50
+      border
+      border-red-200
+      text-red-700
+      rounded-xl
+      p-4
+    "
+  >
+    <div className="font-semibold">
+      🚫 Ваш аккаунт заблокирован
+    </div>
+
+    <div className="text-sm mt-1">
+      Размещение и редактирование объявлений недоступно.
+      Обратитесь к администрации.
+    </div>
+  </div>
+)}
+
+{!user?.isBlocked && (
+  <Link
+    to="/create-listing"
+    className="
+      inline-block
+      mt-4
+      bg-green-600
+      text-white
+      px-5
+      py-3
+      rounded-xl
+    "
+  >
+    Создать объявление
+  </Link>
+)}
 
       </div>
 
@@ -195,14 +231,17 @@ const handleUpdate = async () => {
                 {/* ACTIONS */}
                 <div className="flex flex-wrap gap-2 mt-2 w-full">
 
-  <button
+  {!user?.isBlocked && (
+    <button
     onClick={() => setDeleteItem(listing)}
     className="bg-red-500 text-white px-2 py-1 text-xs rounded"
   >
     Удалить
   </button>
+  )}
 
-  {listing.status === "rejected" ? (
+  {!user?.isBlocked ? (
+  listing.status === "rejected" ? (
     <button
       onClick={() => openEditModal(listing)}
       className="bg-orange-500 text-white px-2 py-1 text-xs rounded"
@@ -216,7 +255,16 @@ const handleUpdate = async () => {
     >
       Редактировать
     </button>
-  )}
+  )
+) : (
+  <button
+    disabled
+    className="bg-gray-300 text-gray-600 px-2 py-1 text-xs rounded cursor-not-allowed"
+    title="Аккаунт заблокирован"
+  >
+    Редактирование недоступно
+  </button>
+)}
 
 </div>
 

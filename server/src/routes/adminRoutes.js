@@ -13,6 +13,7 @@ router.get("/users", adminOnly, async (req, res) => {
     res.json(users);
 });
 
+
 router.delete("/users/:id", adminOnly, async (req, res) => {
   await User.findByIdAndDelete(req.params.id);
   res.json({ success: true });

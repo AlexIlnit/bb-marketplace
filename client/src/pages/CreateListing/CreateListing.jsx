@@ -4,9 +4,17 @@ import { uploadImage } from "../../api/uploadApi";
 import { useNavigate } from "react-router-dom";
 import { useCategoryStore } from "../../store/categoryStore";
 import MainLayout from "../../layouts/MainLayout";
+import { useAuthStore } from "../../store/authStore";
+
 
 export default function CreateListing() {
   const navigate = useNavigate();
+  const user = useAuthStore((s) => s.user);
+  useEffect(() => {
+  if (user?.isBlocked) {
+    navigate("/profile"); // или "/"
+  }
+}, [user]);
 
   const [form, setForm] = useState({
     title: "",
