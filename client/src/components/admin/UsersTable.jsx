@@ -77,6 +77,7 @@ const handleToggleBlock = async (id) => {
       <div className="bg-white rounded-xl p-4 shadow-sm">
         <input
           type="text"
+          name="search"
           placeholder="Поиск по имени или email..."
           value={search}
           onChange={(e) =>
@@ -286,7 +287,7 @@ const handleToggleBlock = async (id) => {
 
         <p>
           <strong>Статус:</strong>{" "}
-          {selectedUser.blocked
+          {selectedUser.isBlocked
             ? "Заблокирован"
             : "Активен"}
         </p>
