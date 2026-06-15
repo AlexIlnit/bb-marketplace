@@ -19,12 +19,23 @@ export default function FilterSidebar() {
   } = useListingStore();
 
   const { categories, fetchCategories } = useCategoryStore();
+   // 🔥 ЛОКАЛЬНЫЙ INPUT STATE
+  
 
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
     fetchCategories();
   }, []);
+const [localSearch, setLocalSearch] = useState(search);
+   // 🔥 DEBOUNCE (главный фикс)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setSearch(localSearch);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [localSearch]);
 
   const fieldClass = `
     border border-gray-300 bg-white text-gray-900
@@ -32,15 +43,15 @@ export default function FilterSidebar() {
     focus:outline-none focus:border-green-500
   `;
 
-  const FiltersContent = () => (
+  return (
     <div className="flex flex-col gap-4">
       
       <label className="flex flex-col gap-1">
       <span>Поиск</span>
       <input
         name="search"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
+        value={localSearch}
+        onChange={(e) => setLocalSearch(e.target.value)}
         className={fieldClass}
         placeholder="Поиск..."
       /></label>
