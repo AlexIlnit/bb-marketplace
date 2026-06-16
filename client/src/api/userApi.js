@@ -12,5 +12,7 @@ export const deleteUser = (id) =>
 export const getAllUsers = () => {
   return api.get("/admin/users");
 };
+export const updateProfile = (data) =>
+  api.put("/auth/profile", data);
 
 export const getMe = () => api.get("/auth/me");

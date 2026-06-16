@@ -8,6 +8,7 @@ import { updateListing, deleteListing } from "../../api/listingApi";
 import { useCategoryStore } from "../../store/categoryStore";
 import { uploadImage } from "../../api/uploadApi";
 import { getMe } from "../../api/userApi";
+import api from "../../api/axios";
 
 export default function Profile() {
   const user = useAuthStore((s) => s.user);
@@ -121,6 +122,22 @@ const handleUpdate = async () => {
     console.error(err);
   }
 };
+const handleAvatarUpload = async () => {
+  if (!imageFile) return;
+
+  try {
+    const { data } = await uploadImage(imageFile);
+
+    await api.put("/users/avatar", {
+      avatar: data.url
+    });
+
+    refreshUser();
+
+  } catch (err) {
+    console.error(err);
+  }
+};
 
   if (loading) {
     return (
@@ -140,14 +157,53 @@ const handleUpdate = async () => {
           Профиль
         </h1>
 
-        <div className="mt-4">
-  <p>
-    <strong>Имя:</strong> {user?.name}
-  </p>
+<div className="flex items-center gap-4 mb-4">
 
-  <p>
-    <strong>Email:</strong> {user?.email}
-  </p>
+  <img
+    src={
+      user?.avatar ||
+      "https://ui-avatars.com/api/?name=" + user?.name
+    }
+    alt=""
+    className="
+      w-24
+      h-24
+      rounded-full
+      object-cover
+      border
+    "
+  />
+
+  <div>
+    <p><strong>Имя:</strong> {user?.name}</p>
+    <p><strong>Email:</strong> {user?.email}</p>
+  </div>
+
+</div>
+<div className="mt-4">
+
+  <input
+    type="file"
+    accept="image/*"
+    onChange={(e) =>
+      setImageFile(e.target.files[0])
+    }
+  />
+
+  <button
+    onClick={handleAvatarUpload}
+    className="
+      mt-2
+      bg-green-600
+      text-white
+      px-4
+      py-2
+      rounded-xl
+    "
+  >
+    Сохранить аватар
+  </button>
+
 </div>
 
 {user?.isBlocked && (

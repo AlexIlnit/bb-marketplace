@@ -16,5 +16,23 @@ router.get("/me", authMiddleware, async (req, res) => {
 
 router.post("/register", register);
 router.post("/login", login);
+router.put("/profile", authMiddleware, async (req, res) => {
+  try {
+    const { name, avatar } = req.body;
+
+    const user = await User.findById(req.user._id);
+
+    user.name = name || user.name;
+    user.avatar = avatar || user.avatar;
+
+    await user.save();
+
+    res.json(user);
+  } catch (err) {
+    res.status(500).json({
+      message: err.message
+    });
+  }
+});
 
 export default router;
