@@ -121,20 +121,29 @@ const handleToggleBlock = async (id) => {
             <div className="flex items-center gap-3 mb-4">
 
               <div
-                className="
-                  w-12
-                  h-12
-                  rounded-full
-                  bg-green-100
-                  flex
-                  items-center
-                  justify-center
-                  font-bold
-                  text-green-700
-                "
-              >
-                {u.name?.charAt(0)?.toUpperCase()}
-              </div>
+  className="
+    w-12
+    h-12
+    rounded-full
+    overflow-hidden
+    bg-gray-100
+    flex
+    items-center
+    justify-center
+  "
+>
+  {u.avatar ? (
+    <img
+      src={u.avatar}
+      alt={u.name}
+      className="w-full h-full object-cover"
+    />
+  ) : (
+    <span className="font-bold text-green-700">
+      {u.name?.charAt(0)?.toUpperCase()}
+    </span>
+  )}
+</div>
 
               <div className="min-w-0">
                 <div className="font-semibold truncate">
@@ -189,6 +198,12 @@ const handleToggleBlock = async (id) => {
                     ).toLocaleDateString("ru-RU")
                   : "-"}
               </div>
+              <div>
+  <strong>Объявления:</strong>{" "}
+  <span className="font-semibold text-green-600">
+    {u.listingsCount || 0}
+  </span>
+</div>
 
             </div>
 <div className="mt-4 space-y-2">
@@ -259,9 +274,41 @@ const handleToggleBlock = async (id) => {
         max-w-md
       "
     >
-      <h2 className="text-xl font-bold mb-4">
+      <h2 className="text-xl font-bold mb-4 text-center">
         Профиль пользователя
       </h2>
+      <div className="flex justify-center mb-4">
+  {selectedUser.avatar ? (
+    <img
+      src={selectedUser.avatar}
+      alt={selectedUser.name}
+      className="
+        w-24
+        h-24
+        rounded-full
+        object-cover
+        border
+      "
+    />
+  ) : (
+    <div
+      className="
+        w-24
+        h-24
+        rounded-full
+        bg-green-100
+        flex
+        items-center
+        justify-center
+        text-3xl
+        font-bold
+        text-green-700
+      "
+    >
+      {selectedUser.name?.charAt(0)?.toUpperCase()}
+    </div>
+  )}
+</div>
 
       <div className="space-y-3">
 
@@ -284,6 +331,12 @@ const handleToggleBlock = async (id) => {
           <strong>ID:</strong>{" "}
           {selectedUser._id}
         </p>
+        <p>
+  <strong>Объявления:</strong>{" "}
+  <span className="font-semibold text-green-600">
+    {selectedUser.listingsCount || 0}
+  </span>
+</p>
 
         <p>
   <strong>Статус:</strong>{" "}

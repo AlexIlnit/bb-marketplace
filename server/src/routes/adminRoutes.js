@@ -9,8 +9,36 @@ const router = express.Router();
 /* ================= USERS ================= */
 
 router.get("/users", adminOnly, async (req, res) => {
-  const users = await User.find().sort({ createdAt: -1 });
+  try {
+    const users = await User.aggregate([
+      {
+        $lookup: {
+          from: "listings",
+          localField: "_id",
+          foreignField: "user",
+          as: "listings"
+        }
+      },
+      {
+        $addFields: {
+          listingsCount: { $size: "$listings" }
+        }
+      },
+      {
+        $project: {
+          password: 0,
+          listings: 0
+        }
+      },
+      {
+        $sort: { createdAt: -1 }
+      }
+    ]);
+
     res.json(users);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 
 
