@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getListingById } from "../../api/listingApi";
 import MainLayout from "../../layouts/MainLayout";
+import { Link } from "react-router-dom";
 
 export default function Listing() {
   const { id } = useParams();
@@ -110,7 +111,20 @@ export default function Listing() {
           >
             Написать продавцу
           </button>
-<div className="mt-6 border rounded-2xl p-4 bg-white shadow-sm">
+<Link
+  to={`/user/${listing.user?._id}`}
+  className="
+    block
+    mt-6
+    border
+    rounded-2xl
+    p-4
+    bg-white
+    shadow-sm
+    hover:shadow-md
+    transition
+  "
+>
 
   <div className="flex items-center gap-4">
 
@@ -138,14 +152,20 @@ export default function Listing() {
       </div>
 
       <div className="text-gray-500 text-sm">
-        Объявлений: {listing.sellerListingsCount}
+        Объявлений:
+        {" "}
+        {listing.sellerListingsCount}
+      </div>
+
+      <div className="text-green-600 text-sm mt-1">
+        Смотреть профиль →
       </div>
 
     </div>
 
   </div>
 
-</div>
+</Link>
         </div>
 
       </div>

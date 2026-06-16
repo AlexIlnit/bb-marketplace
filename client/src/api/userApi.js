@@ -15,4 +15,7 @@ export const getAllUsers = () => {
 export const updateProfile = (data) =>
   api.put("/auth/profile", data);
 
+export const getUserProfile = (id) =>
+  api.get(`/users/${id}/profile`);
+
 export const getMe = () => api.get("/auth/me");

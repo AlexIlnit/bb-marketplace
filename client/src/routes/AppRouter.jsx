@@ -5,6 +5,7 @@ import ProtectedRoute from "./ProtectedRoute";
 import GuestRoute from "./GuestRoute";
 import AdminRoute from "./AdminRoute";
 
+
 // lazy pages
 const Home = lazy(() => import("../pages/Home/Home"));
 const Login = lazy(() => import("../pages/Login/Login"));
@@ -17,6 +18,8 @@ const Favorites = lazy(() => import("../pages/Favorites/Favorites"));
 const AdminDashboard = lazy(() => import("../pages/admin/AdminDashboard"));
 const AdminListings = lazy(() => import("../pages/admin/AdminListings"));
 const AdminUsers = lazy(() => import("../pages/admin/AdminUsers"));
+
+const UserProfile = lazy(() => import("../pages/UserProfile/UserProfile"));
 
 export default function AppRouter() {
   return (
@@ -41,6 +44,7 @@ export default function AppRouter() {
             </GuestRoute>
           }
         />
+        <Route path="/user/:id" element={<UserProfile />}/>
 
         <Route path="/listing/:id" element={<Listing />} />
 
