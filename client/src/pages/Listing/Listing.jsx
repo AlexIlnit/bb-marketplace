@@ -4,6 +4,8 @@ import { getListingById } from "../../api/listingApi";
 import MainLayout from "../../layouts/MainLayout";
 import { Link } from "react-router-dom";
 
+import SEO from "../../components/seo/Seo";
+
 export default function Listing() {
   const { id } = useParams();
 
@@ -40,9 +42,24 @@ export default function Listing() {
       </div>
     );
   }
+  const title = `${listing.title} — ${listing.price} BYN | Маркетплейс`;
+
+const description =
+  listing.description?.slice(0, 150) ||
+  "Смотрите объявление на маркетплейсе";
+
+const image = listing.images?.[0];
+
+const url = window.location.href;
 
   return (
     <MainLayout>
+     <SEO
+        title={title}
+        description={description}
+        image={image}
+        url={url}
+      />
     <div className="max-w-6xl mx-auto p-6">
 
       <div className="grid md:grid-cols-2 gap-8">

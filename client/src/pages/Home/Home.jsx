@@ -6,11 +6,9 @@ import ListingCard from "../../components/listing/ListingCard";
 
 import { useListingStore } from "../../store/listingStore";
 
-// import FilterSidebar from "../../components/filters/FilterSidebar";
-
 import { useFavoriteStore } from "../../store/favoriteStore";
+import { Helmet } from "react-helmet-async";
 
-// import CategoriesBar from "../../components/categories/CategoriesBar";
 const CategoriesBar = lazy(() => import("../../components/categories/CategoriesBar"));
 const FilterSidebar = lazy(() => import("../../components/filters/FilterSidebar"));
 
@@ -44,7 +42,15 @@ export default function Home() {
   ]);
 
   return (
+    
     <MainLayout>
+      <Helmet>
+        <title>Главная | BB доска объявлений</title>
+        <meta
+          name="description"
+          content="Покупайте и продавайте товары быстро и безопасно. Объявления, авто, недвижимость и услуги."
+        />
+      </Helmet>
       <CategoriesBar />
 
       <div className="flex flex-col lg:flex-row gap-8">

@@ -9,6 +9,7 @@ import { useCategoryStore } from "../../store/categoryStore";
 import { uploadImage } from "../../api/uploadApi";
 import { getMe } from "../../api/userApi";
 import api from "../../api/axios";
+import { Helmet } from "react-helmet-async";
 
 export default function Profile() {
   const user = useAuthStore((s) => s.user);
@@ -149,6 +150,13 @@ const handleAvatarUpload = async () => {
 
  return (
     <MainLayout>
+      <Helmet>
+  <title>Профиль | {user?.name}</title>
+  <meta
+    name="description"
+    content={`Профиль пользователя ${user?.name} и его объявления`}
+  />
+</Helmet>
     <div className="max-w-7xl mx-auto p-6">
 
       <div className="bg-white p-6 rounded-2xl shadow-sm mb-8">
