@@ -99,7 +99,7 @@ export const getListings = async (req, res) => {
 export const getListingById = async (req, res) => {
   try {
     const listing = await Listing.findById(req.params.id)
-      .populate("user", "name email");
+      .populate("user", "name email avatar");
 
     if (!listing) {
       return res.status(404).json({
@@ -107,7 +107,17 @@ export const getListingById = async (req, res) => {
       });
     }
 
-    res.json(listing);
+    const sellerListingsCount =
+      await Listing.countDocuments({
+        user: listing.user._id,
+        status: "approved"
+      });
+
+    res.json({
+      ...listing.toObject(),
+      sellerListingsCount
+    });
+
   } catch (error) {
     res.status(500).json({
       message: error.message

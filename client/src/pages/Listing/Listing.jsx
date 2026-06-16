@@ -85,9 +85,6 @@ export default function Listing() {
               🏷️ {listing.category}
             </p>
 
-            <p>
-              👤 {listing.seller?.name}
-            </p>
             <div className="text-xs text-gray-500 mt-1">
   {listing.condition === "new" ? "🆕 Новое" : "♻️ Б/У"}
 </div>
@@ -113,10 +110,46 @@ export default function Listing() {
           >
             Написать продавцу
           </button>
+<div className="mt-6 border rounded-2xl p-4 bg-white shadow-sm">
 
+  <div className="flex items-center gap-4">
+
+    <img
+      src={
+        listing.user?.avatar ||
+        `https://ui-avatars.com/api/?name=${encodeURIComponent(
+          listing.user?.name || "User"
+        )}`
+      }
+      alt=""
+      className="
+        w-16
+        h-16
+        rounded-full
+        object-cover
+        border
+      "
+    />
+
+    <div>
+
+      <div className="font-semibold text-lg">
+        {listing.user?.name}
+      </div>
+
+      <div className="text-gray-500 text-sm">
+        Объявлений: {listing.sellerListingsCount}
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
         </div>
 
       </div>
+      
 
       {/* Описание */}
       <div className="mt-10 bg-white p-6 rounded-2xl border">
