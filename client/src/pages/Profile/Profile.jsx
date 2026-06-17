@@ -123,6 +123,8 @@ const handleUpdate = async () => {
     console.error(err);
   }
 };
+const [avatarModal, setAvatarModal] = useState(false);
+const [imagePreview, setImagePreview] = useState("");
 const handleAvatarUpload = async () => {
   if (!imageFile) return;
 
@@ -138,6 +140,8 @@ const handleAvatarUpload = async () => {
   } catch (err) {
     console.error(err);
   }
+  setImageFile(null);
+  setImagePreview("");
 };
 
   if (loading) {
@@ -168,49 +172,28 @@ const handleAvatarUpload = async () => {
 <div className="flex items-center gap-4 mb-4">
 
   <img
-    src={
-      user?.avatar ||
-      "https://ui-avatars.com/api/?name=" + user?.name
-    }
-    alt=""
-    className="
-      w-24
-      h-24
-      rounded-full
-      object-cover
-      border
-    "
-  />
+  src={
+    user?.avatar ||
+    `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || "")}`
+  }
+  alt=""
+  onClick={() => setAvatarModal(true)}
+  className="
+    w-24
+    h-24
+    rounded-full
+    object-cover
+    border
+    cursor-pointer
+    hover:opacity-80
+    transition
+  "
+/>
 
   <div>
     <p><strong>Имя:</strong> {user?.name}</p>
     <p><strong>Email:</strong> {user?.email}</p>
   </div>
-
-</div>
-<div className="mt-4">
-
-  <input
-    type="file"
-    accept="image/*"
-    onChange={(e) =>
-      setImageFile(e.target.files[0])
-    }
-  />
-
-  <button
-    onClick={handleAvatarUpload}
-    className="
-      mt-2
-      bg-green-600
-      text-white
-      px-4
-      py-2
-      rounded-xl
-    "
-  >
-    Сохранить аватар
-  </button>
 
 </div>
 
@@ -475,6 +458,100 @@ const handleAvatarUpload = async () => {
 
     </div>
 
+  </div>
+)}
+{avatarModal && (
+  <div
+    className="
+      fixed
+      inset-0
+      bg-black/50
+      z-50
+      flex
+      items-center
+      justify-center
+    "
+    onClick={() => setAvatarModal(false)}
+  >
+    <div
+      onClick={(e) => e.stopPropagation()}
+      className="
+        bg-white
+        rounded-2xl
+        p-6
+        w-full
+        max-w-md
+      "
+    >
+      <h2 className="text-xl font-bold mb-4">
+        Изменить аватар
+      </h2>
+
+      <div className="flex justify-center mb-4">
+        <img
+          src={
+            imagePreview ||
+            user?.avatar ||
+            `https://ui-avatars.com/api/?name=${encodeURIComponent(
+              user?.name || ""
+            )}`
+          }
+          alt=""
+          className="
+            w-32
+            h-32
+            rounded-full
+            object-cover
+            border
+          "
+        />
+      </div>
+
+      <input
+        type="file"
+        accept="image/*"
+        onChange={(e) => {
+          const file = e.target.files[0];
+          setImageFile(file);
+
+          if (file) {
+            setImagePreview(
+              URL.createObjectURL(file)
+            );
+          }
+        }}
+      />
+
+      <div className="flex gap-2 mt-6">
+        <button
+          onClick={() => setAvatarModal(false)}
+          className="
+            flex-1
+            bg-gray-200
+            py-2
+            rounded-xl
+          "
+        >
+          Отмена
+        </button>
+
+        <button
+          onClick={async () => {
+            await handleAvatarUpload();
+            setAvatarModal(false);
+          }}
+          className="
+            flex-1
+            bg-green-600
+            text-white
+            py-2
+            rounded-xl
+          "
+        >
+          Сохранить
+        </button>
+      </div>
+    </div>
   </div>
 )}
     </MainLayout>
