@@ -26,6 +26,7 @@ export default function Home() {
     priceTo,
     condition,
     sellerType,
+    city,
     totalPages
   } = useListingStore();
 
@@ -35,6 +36,7 @@ export default function Home() {
     page,
     search,
     category,
+    city,
     priceFrom,
     priceTo,
     condition,

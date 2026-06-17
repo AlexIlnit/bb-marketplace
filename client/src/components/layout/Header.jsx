@@ -12,6 +12,7 @@ import { useListingStore } from "../../store/listingStore";
 import MobileMenu from "./MobileMenu";
 import { useAuthStore } from "../../store/authStore";
 import { useNotificationStore } from "../../store/notificationStore.js";
+import { cities } from "../../data/cities";
 
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -19,6 +20,18 @@ export default function Header() {
 
   const search = useListingStore((s) => s.search);
   const setSearch = useListingStore((s) => s.setSearch);
+
+  
+
+  const [cityModal, setCityModal] = useState(false);
+  const [citySearch, setCitySearch] = useState("");
+  
+  const city = useListingStore((s) => s.city);
+  const setCity = useListingStore((s) => s.setCity);
+
+  const [selectedCity, setSelectedCity] = useState(
+  localStorage.getItem("city") || "Вся Беларусь"
+  );
 
   const navigate = useNavigate();
   const { notifications, fetchNotifications, markAsRead  } =
@@ -120,7 +133,7 @@ useEffect(() => {
   const unreadCount = (notifications || []).filter(
     (n) => !n.isRead
   ).length;
-  let audioEnabled = false;
+  // let audioEnabled = false;
 
   const navItems = [
   { to: "/favorites", label: "Избранное" },
@@ -129,9 +142,15 @@ useEffect(() => {
   { to: "/admin", label: "Админ", role: "admin" }
 ];
 
-document.addEventListener("click", () => {
-  audioEnabled = true;
-});
+// document.addEventListener("click", () => {
+//   audioEnabled = true;
+// });
+
+const filteredCities = cities.filter((city) =>
+  city.toLowerCase().includes(
+    citySearch.toLowerCase()
+  )
+);
 
   return (
     <>
@@ -163,7 +182,20 @@ document.addEventListener("click", () => {
   placeholder="Поиск товаров"
   className="bg-transparent p-3 w-full outline-none"
 />
+
             </div>
+            <button
+  onClick={() => setCityModal(true)}
+  className="
+    flex items-center gap-2
+    bg-gray-100
+    px-4 py-3
+    rounded-xl
+    hover:bg-gray-200
+  "
+>
+  📍 {city || "Вся Беларусь"}
+</button>
           </div>
 
           {/* RIGHT */}
@@ -274,6 +306,77 @@ document.addEventListener("click", () => {
             <Menu />
           </button>
         </div>
+        {cityModal && (
+  <div
+    className="
+      fixed inset-0
+      bg-black/50
+      z-50
+      flex items-center justify-center
+    "
+    onClick={() => setCityModal(false)}
+  >
+    <div
+      onClick={(e) => e.stopPropagation()}
+      className="
+        bg-white
+        rounded-2xl
+        p-6
+        w-full
+        max-w-lg
+      "
+    >
+      <h2 className="text-xl font-bold mb-4">
+        Выберите город
+      </h2>
+
+      <input
+        value={citySearch}
+        onChange={(e) =>
+          setCitySearch(e.target.value)
+        }
+        placeholder="Поиск города..."
+        className="
+          w-full
+          border
+          rounded-xl
+          p-3
+          mb-4
+        "
+      />
+
+      <div className="max-h-96 overflow-y-auto">
+        {filteredCities.map((city) => (
+          <button
+            key={city}
+            onClick={() => {
+  setCity(city);
+
+  localStorage.setItem(
+    "city",
+    city
+  );
+
+  setCityModal(false);
+
+  navigate("/");
+}}
+            className="
+              w-full
+              text-left
+              px-3
+              py-3
+              rounded-lg
+              hover:bg-gray-100
+            "
+          >
+            {city}
+          </button>
+        ))}
+      </div>
+    </div>
+  </div>
+)}
       </header>
 
       <MobileMenu

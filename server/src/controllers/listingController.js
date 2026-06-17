@@ -47,8 +47,13 @@ export const getListings = async (req, res) => {
       status: "approved"
     };
 
+    const city = req.query.city;
+
     if (req.query.category) {
       filter.category = req.query.category;
+    }
+    if ( city && city !== "Вся Беларусь") {
+      filter.city = city;
     }
 
     if (req.query.condition) {
@@ -79,6 +84,7 @@ export const getListings = async (req, res) => {
     }
 
     // console.log("FINAL FILTER 👉", filter);
+    console.log("FILTER:", filter);
 
     const listings = await Listing.find(filter)
       .sort({ createdAt: -1 })

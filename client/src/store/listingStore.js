@@ -15,6 +15,10 @@ create((set, get) => ({
   priceTo: "",
   condition: "",
   sellerType: "",
+  city: "",
+
+  setCity: (city) =>
+    set({ city }),
 
   setSearch: (value) =>
     set({ search: value }),
@@ -48,6 +52,7 @@ fetchListings: async (page = 1) => {
     page,
     search: state.search,
     category: state.category,
+    city: state.city,
     priceFrom: state.priceFrom,
     priceTo: state.priceTo,
     condition: state.condition,
