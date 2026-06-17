@@ -8,6 +8,7 @@ import {
 
 import { useRef, useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useListingStore } from "../../store/listingStore";
 import MobileMenu from "./MobileMenu";
 import { useAuthStore } from "../../store/authStore";
 import { useNotificationStore } from "../../store/notificationStore.js";
@@ -15,6 +16,9 @@ import { useNotificationStore } from "../../store/notificationStore.js";
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openNotif, setOpenNotif] = useState(false);
+
+  const search = useListingStore((s) => s.search);
+  const setSearch = useListingStore((s) => s.setSearch);
 
   const navigate = useNavigate();
   const { notifications, fetchNotifications, markAsRead  } =
@@ -143,12 +147,22 @@ document.addEventListener("click", () => {
             </Link>
 
             <div className="hidden md:flex items-center bg-gray-100 px-4 rounded-xl w-[450px]">
-              <Search size={18} />
+              <Search
+  size={18}
+  className="cursor-pointer"
+  onClick={() => navigate("/")}
+/>
               <input
-                name="searchTop"
-                placeholder="Поиск товаров"
-                className="bg-transparent p-3 w-full outline-none"
-              />
+  value={search}
+  onChange={(e) => setSearch(e.target.value)}
+  onKeyDown={(e) => {
+    if (e.key === "Enter") {
+      navigate("/");
+    }
+  }}
+  placeholder="Поиск товаров"
+  className="bg-transparent p-3 w-full outline-none"
+/>
             </div>
           </div>
 
