@@ -13,6 +13,7 @@ import MobileMenu from "./MobileMenu";
 import { useAuthStore } from "../../store/authStore";
 import { useNotificationStore } from "../../store/notificationStore.js";
 import { cities } from "../../data/cities";
+import { regions } from "../../data/regions";
 
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -21,17 +22,30 @@ export default function Header() {
   const search = useListingStore((s) => s.search);
   const setSearch = useListingStore((s) => s.setSearch);
 
-  
 
+const [citySearch, setCitySearch] = useState("");
+
+const [selectedRegion, setSelectedRegion] =
+  useState("Все города");
+
+const citiesToShow =
+  selectedRegion === "Все города"
+    ? Object.values(regions).flat()
+    : regions[selectedRegion] || [];
+
+const filteredCities = citiesToShow.filter((city) =>
+  city.toLowerCase().includes(citySearch.toLowerCase())
+);
   const [cityModal, setCityModal] = useState(false);
-  const [citySearch, setCitySearch] = useState("");
-  
+  // const [tempCity, setTempCity] = useState(null);
   const city = useListingStore((s) => s.city);
   const setCity = useListingStore((s) => s.setCity);
 
   const [selectedCity, setSelectedCity] = useState(
   localStorage.getItem("city") || "Вся Беларусь"
   );
+
+  const finalCity = selectedCity || "Все города";
 
   const navigate = useNavigate();
   const { notifications, fetchNotifications, markAsRead  } =
@@ -104,6 +118,14 @@ useEffect(() => {
 }, []);
 
 useEffect(() => {
+  if (cityModal) {
+    setSelectedRegion("Все города");
+   
+    setCitySearch("");
+  }
+}, [cityModal]);
+
+useEffect(() => {
   if (!soundEnabled) return;
 
   const currentIds = new Set(
@@ -141,16 +163,6 @@ useEffect(() => {
   { to: "/profile", label: "Профиль", auth: true },
   { to: "/admin", label: "Админ", role: "admin" }
 ];
-
-// document.addEventListener("click", () => {
-//   audioEnabled = true;
-// });
-
-const filteredCities = cities.filter((city) =>
-  city.toLowerCase().includes(
-    citySearch.toLowerCase()
-  )
-);
 
   return (
     <>
@@ -306,73 +318,110 @@ const filteredCities = cities.filter((city) =>
             <Menu />
           </button>
         </div>
-        {cityModal && (
+{cityModal && (
   <div
-    className="
-      fixed inset-0
-      bg-black/50
-      z-50
-      flex items-center justify-center
-    "
+    className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center"
     onClick={() => setCityModal(false)}
   >
     <div
       onClick={(e) => e.stopPropagation()}
-      className="
-        bg-white
-        rounded-2xl
-        p-6
-        w-full
-        max-w-lg
-      "
+      className="bg-white rounded-2xl p-6 w-full max-w-lg"
     >
-      <h2 className="text-xl font-bold mb-4">
-        Выберите город
+
+      {/* HEADER */}
+      <h2 className="text-xl font-bold mb-2">
+        Выбор региона
       </h2>
 
+      <p className="text-sm text-gray-500 mb-4">
+        Текущий город:{" "}
+        <span className="font-semibold">
+          {selectedCity || "Все города"}
+        </span>
+      </p>
+
+      {/* SEARCH */}
       <input
         value={citySearch}
-        onChange={(e) =>
-          setCitySearch(e.target.value)
-        }
+        onChange={(e) => setCitySearch(e.target.value)}
         placeholder="Поиск города..."
-        className="
-          w-full
-          border
-          rounded-xl
-          p-3
-          mb-4
-        "
+        className="w-full border rounded-xl p-3 mb-4"
       />
 
-      <div className="max-h-96 overflow-y-auto">
-        {filteredCities.map((city) => (
+      {/* REGIONS */}
+      <div className="flex flex-wrap gap-2 mb-4">
+        {Object.keys(regions).map((region) => (
           <button
-            key={city}
+            key={region}
             onClick={() => {
-  setCity(city);
-
-  localStorage.setItem(
-    "city",
-    city
-  );
-
-  setCityModal(false);
-
-  navigate("/");
-}}
-            className="
-              w-full
-              text-left
-              px-3
-              py-3
-              rounded-lg
-              hover:bg-gray-100
-            "
+              setSelectedRegion(region);
+             
+              setCitySearch("");
+            }}
+            className={`px-3 py-2 rounded-full text-sm ${
+              selectedRegion === region
+                ? "bg-green-600 text-white"
+                : "bg-gray-100"
+            }`}
           >
-            {city}
+            {region}
           </button>
         ))}
+      </div>
+
+      {/* CITIES LIST */}
+      {selectedRegion !== "Все города" && (
+      <div className="max-h-72 overflow-y-auto space-y-2">
+        {citiesToShow
+          .filter((c) =>
+            c.toLowerCase().includes(citySearch.toLowerCase())
+          )
+          .map((city) => (
+            
+            <label
+              key={city}
+              className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer"
+            >
+              <input
+                type="radio"
+                checked={city === selectedCity}
+                onChange={() => setSelectedCity(city)}
+              />
+              {city}
+            </label>
+          ))}
+      </div>
+)}
+      {/* BUTTONS */}
+      <div className="flex gap-3 mt-6">
+
+        {/* APPLY */}
+        <button
+          onClick={() => {
+            const finalCity = selectedCity || "Все города";
+
+            setCity(finalCity);
+            setSelectedCity(finalCity);
+
+            localStorage.setItem("city", finalCity);
+
+            setCityModal(false);
+            navigate("/");
+          }}
+          className="flex-1 bg-green-600 text-white py-3 rounded-xl"
+        >
+          Показать объявления
+        </button>
+
+        {/* RESET */}
+        {selectedCity !== "Все города"  && (
+          <button
+            onClick={() => setSelectedCity("Вся Беларусь")}
+            className="flex-1 border py-3 rounded-xl"
+          >
+            Сбросить
+          </button>
+        )}
       </div>
     </div>
   </div>

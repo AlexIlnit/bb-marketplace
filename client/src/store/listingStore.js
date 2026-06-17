@@ -45,9 +45,8 @@ create((set, get) => ({
 fetchListings: async (page = 1) => {
   set({ loading: true });
 
-  const state = get(); // 👈 ВАЖНО ДОБАВИТЬ
+  const state = get(); 
 
-  // set({ loading: true });
   const { data } = await getListings({
     page,
     search: state.search,
