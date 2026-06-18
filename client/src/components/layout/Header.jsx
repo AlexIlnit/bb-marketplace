@@ -200,10 +200,10 @@ useEffect(() => {
   onClick={() => setCityModal(true)}
   className="
     flex items-center gap-2
-    bg-gray-100
-    px-4 py-3
+    px-2 py-1
     rounded-xl
-    hover:bg-gray-200
+    hover:bg-gray-100
+    text-green-600
   "
 >
   📍 {city || "Вся Беларусь"}
