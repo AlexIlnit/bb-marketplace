@@ -1,11 +1,16 @@
 import { useEffect, useState } from "react";
 import { useListingStore } from "../../store/listingStore";
 import { useCategoryStore } from "../../store/categoryStore";
+import { regions } from "../../data/regions";
 
 export default function FilterSidebar() {
   const {
     search,
     category,
+    region,
+    city,
+    setCity,
+    setRegion,
     priceFrom,
     priceTo,
     condition,
@@ -37,6 +42,11 @@ const [localSearch, setLocalSearch] = useState(search);
     return () => clearTimeout(timer);
   }, [localSearch]);
 
+  const availableCities =
+  region && regions[region]
+    ? regions[region]
+    : [];
+
   const fieldClass = `
     border border-gray-300 bg-white text-gray-900
     rounded-xl p-3 w-full
@@ -55,6 +65,54 @@ const [localSearch, setLocalSearch] = useState(search);
         className={fieldClass}
         placeholder="Поиск..."
       /></label>
+
+      <label className="flex flex-col gap-1">
+  <span>Область</span>
+
+  <select
+    value={region}
+    onChange={(e) => {
+      setRegion(e.target.value);
+      setCity("");
+    }}
+    className={fieldClass}
+  >
+    <option value="">Все области</option>
+
+    {Object.keys(regions).map((regionName) => (
+      <option
+        key={regionName}
+        value={regionName}
+      >
+        {regionName}
+      </option>
+    ))}
+  </select>
+</label>
+
+<label className="flex flex-col gap-1">
+  <span>Город</span>
+
+  <select
+    value={city}
+    onChange={(e) => setCity(e.target.value)}
+    disabled={!region}
+    className={fieldClass}
+  >
+    <option value="">
+      Все города
+    </option>
+
+    {availableCities.map((cityName) => (
+      <option
+        key={cityName}
+        value={cityName}
+      >
+        {cityName}
+      </option>
+    ))}
+  </select>
+</label>
 
       <label className="flex flex-col gap-1">
        <span>Категория</span>
@@ -126,6 +184,8 @@ const [localSearch, setLocalSearch] = useState(search);
           setPriceTo("");
           setCondition("");
           setSellerType("");
+          setRegion("");
+          setCity("");
         }}
         className="bg-gray-200 py-2 rounded-xl"
       >
