@@ -320,81 +320,84 @@ useEffect(() => {
         </div>
 {cityModal && (
   <div
-    className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center"
+    className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
     onClick={() => setCityModal(false)}
   >
     <div
       onClick={(e) => e.stopPropagation()}
-      className="bg-white rounded-2xl p-6 w-full max-w-lg"
+      /* МЫ ДОБАВИЛИ min-h-0. Теперь браузер будет сжимать список городов, а не выталкивать кнопки */
+      className="bg-white rounded-2xl p-6 w-full max-w-lg max-h-[85vh] flex flex-col min-h-0"
     >
+      {/* ФИКСИРОВАННАЯ ВЕРХНЯЯ ЧАСТЬ */}
+      <div className="flex-shrink-0">
+        {/* HEADER */}
+        <h2 className="text-xl font-bold mb-2">
+          Выбор региона
+        </h2>
 
-      {/* HEADER */}
-      <h2 className="text-xl font-bold mb-2">
-        Выбор региона
-      </h2>
+        <p className="text-sm text-gray-500 mb-4">
+          Текущий город:{" "}
+          <span className="font-semibold">
+            {selectedCity || "Все города"}
+          </span>
+        </p>
 
-      <p className="text-sm text-gray-500 mb-4">
-        Текущий город:{" "}
-        <span className="font-semibold">
-          {selectedCity || "Все города"}
-        </span>
-      </p>
+        {/* SEARCH */}
+        <input
+          value={citySearch}
+          onChange={(e) => setCitySearch(e.target.value)}
+          placeholder="Поиск города..."
+          className="w-full border rounded-xl p-3 mb-4"
+        />
 
-      {/* SEARCH */}
-      <input
-        value={citySearch}
-        onChange={(e) => setCitySearch(e.target.value)}
-        placeholder="Поиск города..."
-        className="w-full border rounded-xl p-3 mb-4"
-      />
-
-      {/* REGIONS */}
-      <div className="flex flex-wrap gap-2 mb-4">
-        {Object.keys(regions).map((region) => (
-          <button
-            key={region}
-            onClick={() => {
-              setSelectedRegion(region);
-             
-              setCitySearch("");
-            }}
-            className={`px-3 py-2 rounded-full text-sm ${
-              selectedRegion === region
-                ? "bg-green-600 text-white"
-                : "bg-gray-100"
-            }`}
-          >
-            {region}
-          </button>
-        ))}
-      </div>
-
-      {/* CITIES LIST */}
-      {selectedRegion !== "Все города" && (
-      <div className="max-h-72 overflow-y-auto space-y-2">
-        {citiesToShow
-          .filter((c) =>
-            c.toLowerCase().includes(citySearch.toLowerCase())
-          )
-          .map((city) => (
-            
-            <label
-              key={city}
-              className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer"
+        {/* REGIONS */}
+        <div className="flex flex-wrap gap-2 mb-4">
+          {Object.keys(regions).map((region) => (
+            <button
+              key={region}
+              onClick={() => {
+                setSelectedRegion(region);
+                setCitySearch("");
+              }}
+              className={`px-3 py-2 rounded-full text-sm ${
+                selectedRegion === region
+                  ? "bg-green-600 text-white"
+                  : "bg-gray-100"
+              }`}
             >
-              <input
-                type="radio"
-                checked={city === selectedCity}
-                onChange={() => setSelectedCity(city)}
-              />
-              {city}
-            </label>
+              {region}
+            </button>
           ))}
+        </div>
       </div>
-)}
-      {/* BUTTONS */}
-      <div className="flex gap-3 mt-6">
 
+      {/* СКРОЛЛИРУЕМЫЙ СПИСОК ГОРODОВ */}
+      {selectedRegion !== "Все города" && (
+        /* flex-1 и overflow-y-auto теперь работают корректно внутри min-h-0 */
+        <div className="flex-1 overflow-y-auto space-y-2 pr-1 min-h-[100px]">
+          {citiesToShow
+            .filter((c) =>
+              c.toLowerCase().includes(citySearch.toLowerCase())
+            )
+            .map((city) => (
+              <label
+                key={city}
+                className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer"
+              >
+                <input
+                  type="radio"
+                  checked={city === selectedCity}
+                  onChange={() => setSelectedCity(city)}
+                  className="accent-green-600 w-4 h-4" 
+                />
+                {city}
+              </label>
+            ))}
+        </div>
+      )}
+
+      {/* ФИКСИРОВАННАЯ НИЖНЯЯ ЧАСТЬ С КНОПКАМИ */}
+      <div className="flex-shrink-0 pt-4 mt-4 border-t border-gray-100 flex gap-3">
         {/* APPLY */}
         <button
           onClick={() => {
@@ -408,16 +411,16 @@ useEffect(() => {
             setCityModal(false);
             navigate("/");
           }}
-          className="flex-1 bg-green-600 text-white py-3 rounded-xl"
+          className="flex-1 bg-green-600 text-white py-3 rounded-xl font-medium"
         >
           Показать объявления
         </button>
 
         {/* RESET */}
-        {selectedCity !== "Все города"  && (
+        {selectedCity !== "Все города" && (
           <button
             onClick={() => setSelectedCity("Вся Беларусь")}
-            className="flex-1 border py-3 rounded-xl"
+            className="flex-1 border py-3 rounded-xl font-medium hover:bg-gray-50 transition-colors"
           >
             Сбросить
           </button>
@@ -426,6 +429,8 @@ useEffect(() => {
     </div>
   </div>
 )}
+
+
       </header>
 
       <MobileMenu
