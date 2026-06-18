@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useCategoryStore } from "../../store/categoryStore";
 import MainLayout from "../../layouts/MainLayout";
 import { useAuthStore } from "../../store/authStore";
+import { regions } from "../../data/regions";
 
 
 export default function CreateListing() {
@@ -20,6 +21,7 @@ export default function CreateListing() {
     title: "",
     description: "",
     price: "",
+    region: "",
     city: "",
     category: "",
     condition: "used",
@@ -31,6 +33,9 @@ export default function CreateListing() {
 
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
+
+  const [region, setRegion] = useState("");
+  const [city, setCity] = useState("");
 
   const [imageFile, setImageFile] = useState(null);
   const [imageUrl, setImageUrl] = useState("");
@@ -64,6 +69,14 @@ export default function CreateListing() {
  const submit = async (e) => {
   e.preventDefault();
 
+  if (!region) {
+  return toast.error("Выберите область");
+  }
+
+  if (!city) {
+  return toast.error("Выберите город");
+  }
+
   if (!imageUrl) {
     alert("Сначала загрузите фото");
     return;
@@ -76,7 +89,8 @@ export default function CreateListing() {
       title: form.title,
       description: form.description,
       price: Number(form.price),
-      city: form.city,
+      region,
+      city,
       category: form.category,
 
       // 🔥 ВАЖНО — явно задаём
@@ -97,6 +111,10 @@ export default function CreateListing() {
     setLoading(false);
   }
 };
+
+const availableCities = region
+  ? regions[region] || []
+  : [];
 
   return (
    <MainLayout>
@@ -129,12 +147,51 @@ export default function CreateListing() {
           onChange={handleChange}
         />
 
-        <input
-          name="city"
-          placeholder="Город"
-          className="w-full p-3 border rounded-xl"
-          onChange={handleChange}
-        />
+        <div className="space-y-4">
+
+  <select
+    value={region}
+    onChange={(e) => {
+      setRegion(e.target.value);
+      setCity("");
+    }}
+    className="w-full border rounded-xl p-3"
+  >
+    <option value="">
+      Выберите область
+    </option>
+
+    {Object.keys(regions).map((regionName) => (
+      <option
+        key={regionName}
+        value={regionName}
+      >
+        {regionName}
+      </option>
+    ))}
+  </select>
+
+  <select
+    value={city}
+    onChange={(e) => setCity(e.target.value)}
+    disabled={!region}
+    className="w-full border rounded-xl p-3"
+  >
+    <option value="">
+      Выберите город
+    </option>
+
+    {availableCities.map((cityName) => (
+      <option
+        key={cityName}
+        value={cityName}
+      >
+        {cityName}
+      </option>
+    ))}
+  </select>
+
+</div>
 
         {/* CATEGORY SELECT */}
         <select

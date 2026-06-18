@@ -11,12 +11,13 @@ if (user?.isBlocked) {
     message: "Ваш аккаунт заблокирован. Размещение объявлений недоступно."
   });
 }
-    const { title, description, price, city, category, images, condition, sellerType  } = req.body;
+    const { title, description, price, region, city, category, images, condition, sellerType  } = req.body;
 
     const listing = await Listing.create({
       title,
       description,
       price,
+      region,
       city,
       category,
       images,

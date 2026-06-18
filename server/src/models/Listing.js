@@ -22,6 +22,11 @@ const listingSchema =
 
       city: String,
 
+      region: {
+        type: String,
+        required: true
+      },
+
       category: String,
 
       views: {
