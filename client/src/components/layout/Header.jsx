@@ -185,6 +185,7 @@ useEffect(() => {
 />
               <input
   value={search}
+  name="search"
   onChange={(e) => setSearch(e.target.value)}
   onKeyDown={(e) => {
     if (e.key === "Enter") {
@@ -206,7 +207,7 @@ useEffect(() => {
     text-green-600
   "
 >
-  📍 {city || "Вся Беларусь"}
+  {city || "Вся Беларусь"}
 </button>
           </div>
 
@@ -303,10 +304,23 @@ useEffect(() => {
             {/* BUTTON */}
             {user && (
               <Link to="/create-listing">
-                <button className="bg-green-600 text-white px-4 py-2 rounded-xl">
-                  Подать объявление
-                </button>
-              </Link>
+  <button className="bg-green-600 text-white rounded-xl flex items-center justify-center transition-all
+    {/* Стили по умолчанию (для экранов МЕНЬШЕ 1200px): квадратная кнопка */}
+    w-10 h-10 p-0
+    {/* Стили для экранов ОТ 1200px (xl и выше): прямоугольная кнопка с текстом */}
+    xl:w-auto xl:h-auto xl:px-4 xl:py-2"
+  >
+    {/* Иконка плюса: видна ВСЕГДА */}
+    <span className="text-2xl font-bold flex items-center justify-center leading-none select-none">
+  +
+</span>
+    
+    {/* Текст: скрыт на мобильных/планшетах, появляется только от 1200px */}
+    <span className="hidden xl:inline xl:ml-2">
+      Подать объявление
+    </span>
+  </button>
+</Link>
             )}
           </div>
 
@@ -325,7 +339,6 @@ useEffect(() => {
   >
     <div
       onClick={(e) => e.stopPropagation()}
-      /* МЫ ДОБАВИЛИ min-h-0. Теперь браузер будет сжимать список городов, а не выталкивать кнопки */
       className="bg-white rounded-2xl p-6 w-full max-w-lg max-h-[85vh] flex flex-col min-h-0"
     >
       {/* ФИКСИРОВАННАЯ ВЕРХНЯЯ ЧАСТЬ */}

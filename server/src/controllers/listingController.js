@@ -49,12 +49,19 @@ export const getListings = async (req, res) => {
     };
 
     const city = req.query.city;
+    const region = req.query.region; // Получаем область из фронтенда
 
     if (req.query.category) {
       filter.category = req.query.category;
     }
-    if ( city && city !== "Вся Беларусь") {
+    
+    // 🔥 ПРЯМАЯ ФИЛЬТРАЦИЯ ПО ОБЛАСТЯМ И ГОРОДАМ
+    if (city && city !== "Вся Беларусь" && city !== "Все города" && city !== "Все области") {
+      // Если выбран конкретный город — фильтруем строго по нему
       filter.city = city;
+    } else if (region && region !== "Вся Беларусь" && region !== "Все области" && region !== "Все города") {
+      // Если город НЕ выбран (или выбран "Все города"), но выбрана область — фильтруем НАПРЯМУЮ по полю region
+      filter.region = region;
     }
 
     if (req.query.condition) {
