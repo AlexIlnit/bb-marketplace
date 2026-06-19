@@ -22,14 +22,6 @@ const toggleFavorite = useFavoriteStore(
   (state) => state.toggleFavorite
 );
 
-  // const isFavorite = favorites.some(
-  //   (fav) => fav.listing?._id === listing._id
-  // );
-// const imageUrl = listing.images?.[0]
-//   ? listing.images[0].includes("/upload/")
-//     ? listing.images[0].replace("/upload/", "/upload/f_auto,q_auto,w_500/")
-//     : listing.images[0]
-//   : "";
 const imageUrl = listing.images?.[0]
   ? listing.images[0].replace(
       "/upload/",
@@ -77,6 +69,8 @@ const imageUrl = listing.images?.[0]
   "
   alt={listing.title}
   loading={priority ? "eager" : "lazy"}
+  fetchPriority={priority ? "high" : undefined}
+  decoding="async"
   className="absolute inset-0 w-full h-full object-cover"
 />
 </div>

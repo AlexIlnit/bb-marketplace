@@ -80,7 +80,7 @@ export default function Home() {
               <ListingCard
                 key={listing._id}
                 listing={listing}
-                priority={index == 0}
+                priority={index === 0}
               />
             ))}
           </div>
