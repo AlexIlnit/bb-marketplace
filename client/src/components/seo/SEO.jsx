@@ -29,16 +29,7 @@ export default function SEO({
       <link rel="preconnect" href="https://res.cloudinary.com" />
       <link rel="dns-prefetch" href="https://res.cloudinary.com" />
 
-      {/* 🔥 УЛЬТРА-ОПТИМИЗАЦИЯ ДЛЯ LCP */}
-      {/* Если картинка передана, заставляем браузер качать её ПЕРВЫМ делом, параллельно с JS-скриптами */}
-      {image && (
-        <link 
-          rel="preload" 
-          fetchpriority="high" 
-          as="image" 
-          href={image} 
-        />
-      )}
+   
     </Helmet>
   );
 }
