@@ -53,20 +53,15 @@ const imageUrl = listing.images?.[0]
           color={isFavorite ? "red" : "black"}
         />
       </button>
-
 <div className="aspect-[3/2] relative overflow-hidden">
 <img
   src={imageUrl}
-  srcSet={`
-    ${listing.images[0].replace("/upload/", "/upload/f_auto,q_auto,w_250/")} 250w,
-    ${listing.images[0].replace("/upload/", "/upload/f_auto,q_auto,w_350/")} 350w,
-    ${listing.images[0].replace("/upload/", "/upload/f_auto,q_auto,w_500/")} 500w
-  `}
-  sizes="
-    (max-width: 640px) 100vw,
-    (max-width: 1024px) 50vw,
-    25vw
-  "
+srcSet={`
+  ${listing.images[0].replace("/upload/", "/upload/f_auto,q_auto:eco,w_180/")} 180w,
+  ${listing.images[0].replace("/upload/", "/upload/f_auto,q_auto:eco,w_250/")} 250w,
+  ${listing.images[0].replace("/upload/", "/upload/f_auto,q_auto:eco,w_350/")} 350w
+`}
+sizes="(max-width: 768px) 50vw, 174px"
   alt={listing.title}
   loading={priority ? "eager" : "lazy"}
   fetchPriority={priority ? "high" : undefined}
