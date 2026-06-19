@@ -53,7 +53,10 @@ export default function Home() {
           content="Покупайте и продавайте товары быстро и безопасно. Объявления, авто, недвижимость и услуги."
         />
       </Helmet>
-      <CategoriesBar />
+      <Suspense fallback={<div>Загрузка...</div>}>
+  <CategoriesBar />
+</Suspense>
+     
 
       <div className="flex flex-col lg:flex-row gap-8">
 
@@ -77,7 +80,7 @@ export default function Home() {
               <ListingCard
                 key={listing._id}
                 listing={listing}
-                priority={index < 4}
+                priority={index == 0}
               />
             ))}
           </div>

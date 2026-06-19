@@ -25,10 +25,16 @@ const toggleFavorite = useFavoriteStore(
   // const isFavorite = favorites.some(
   //   (fav) => fav.listing?._id === listing._id
   // );
+// const imageUrl = listing.images?.[0]
+//   ? listing.images[0].includes("/upload/")
+//     ? listing.images[0].replace("/upload/", "/upload/f_auto,q_auto,w_500/")
+//     : listing.images[0]
+//   : "";
 const imageUrl = listing.images?.[0]
-  ? listing.images[0].includes("/upload/")
-    ? listing.images[0].replace("/upload/", "/upload/f_auto,q_auto,w_500/")
-    : listing.images[0]
+  ? listing.images[0].replace(
+      "/upload/",
+      "/upload/f_auto,q_auto:eco,dpr_auto,w_350/"
+    )
   : "";
 
   return (
@@ -57,14 +63,20 @@ const imageUrl = listing.images?.[0]
       </button>
 
 <div className="aspect-[3/2] relative overflow-hidden">
-  <img
+<img
   src={imageUrl}
+  srcSet={`
+    ${listing.images[0].replace("/upload/", "/upload/f_auto,q_auto,w_250/")} 250w,
+    ${listing.images[0].replace("/upload/", "/upload/f_auto,q_auto,w_350/")} 350w,
+    ${listing.images[0].replace("/upload/", "/upload/f_auto,q_auto,w_500/")} 500w
+  `}
+  sizes="
+    (max-width: 640px) 100vw,
+    (max-width: 1024px) 50vw,
+    25vw
+  "
   alt={listing.title}
-  width="500"
-  height="333"
   loading={priority ? "eager" : "lazy"}
-  fetchPriority={priority ? "high" : "auto"}
-  decoding="async"
   className="absolute inset-0 w-full h-full object-cover"
 />
 </div>

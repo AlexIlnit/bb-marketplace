@@ -5,27 +5,34 @@ import ProtectedRoute from "./ProtectedRoute";
 import GuestRoute from "./GuestRoute";
 import AdminRoute from "./AdminRoute";
 
+// 🔥 КРИТИЧЕСКИЙ ФИКС ДЛЯ СКОРОСТИ LCP:
+// Главные страницы импортируем СИНХРОННО. Браузер отобразит их контент и картинки мгновенно!
+import Home from "../pages/Home/Home";
+import Listing from "../pages/Listing/Listing";
 
-// lazy pages
-const Home = lazy(() => import("../pages/Home/Home"));
+// 💤 ЛЕНИВЫЕ СТРАНИЦЫ (оставляем lazy, они не влияют на первую загрузку сайта):
 const Login = lazy(() => import("../pages/Login/Login"));
 const Register = lazy(() => import("../pages/Register/Register"));
-const Listing = lazy(() => import("../pages/Listing/Listing"));
 const CreateListing = lazy(() => import("../pages/CreateListing/CreateListing"));
 const Profile = lazy(() => import("../pages/Profile/Profile"));
 const Favorites = lazy(() => import("../pages/Favorites/Favorites"));
+const UserProfile = lazy(() => import("../pages/UserProfile/UserProfile"));
 
+// Админка (lazy — идеальное решение для тяжелых панелей управления)
 const AdminDashboard = lazy(() => import("../pages/admin/AdminDashboard"));
 const AdminListings = lazy(() => import("../pages/admin/AdminListings"));
 const AdminUsers = lazy(() => import("../pages/admin/AdminUsers"));
 
-const UserProfile = lazy(() => import("../pages/UserProfile/UserProfile"));
-
 export default function AppRouter() {
   return (
-    <Suspense fallback={<div className="p-6">Loading...</div>}>
+    // Заменим скучный Loading... на аккуратный визуальный индикатор (опционально)
+    <Suspense fallback={<div className="p-6 text-gray-500 animate-pulse">Загрузка...</div>}>
       <Routes>
+        {/* Прямой рендеринг без ожидания ленивых чанков */}
         <Route path="/" element={<Home />} />
+        <Route path="/listing/:id" element={<Listing />} />
+        
+        <Route path="/user/:id" element={<UserProfile />}/>
 
         <Route
           path="/login"
@@ -44,9 +51,6 @@ export default function AppRouter() {
             </GuestRoute>
           }
         />
-        <Route path="/user/:id" element={<UserProfile />}/>
-
-        <Route path="/listing/:id" element={<Listing />} />
 
         <Route
           path="/create-listing"

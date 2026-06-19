@@ -23,6 +23,22 @@ export default function SEO({
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />
       {image && <meta name="twitter:image" content={image} />}
+
+      {/* ОПТИМИЗАЦИЯ СЕТИ */}
+      {/* Заранее подключаемся к серверу картинок (убирает задержку на DNS/TLS) */}
+      <link rel="preconnect" href="https://res.cloudinary.com" />
+      <link rel="dns-prefetch" href="https://res.cloudinary.com" />
+
+      {/* 🔥 УЛЬТРА-ОПТИМИЗАЦИЯ ДЛЯ LCP */}
+      {/* Если картинка передана, заставляем браузер качать её ПЕРВЫМ делом, параллельно с JS-скриптами */}
+      {image && (
+        <link 
+          rel="preload" 
+          fetchpriority="high" 
+          as="image" 
+          href={image} 
+        />
+      )}
     </Helmet>
   );
 }
