@@ -1,9 +1,9 @@
 import "./globals.css";
-import { headers } from "next/headers";
+import Header from "@/components/layout/Header";
 
 export const metadata = {
   title: "BB доска объявлений",
-  description: "Маркетплейс",
+  description: "Продажа товаров, авто, недвижимости и услуг",
 };
 
 export default function RootLayout({
@@ -13,7 +13,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ru">
-      <body>{children}</body>
+      <body>
+        <Header />
+        {children}
+      </body>
     </html>
   );
 }

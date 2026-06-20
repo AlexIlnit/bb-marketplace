@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import Link from "next/link";
 
 export default function Footer() {
   return (
@@ -25,25 +25,25 @@ export default function Footer() {
 
             <ul className="space-y-2 text-sm">
               <li>
-                <Link to="/">
+                <Link href="/">
                   Главная
                 </Link>
               </li>
 
               <li>
-                <Link to="/favorites">
+                <Link href="/favorites">
                   Избранное
                 </Link>
               </li>
 
               <li>
-                <Link to="/profile">
+                <Link href="/profile">
                   Профиль
                 </Link>
               </li>
 
               <li>
-                <Link to="/create-listing">
+                <Link href="/create-listing">
                   Подать объявление
                 </Link>
               </li>

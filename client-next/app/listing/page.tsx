@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { getListingById } from "@/src/lib/api";
+import { getListingById } from "@/lib/api";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 

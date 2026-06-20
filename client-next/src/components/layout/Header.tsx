@@ -9,13 +9,12 @@ import {
 } from "lucide-react";
 
 import { useRef, useState, useEffect } from "react";
-// import { Link, useNavigate } from "react-router-dom";
-import { useListingStore } from "../../store/listingStore";
+import { useListingStore } from "@/store/listingStore";
 import MobileMenu from "./MobileMenu";
-import { useAuthStore } from "../../store/authStore";
-import { useNotificationStore } from "../../store/notificationStore.js";
-import { cities } from "../../data/cities";
-import { regions } from "../../data/regions";
+import { useAuthStore } from "@/store/authStore";
+import { useNotificationStore } from "@/store/notificationStore";
+import { cities } from "@/data/cities";
+import { regions } from "@/data/regions";
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";

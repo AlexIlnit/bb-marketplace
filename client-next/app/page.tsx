@@ -1,48 +1,69 @@
-import { getListings } from "../src/lib/api";
-import ListingCard from "../src/components/ListingCard";
-import PaginationClient from "../src/components/PaginationClient";
-import MainLayout from "../src/components/layout/MainLayout";
-
-
-
-type Props = {
-  searchParams: Promise<Record<string, string | undefined>>;
-};
+import { getListings } from "@/lib/api";
+import ListingCard from "@/components/listing/ListingCard";
+import PaginationClient from "@/components/pagination/PaginationClient";
+import MainLayout from "@/components/layout/MainLayout";
+import CategoriesBar from "@/components/categories/CategoriesBar";
+import FilterSidebar from "@/components/filters/FilterSidebar";
 
 export const metadata = {
   title: "BB Доска объявлений",
   description: "Продажа товаров, авто, недвижимости и услуг",
 };
 
-export default async function HomePage({ searchParams }: Props) {
-  const params = await searchParams;
+type Props = {
+  searchParams: Record<string, string | undefined>;
+};
 
-  const page = Number(params.page ?? 1);
+export default async function HomePage({ searchParams }: Props) {
+  const page = Number(searchParams.page ?? 1);
 
   const data = await getListings({
-    ...params,
+    ...searchParams,
     page,
   });
 
   return (
     <MainLayout>
-      <main className="max-w-7xl mx-auto p-6">
-        <h1 className="text-3xl font-bold mb-6">
-          Свежие объявления
-        </h1>
+      {/* CATEGORIES */}
+      <CategoriesBar />
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          {data.listings.map((listing, index) => (
-            <ListingCard
-              key={listing._id}
-              listing={listing}
-              priority={index === 0}
-            />
-          ))}
+      <div className="flex flex-col lg:flex-row gap-8 mt-6">
+
+        {/* FILTERS */}
+        <div className="hidden lg:block lg:w-1/4">
+          <FilterSidebar />
         </div>
 
-        <PaginationClient totalPages={data.totalPages} />
-      </main>
+        {/* CONTENT */}
+        <section className="w-full">
+
+          <h3 className="text-3xl font-bold mb-8">
+            Свежие объявления
+          </h3>
+
+          {/* MOBILE FILTER */}
+          <div className="lg:hidden mb-6">
+            <FilterSidebar />
+          </div>
+
+          {/* LISTINGS */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+            {data.listings.map((listing, index) => (
+              <ListingCard
+                key={listing._id}
+                listing={listing}
+                priority={index === 0}
+              />
+            ))}
+          </div>
+
+          {/* PAGINATION */}
+          {data.totalPages > 1 && (
+            <PaginationClient totalPages={data.totalPages} />
+          )}
+
+        </section>
+      </div>
     </MainLayout>
   );
 }

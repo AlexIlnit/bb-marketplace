@@ -4,6 +4,9 @@ type ListingsParams = {
   search?: string;
   category?: string;
   city?: string;
+  region?: string;
+  condition?: string;
+  sellerType?: string;
   priceFrom?: string;
   priceTo?: string;
   page?: number | string;
