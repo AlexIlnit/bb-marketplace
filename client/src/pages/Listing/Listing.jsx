@@ -74,7 +74,7 @@ const url = window.location.href;
             alt={listing.title}
             className="
               w-full
-              h-[500px]
+              h-[512px]
               object-cover
               rounded-2xl
               border

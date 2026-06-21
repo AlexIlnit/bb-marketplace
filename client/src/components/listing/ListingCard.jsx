@@ -1,8 +1,9 @@
 import { Heart } from "lucide-react";
 import { useFavoriteStore } from "../../store/favoriteStore";
 import { useNavigate } from "react-router-dom";
+import { memo } from "react";
 
-export default function ListingCard({ listing, priority = false }) {
+function ListingCard({ listing, priority  }) {
 if (!listing) return null;
 
   const navigate = useNavigate(); // ✅ ВОТ ЭТОГО НЕ ХВАТАЛО
@@ -61,7 +62,12 @@ srcSet={`
   ${listing.images[0].replace("/upload/", "/upload/f_auto,q_auto:eco,w_250/")} 250w,
   ${listing.images[0].replace("/upload/", "/upload/f_auto,q_auto:eco,w_350/")} 350w
 `}
-sizes="(max-width: 768px) 50vw, 174px"
+sizes="
+(max-width: 640px) 100vw,
+(max-width: 768px) 50vw,
+(max-width: 1280px) 33vw,
+25vw
+"
   alt={listing.title}
   loading={priority ? "eager" : "lazy"}
   fetchPriority={priority ? "high" : undefined}
@@ -95,3 +101,4 @@ sizes="(max-width: 768px) 50vw, 174px"
 </div>
   );
 }
+export default memo(ListingCard);
