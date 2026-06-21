@@ -10,6 +10,7 @@ type Notification = {
   createdAt: string;
 };
 
+
 type State = {
   notifications: Notification[];
   fetchNotifications: () => Promise<void>;

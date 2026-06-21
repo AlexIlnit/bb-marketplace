@@ -40,7 +40,7 @@ function CategoriesBar() {
             className={`
               flex-shrink-0
               w-28
-              aspect-[3/2]
+              h-20
               rounded-xl
               overflow-hidden
               relative
@@ -55,7 +55,9 @@ function CategoriesBar() {
             <Image
               src="/categories/all.webp"
               alt="Все категории"
-              fill
+              width={112}
+  height={80}
+              sizes="112px"
               className="object-cover"
             />
           </button>
@@ -75,7 +77,7 @@ function CategoriesBar() {
                 className={`
                   flex-shrink-0
                   w-28
-                  aspect-[3/2]
+                  h-20
                   rounded-xl
                   overflow-hidden
                   relative
@@ -89,7 +91,9 @@ function CategoriesBar() {
                 <Image
                   src={cat.image}
                   alt={cat.name}
-                  fill
+                  width={112}
+  height={80}
+                  sizes="112px"
                   className="object-cover"
                 />
 

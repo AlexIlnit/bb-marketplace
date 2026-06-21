@@ -1,22 +1,73 @@
+"use client";
+
 import { create } from "zustand";
 
-export const useAuthStore = create((set) => ({
-  user: JSON.parse(localStorage.getItem("user")) || null,
-  token: localStorage.getItem("token") || null,
+type User = {
+  _id: string;
+  name: string;
+  role: string;
+};
 
-  setUser: (user, token) => {
-    localStorage.setItem("user", JSON.stringify(user));
-    localStorage.setItem("token", token);
+type AuthState = {
+  user: User | null;
+  token: string | null;
 
-    set({ user, token });
-  },
-  
+  loadUser: () => void;
 
-  logout: () => {
-    localStorage.removeItem("user");
-    localStorage.removeItem("token");
+  setUser: (
+    user: User,
+    token: string
+  ) => void;
 
-    set({ user: null, token: null });
-  }
-  
-}));
+  logout: () => void;
+};
+
+export const useAuthStore =
+  create<AuthState>((set) => ({
+    user: null,
+    token: null,
+
+    loadUser: () => {
+      if (typeof window === "undefined") return;
+
+      const user =
+        localStorage.getItem("user");
+
+      const token =
+        localStorage.getItem("token");
+
+      set({
+        user: user
+          ? JSON.parse(user)
+          : null,
+        token,
+      });
+    },
+
+    setUser: (user, token) => {
+      localStorage.setItem(
+        "user",
+        JSON.stringify(user)
+      );
+
+      localStorage.setItem(
+        "token",
+        token
+      );
+
+      set({
+        user,
+        token,
+      });
+    },
+
+    logout: () => {
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
+
+      set({
+        user: null,
+        token: null,
+      });
+    },
+  }));

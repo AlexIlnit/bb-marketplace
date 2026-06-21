@@ -11,42 +11,41 @@ export const metadata = {
 };
 
 type Props = {
-  searchParams: Record<string, string | undefined>;
+  searchParams: Promise<
+    Record<string, string | undefined>
+  >;
 };
 
-export default async function HomePage({ searchParams }: Props) {
-  const page = Number(searchParams.page ?? 1);
+export default async function HomePage({
+  searchParams,
+}: Props) {
+  const params = await searchParams;
+
+  const page = Number(params.page ?? 1);
 
   const data = await getListings({
-    ...searchParams,
+    ...params,
     page,
   });
 
   return (
     <MainLayout>
-      {/* CATEGORIES */}
       <CategoriesBar />
 
       <div className="flex flex-col lg:flex-row gap-8 mt-6">
-
-        {/* FILTERS */}
         <div className="hidden lg:block lg:w-1/4">
           <FilterSidebar />
         </div>
 
-        {/* CONTENT */}
         <section className="w-full">
-
           <h3 className="text-3xl font-bold mb-8">
             Свежие объявления
           </h3>
 
-          {/* MOBILE FILTER */}
           <div className="lg:hidden mb-6">
             <FilterSidebar />
           </div>
 
-          {/* LISTINGS */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
             {data.listings.map((listing, index) => (
               <ListingCard
@@ -57,11 +56,11 @@ export default async function HomePage({ searchParams }: Props) {
             ))}
           </div>
 
-          {/* PAGINATION */}
           {data.totalPages > 1 && (
-            <PaginationClient totalPages={data.totalPages} />
+            <PaginationClient
+              totalPages={data.totalPages}
+            />
           )}
-
         </section>
       </div>
     </MainLayout>

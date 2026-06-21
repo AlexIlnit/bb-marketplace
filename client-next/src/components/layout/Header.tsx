@@ -13,7 +13,6 @@ import { useListingStore } from "@/store/listingStore";
 import MobileMenu from "./MobileMenu";
 import { useAuthStore } from "@/store/authStore";
 import { useNotificationStore } from "@/store/notificationStore";
-import { cities } from "@/data/cities";
 import { regions } from "@/data/regions";
 
 import Link from "next/link";
@@ -35,11 +34,11 @@ const [selectedRegion, setSelectedRegion] =
 const citiesToShow =
   selectedRegion === "Все города"
     ? Object.values(regions).flat()
-    : regions[selectedRegion] || [];
+    : regions[selectedRegion as keyof typeof regions] || [];
 
-const filteredCities = citiesToShow.filter((city) =>
-  city.toLowerCase().includes(citySearch.toLowerCase())
-);
+// const filteredCities = citiesToShow.filter((city) =>
+//   city.toLowerCase().includes(citySearch.toLowerCase())
+// );
   const [cityModal, setCityModal] = useState(false);
   // const [tempCity, setTempCity] = useState(null);
   const city = useListingStore((s) => s.city);
@@ -56,16 +55,23 @@ useEffect(() => {
   }
 }, []);
 
-  const finalCity = selectedCity || "Все города";
+  const loadUser =
+  useAuthStore((s) => s.loadUser);
+
+useEffect(() => {
+  loadUser();
+}, [loadUser]);
+const user = useAuthStore((s) => s.user);
+
 
   const router = useRouter();
   const { notifications, fetchNotifications, markAsRead  } =
     useNotificationStore();
 
-  const user = useAuthStore((s) => s.user);
+ 
   const logout = useAuthStore((s) => s.logout);
 
-  const dropdownRef = useRef();
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
 
   // FETCH NOTIFICATIONS
   useEffect(() => {
@@ -83,10 +89,10 @@ useEffect(() => {
 
   // CLOSE ON OUTSIDE CLICK
   useEffect(() => {
-    const handleClickOutside = (e) => {
+    const handleClickOutside = (e: MouseEvent) => {
       if (
         dropdownRef.current &&
-        !dropdownRef.current.contains(e.target)
+        !dropdownRef.current.contains(e.target as Node)
       ) {
         setOpenNotif(false);
       }
@@ -107,10 +113,10 @@ useEffect(() => {
     router.push("/")
   };
 
-  const soundRef = useRef(null);
+  const soundRef = useRef<HTMLAudioElement | null>(null);
   const [soundEnabled, setSoundEnabled] = useState(false);
   
-  const prevIdsRef = useRef(new Set());
+  const prevIdsRef = useRef<Set<string>>(new Set());
   const firstLoadRef = useRef(true);
 
 useEffect(() => {
@@ -168,12 +174,12 @@ useEffect(() => {
   ).length;
   // let audioEnabled = false;
 
-  const navItems = [
-  { to: "/favorites", label: "Избранное" },
-  { to: "/create-listing", label: "Подать объявление", auth: true },
-  { to: "/profile", label: "Профиль", auth: true },
-  { to: "/admin", label: "Админ", role: "admin" }
-];
+//   const navItems = [
+//   { href: "/favorites", label: "Избранное" },
+//   { href: "/create-listing", label: "Подать объявление", auth: true },
+//   { href: "/profile", label: "Профиль", auth: true },
+//   { href: "/admin", label: "Админ", role: "admin" }
+// ];
 
   return (
     <>
@@ -315,19 +321,20 @@ useEffect(() => {
             {/* BUTTON */}
             {user && (
               <Link href="/create-listing">
-  <button className="bg-green-600 text-white rounded-xl flex items-center justify-center transition-all
-    {/* Стили по умолчанию (для экранов МЕНЬШЕ 1200px): квадратная кнопка */}
-    w-10 h-10 p-0
-    {/* Стили для экранов ОТ 1200px (xl и выше): прямоугольная кнопка с текстом */}
-    xl:w-auto xl:h-auto xl:px-4 xl:py-2"
+  <button
+    className="
+      bg-green-600 text-white rounded-xl
+      flex items-center justify-center
+      transition-all
+      w-10 h-10 p-0
+      xl:w-auto xl:h-auto xl:px-4 xl:py-2
+    "
   >
-    {/* Иконка плюса: видна ВСЕГДА */}
-    <span className="text-2xl font-bold flex items-center justify-center leading-none select-none">
-  +
-</span>
-    
-    {/* Текст: скрыт на мобильных/планшетах, появляется только от 1200px */}
-    <span className="hidden xl:inline xl:ml-2">
+    <span className="text-2xl font-bold leading-none">
+      +
+    </span>
+
+    <span className="hidden xl:inline ml-2">
       Подать объявление
     </span>
   </button>

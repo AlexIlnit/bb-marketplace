@@ -19,7 +19,12 @@ export default function ListingCard({ listing, priority }) {
     ${imageUrl.replace("w_400", "w_400")} 400w,
     ${imageUrl.replace("w_400", "w_600")} 600w
   `}
-  sizes="(max-width: 640px) 100vw, 25vw"
+  sizes="
+    (max-width: 640px) 100vw,
+    (max-width: 1024px) 50vw,
+    (max-width: 1280px) 33vw,
+    25vw
+  "
   alt={listing.title}
   loading={priority ? "eager" : "lazy"}
   fetchPriority={priority ? "high" : "auto"}
