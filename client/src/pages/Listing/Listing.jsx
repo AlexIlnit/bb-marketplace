@@ -11,6 +11,7 @@ export default function Listing() {
 
   const [listing, setListing] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [currentImage, setCurrentImage] = useState(0);
 
   useEffect(() => {
     loadListing();
@@ -48,39 +49,78 @@ const description =
   listing.description?.slice(0, 150) ||
   "Смотрите объявление на маркетплейсе";
 
-const image = listing.images?.[0];
+
 
 const url = window.location.href;
 
+
+const images = listing.images || [];
+  const image = listing.images?.[0];
+
   return (
     <MainLayout>
+      
      <SEO
         title={title}
         description={description}
         image={image}
         url={url}
+        
       />
     <div className="max-w-6xl mx-auto p-6">
 
       <div className="grid md:grid-cols-2 gap-8">
 
         {/* Фото */}
-        <div>
-          <img
-            src={
-              listing.images?.[0] ||
-              "https://placehold.co/800x600"
-            }
-            alt={listing.title}
-            className="
-              w-full
-              h-128
-              object-cover
-              rounded-2xl
-              border
-            "
-          />
-        </div>
+       <div className="aspect-3/2 relative overflow-hidden">
+  <img
+    src={images[currentImage]}
+    alt={listing.title}
+    className="absolute inset-0 w-full h-full object-cover"
+  />
+
+  {images.length > 1 && (
+    <>
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          setCurrentImage((prev) =>
+            prev === 0 ? images.length - 1 : prev - 1
+          );
+        }}
+        className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 rounded-full px-2 py-1"
+      >
+        ‹
+      </button>
+
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          setCurrentImage((prev) =>
+            prev === images.length - 1 ? 0 : prev + 1
+          );
+        }}
+        className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 rounded-full px-2 py-1"
+      >
+        ›
+      </button>
+    </>
+  )}
+  {images.length > 1 && (
+  <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
+    {images.map((_, index) => (
+      <div
+        key={index}
+        className={`w-2 h-2 rounded-full ${
+          currentImage === index
+            ? "bg-white"
+            : "bg-white/50"
+        }`}
+      />
+    ))}
+  </div>
+)}
+</div>
 
         {/* Информация */}
         <div>

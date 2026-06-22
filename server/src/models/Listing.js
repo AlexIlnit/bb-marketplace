@@ -14,7 +14,12 @@ const listingSchema = new mongoose.Schema(
       type: Number,
       required: true
     },
-    images: [String],
+
+    images: {
+    type: [String],
+    default: []
+    },
+
     city: String,
     region: {
       type: String,

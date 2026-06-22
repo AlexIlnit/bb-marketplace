@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { createListing } from "../../api/listingApi";
-import { uploadImage } from "../../api/uploadApi";
+// import { uploadImage } from "../../api/uploadApi";
 import { useNavigate } from "react-router-dom";
 import { useCategoryStore } from "../../store/categoryStore";
 import MainLayout from "../../layouts/MainLayout";
@@ -9,6 +9,7 @@ import { regions } from "../../data/regions";
 
 
 export default function CreateListing() {
+
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
   useEffect(() => {
@@ -37,12 +38,52 @@ export default function CreateListing() {
   const [region, setRegion] = useState("");
   const [city, setCity] = useState("");
 
-  const [imageFile, setImageFile] = useState(null);
-  const [imageUrl, setImageUrl] = useState("");
+  const [images, setImages] = useState([]);
+  const [previews, setPreviews] = useState([]);
+
+  const [loadingImage, setLoadingImage] = useState(null);
+
+ const handleImageSelect = (e, index) => {
+  const file = e.target.files?.[0];
+  if (!file) return;
+
+  setLoadingImage(index);
+
+  const newImages = [...images];
+  newImages[index] = file;
+  setImages(newImages);
+
+  const newPreviews = [...previews];
+  newPreviews[index] = {
+    file,
+    url: URL.createObjectURL(file),
+  };
+  setPreviews(newPreviews);
+
+  setLoadingImage(null);
+};
+
+const removeImage = (index) => {
+  setImages((prev) => prev.filter((_, i) => i !== index));
+
+  setPreviews((prev) => {
+    const updated = [...prev];
+    URL.revokeObjectURL(updated[index].url);
+    updated.splice(index, 1);
+    return updated;
+  });
+};
+useEffect(() => {
+  return () => {
+    previews.forEach((p) => URL.revokeObjectURL(p.url));
+  };
+}, [previews]);
 
   useEffect(() => {
     fetchCategories();
   }, []);
+
+  
 
   const handleChange = (e) => {
     setForm({
@@ -65,52 +106,35 @@ export default function CreateListing() {
       setUploading(false);
     }
   };
+const formData = new FormData();
+
+images.forEach((file) => {
+  formData.append("images", file);
+});
 
  const submit = async (e) => {
   e.preventDefault();
 
-  if (!region) {
-  return toast.error("Выберите область");
-  }
+  const formData = new FormData();
 
-  if (!city) {
-  return toast.error("Выберите город");
-  }
+  formData.append("title", form.title);
+  formData.append("description", form.description);
+  formData.append("price", Number(form.price));
+  formData.append("region", region);
+  formData.append("city", city);
+  formData.append("category", form.category);
+  formData.append("condition", form.condition || "used");
+  formData.append("sellerType", form.sellerType || "private");
 
-  if (!imageUrl) {
-    alert("Сначала загрузите фото");
-    return;
-  }
+  images.forEach((file) => {
+    formData.append("images", file);
+  });
 
-  setLoading(true);
+  await createListing(formData);
 
-  try {
-    const payload = {
-      title: form.title,
-      description: form.description,
-      price: Number(form.price),
-      region,
-      city,
-      category: form.category,
-
-      // 🔥 ВАЖНО — явно задаём
-      condition: form.condition || "used",
-      sellerType: form.sellerType || "private",
-
-      images: [imageUrl]
-    };
-
-    console.log("CREATE LISTING 👉", payload);
-
-    await createListing(payload);
-
-    navigate("/");
-  } catch (err) {
-    alert(err.response?.data?.message);
-  } finally {
-    setLoading(false);
-  }
+  navigate("/");
 };
+const MAX_IMAGES = 5;
 
 const availableCities = region
   ? regions[region] || []
@@ -240,43 +264,55 @@ const availableCities = region
 </select>
 
         {/* IMAGE UPLOAD */}
-        <div className="space-y-3 border p-4 rounded-xl">
-
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(e) => setImageFile(e.target.files[0])}
+       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+        
+  {Array.from({ length: MAX_IMAGES }).map((_, index) => (
+    <div
+      key={index}
+      className="border rounded-xl p-2 text-center"
+    >
+      {previews[index] ? (
+        <div className="relative">
+          <img
+            src={previews[index].url}
+            className="w-full h-28 object-cover rounded-lg"
           />
 
           <button
             type="button"
-            onClick={handleUpload}
-            className="bg-blue-500 text-white px-4 py-2 rounded-xl"
+            onClick={() => removeImage(index)}
+            className="absolute top-1 right-1 bg-red-500 text-white px-2 rounded"
           >
-            {uploading ? "Загрузка..." : "Загрузить фото"}
+            ✕
           </button>
-
-          {imageUrl && (
-            <div className="mt-3">
-              <img
-                src={imageUrl}
-                className="w-full h-64 object-cover rounded-xl border"
-              />
-
-              <p className="text-green-600 text-sm mt-2">
-                Фото загружено ✓
-              </p>
-            </div>
-          )}
-
         </div>
+      ) : (
+        <label className="cursor-pointer block h-28 border-2 border-dashed rounded-lg items-center justify-center">
+          + Фото
+          <input
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={(e) =>
+              handleImageSelect(e, index)
+            }
+          />
+        </label>
+      )}
+
+      <div className="text-xs mt-2">
+        Фото {index + 1}
+      </div>
+    </div>
+  ))}
+</div>
 
         <button
-          disabled={loading}
-          className="w-full bg-green-600 text-white py-3 rounded-xl"
-        >
-          {loading ? "Создание..." : "Создать объявление"}
-        </button>
+  disabled={loading}
+  className="w-full bg-green-600 text-white py-3 rounded-xl"
+>
+  {loading ? "Загружаем фото и создаём объявление..." : "Создать объявление"}
+</button>
 
       </form>
     </div>

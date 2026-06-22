@@ -23,7 +23,12 @@ export const getListingById = (id) =>
   api.get(`/listings/${id}`);
 
 export const createListing = (data) =>
-  api.post("/listings", data);
+  api.post("/listings", data, {
+    headers: {
+      "Content-Type": "multipart/form-data"
+    }
+  });
+
 
 export const deleteListing = (id) =>
   api.delete(`/listings/${id}`);

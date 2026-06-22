@@ -1,6 +1,7 @@
 import Listing from "../models/Listing.js";
 import { createNotification } from "../utils/createNotification.js";
 import User from "../models/User.js";
+import cloudinary from "../config/cloudinary.js";
 // CREATE LISTING
 export const createListing = async (req, res) => {
   try {
@@ -11,7 +12,25 @@ if (user?.isBlocked) {
     message: "Ваш аккаунт заблокирован. Размещение объявлений недоступно."
   });
 }
-    const { title, description, price, region, city, category, images, condition, sellerType  } = req.body;
+    const { title, description, price, region, city, category, condition, sellerType  } = req.body;
+
+    const imageUrls = [];
+
+if (req.files?.length) {
+  for (const file of req.files) {
+    const uploaded = await new Promise((resolve, reject) => {
+      cloudinary.uploader.upload_stream(
+        { folder: "listings" },
+        (err, result) => {
+          if (err) reject(err);
+          else resolve(result);
+        }
+      ).end(file.buffer);
+    });
+
+    imageUrls.push(uploaded.secure_url);
+  }
+}
 
     const listing = await Listing.create({
       title,
@@ -20,7 +39,7 @@ if (user?.isBlocked) {
       region,
       city,
       category,
-      images,
+      images: imageUrls, 
       condition: condition || "used",
       sellerType: sellerType || "private",
       user: req.user._id,
@@ -33,6 +52,7 @@ await createNotification(
 );
     res.status(201).json(listing);
   } catch (error) {
+    console.error("CREATE LISTING ERROR:", error);
     res.status(500).json({
       message: error.message
     });
