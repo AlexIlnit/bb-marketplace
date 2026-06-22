@@ -324,7 +324,7 @@ const handleAvatarUpload = async () => {
     </div>
     {editItem && (
   <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-    <div className="bg-white p-6 rounded-xl w-[420px] max-h-[90vh] overflow-auto">
+    <div className="bg-white p-6 rounded-xl w-105 max-h-[90vh] overflow-auto">
 
       <h2 className="text-xl font-bold mb-4">
         Редактировать объявление
@@ -428,7 +428,7 @@ const handleAvatarUpload = async () => {
 {deleteItem && (
   <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
 
-    <div className="bg-white p-6 rounded-xl w-[360px]">
+    <div className="bg-white p-6 rounded-xl w-90">
 
       <h2 className="text-xl font-bold mb-2">
         Удалить объявление?

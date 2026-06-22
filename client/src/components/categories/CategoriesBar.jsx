@@ -26,9 +26,9 @@ function CategoriesBar() {
             aria-pressed={!activeCategory}
             onClick={() => setCategory("")}
             className={`
-              flex-shrink-0
+              shrink-0
               w-28
-              aspect-[3/2]
+              aspect-3/2
               rounded-xl
               overflow-hidden
               relative
@@ -55,9 +55,9 @@ function CategoriesBar() {
                   setCategory(isActive ? "" : cat.slug)
                 }
                 className={`
-                  flex-shrink-0
+                  shrink-0
                   w-28
-                  aspect-[3/2]
+                  aspect-3/2
                   rounded-xl
                   overflow-hidden
                   relative

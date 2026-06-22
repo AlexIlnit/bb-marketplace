@@ -177,7 +177,7 @@ useEffect(() => {
               </h1>
             </Link>
 
-            <div className="hidden md:flex items-center bg-gray-100 px-4 rounded-xl w-[450px]">
+            <div className="hidden md:flex items-center bg-gray-100 px-4 rounded-xl w-112.5">
               <Search
   size={18}
   className="cursor-pointer"
@@ -342,7 +342,7 @@ useEffect(() => {
       className="bg-white rounded-2xl p-6 w-full max-w-lg max-h-[85vh] flex flex-col min-h-0"
     >
       {/* ФИКСИРОВАННАЯ ВЕРХНЯЯ ЧАСТЬ */}
-      <div className="flex-shrink-0">
+      <div className="shrink-0">
         {/* HEADER */}
         <h2 className="text-xl font-bold mb-2">
           Выбор региона
@@ -387,7 +387,7 @@ useEffect(() => {
       {/* СКРОЛЛИРУЕМЫЙ СПИСОК ГОРODОВ */}
       {selectedRegion !== "Все города" && (
         /* flex-1 и overflow-y-auto теперь работают корректно внутри min-h-0 */
-        <div className="flex-1 overflow-y-auto space-y-2 pr-1 min-h-[100px]">
+        <div className="flex-1 overflow-y-auto space-y-2 pr-1 min-h-25">
           {citiesToShow
             .filter((c) =>
               c.toLowerCase().includes(citySearch.toLowerCase())
@@ -410,7 +410,7 @@ useEffect(() => {
       )}
 
       {/* ФИКСИРОВАННАЯ НИЖНЯЯ ЧАСТЬ С КНОПКАМИ */}
-      <div className="flex-shrink-0 pt-4 mt-4 border-t border-gray-100 flex gap-3">
+      <div className="shrink-0 pt-4 mt-4 border-t border-gray-100 flex gap-3">
         {/* APPLY */}
         <button
           onClick={() => {

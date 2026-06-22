@@ -54,7 +54,7 @@ const imageUrl = listing.images?.[0]
           color={isFavorite ? "red" : "black"}
         />
       </button>
-<div className="aspect-[3/2] relative overflow-hidden">
+<div className="aspect-3/2 relative overflow-hidden">
 <img
   src={imageUrl}
 srcSet={`
