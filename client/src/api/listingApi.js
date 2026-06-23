@@ -11,8 +11,6 @@ export const getListings = (params) => {
     params: cleanParams
   });
 };
-// export const getListings = (params) =>
-//   api.get("/listings", { params });
 
 // получить ВСЕ объявления (для админки)
 export const getAllListings = () => {
@@ -41,3 +39,8 @@ export const updateListing = (
     `/listings/${id}`,
     data
   );
+
+  export const getListingsCount = (params) =>
+  api.get("/listings/count", {
+    params,
+  });

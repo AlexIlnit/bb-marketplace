@@ -48,7 +48,6 @@ router.delete("/users/:id", adminOnly, async (req, res) => {
 });
 
 router.patch("/users/:id/block", adminOnly, async (req, res) => {
-  // console.log("BLOCK REQUEST HIT:", req.params.id);
   try {
     const user = await User.findById(req.params.id);
 
@@ -92,12 +91,6 @@ router.patch("/listings/:id/approve", adminOnly, async (req, res) => {
 
     listing.status = "approved";
     await listing.save();
-
-    // await createNotification(
-    //   listing.user,
-    //   "Ваше объявление опубликовано ✅",
-    //   "success"
-    // );
     const userId = listing.user._id || listing.user;
 
 await createNotification(

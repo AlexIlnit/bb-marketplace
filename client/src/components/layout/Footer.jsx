@@ -12,7 +12,7 @@ export default function Footer() {
               BB Market
             </h3>
 
-            <p className="text-sm">
+            <p className="text-white text-sm">
               Площадка для покупки и продажи товаров,
               автомобилей, недвижимости и услуг.
             </p>

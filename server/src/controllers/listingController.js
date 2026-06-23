@@ -233,3 +233,37 @@ if (user?.isBlocked) {
     res.status(500).json({ message: error.message });
   }
 };
+export const getListingsCount = async (req, res) => {
+  try {
+    const filter = {
+      status: "approved",
+    };
+
+    const city = req.query.city;
+    const region = req.query.region;
+
+    if (
+      city &&
+      city !== "Вся Беларусь" &&
+      city !== "Все города" &&
+      city !== "Все области"
+    ) {
+      filter.city = city;
+    } else if (
+      region &&
+      region !== "Вся Беларусь" &&
+      region !== "Все области" &&
+      region !== "Все города"
+    ) {
+      filter.region = region;
+    }
+
+    const total = await Listing.countDocuments(filter);
+
+    res.json({ total });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};

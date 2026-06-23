@@ -4,7 +4,8 @@ import {
   getListingById,
   createListing,
   deleteListing,
-  updateListing
+  updateListing,
+  getListingsCount
 } from "../controllers/listingController.js";
 
 import { authMiddleware } from "../middleware/auth.js";
@@ -12,7 +13,7 @@ import { upload } from "../middleware/upload.js";
 import { uploadImage } from "../controllers/uploadController.js";
 
 const router = express.Router();
-
+router.get("/count", getListingsCount);
 router.get("/", getListings);
 router.get("/:id", getListingById);
 

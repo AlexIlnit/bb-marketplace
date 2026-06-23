@@ -14,6 +14,7 @@ import { useAuthStore } from "../../store/authStore";
 import { useNotificationStore } from "../../store/notificationStore.js";
 import { cities } from "../../data/cities";
 import { regions } from "../../data/regions";
+import { getListingsCount} from "../../api/listingApi";
 
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -163,6 +164,23 @@ useEffect(() => {
   { to: "/profile", label: "Профиль", auth: true },
   { to: "/admin", label: "Админ", role: "admin" }
 ];
+const [adsCount, setAdsCount] = useState(0);
+useEffect(() => {
+  const loadCount = async () => {
+    try {
+      const { data } = await getListingsCount({
+        city: selectedCity,
+        region: selectedRegion,
+      });
+
+      setAdsCount(data.total);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  loadCount();
+}, [selectedCity, selectedRegion]);
 
   return (
     <>
@@ -426,7 +444,7 @@ useEffect(() => {
           }}
           className="flex-1 bg-green-600 text-white py-3 rounded-xl font-medium"
         >
-          Показать объявления
+          Показать объявления ({adsCount})
         </button>
 
         {/* RESET */}
