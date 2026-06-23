@@ -148,173 +148,243 @@ const availableCities = region
         Создать объявление
       </h1>
 
-      <form onSubmit={submit} className="space-y-4">
+      <form onSubmit={submit} className="space-y-6">
 
-        <input
-          name="title"
-          placeholder="Название"
-          className="w-full p-3 border rounded-xl"
-          onChange={handleChange}
-        />
+  {/* 1. Название */}
+  <div className="bg-white border rounded-2xl p-6">
+    <h2 className="font-semibold text-lg mb-4">
+      1. Название объявления *
+    </h2>
 
-        <textarea
-          name="description"
-          placeholder="Описание"
-          className="w-full p-3 border rounded-xl"
-          onChange={handleChange}
-        />
+    <input
+      name="title"
+      value={form.title}
+      onChange={handleChange}
+      placeholder="Например: iPhone 15 Pro 256GB"
+      maxLength={50}
+      className="w-full p-3 border rounded-xl"
+    />
+<p className="text-sm text-gray-500 mt-2">
+  {form.title.length}/50 символов
+</p>
+    
+  </div>
 
-        <input
-          name="price"
-          placeholder="Цена"
-          className="w-full p-3 border rounded-xl"
-          onChange={handleChange}
-        />
+  {/* 2. Категория */}
+  <div className="bg-white border rounded-2xl p-6">
+    <h2 className="font-semibold text-lg mb-4">
+      2. Категория
+    </h2>
 
-        <div className="space-y-4">
-
-  <select
-    value={region}
-    onChange={(e) => {
-      setRegion(e.target.value);
-      setCity("");
-    }}
-    className="w-full border rounded-xl p-3"
-  >
-    <option value="">
-      Выберите область
-    </option>
-
-    {Object.keys(regions).map((regionName) => (
-      <option
-        key={regionName}
-        value={regionName}
-      >
-        {regionName}
-      </option>
-    ))}
-  </select>
-
-  <select
-    value={city}
-    onChange={(e) => setCity(e.target.value)}
-    disabled={!region}
-    className="w-full border rounded-xl p-3"
-  >
-    <option value="">
-      Выберите город
-    </option>
-
-    {availableCities.map((cityName) => (
-      <option
-        key={cityName}
-        value={cityName}
-      >
-        {cityName}
-      </option>
-    ))}
-  </select>
-
-</div>
-
-        {/* CATEGORY SELECT */}
-        <select
-          name="category"
-          value={form.category}
-          onChange={handleChange}
-          className="w-full p-3 border rounded-xl"
-        >
-          <option value="">
-            Выберите категорию
-          </option>
-
-          {categories.map((cat) => (
-            <option
-              key={cat._id}
-              value={cat.slug}
-            >
-              {cat.name}
-            </option>
-          ))}
-        </select>
-
-        <select
-  name="condition"
-  value={form.condition}
-  onChange={handleChange}
-  className="w-full p-3 border rounded-xl"
->
-  <option value="used">Б/У</option>
-  <option value="new">Новое</option>
-</select>
-
-<select
-  name="sellerType"
-  value={form.sellerType}
-  onChange={handleChange}
-  className="w-full p-3 border rounded-xl"
->
-  <option value="private">
-    Частное лицо
-  </option>
-
-  <option value="company">
-    Компания
-  </option>
-</select>
-
-        {/* IMAGE UPLOAD */}
-       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-        
-  {Array.from({ length: MAX_IMAGES }).map((_, index) => (
-    <div
-      key={index}
-      className="border rounded-xl p-2 text-center"
+    <select
+      name="category"
+      value={form.category}
+      onChange={handleChange}
+      className="w-full p-3 border rounded-xl"
     >
-      {previews[index] ? (
-        <div className="relative">
-          <img
-            src={previews[index].url}
-            className="w-full h-28 object-cover rounded-lg"
-          />
+      <option value="">
+        Выберите категорию
+      </option>
 
-          <button
-            type="button"
-            onClick={() => removeImage(index)}
-            className="absolute top-1 right-1 bg-red-500 text-white px-2 rounded"
-          >
-            ✕
-          </button>
+      {categories.map((cat) => (
+        <option
+          key={cat._id}
+          value={cat.slug}
+        >
+          {cat.name}
+        </option>
+      ))}
+    </select>
+  </div>
+
+  {/* 3. Описание */}
+  <div className="bg-white border rounded-2xl p-6">
+    <h2 className="font-semibold text-lg mb-4">
+      3. Описание
+    </h2>
+
+    <textarea
+      name="description"
+      value={form.description}
+      onChange={handleChange}
+      rows={8}
+      placeholder="Опишите товар максимально подробно"
+      maxLength={4000}
+      className="w-full p-3 border rounded-xl"
+    />
+
+    <p className="text-sm text-gray-500 mt-2">
+  {form.description.length}/4000 символов
+</p>
+  </div>
+
+  {/* 4. Фото */}
+  <div className="bg-white border rounded-2xl p-6">
+    <h2 className="font-semibold text-lg mb-4">
+      4. Фотографии
+    </h2>
+
+    <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+      {Array.from({ length: MAX_IMAGES }).map((_, index) => (
+        <div
+          key={index}
+          className="border rounded-xl p-2 text-center"
+        >
+          {previews[index] ? (
+            <div className="relative">
+              <img
+                src={previews[index].url}
+                className="w-full h-28 object-cover rounded-lg"
+              />
+
+              <button
+                type="button"
+                onClick={() => removeImage(index)}
+                className="absolute top-1 right-1 bg-red-500 text-white px-2 rounded"
+              >
+                ✕
+              </button>
+            </div>
+          ) : (
+            <label className="cursor-pointer flex items-center justify-center h-28 border-2 border-dashed rounded-lg">
+              + Фото
+
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) =>
+                  handleImageSelect(e, index)
+                }
+              />
+            </label>
+          )}
+
+          <div className="text-xs mt-2">
+            Фото {index + 1}
+          </div>
         </div>
-      ) : (
-        <label className="cursor-pointer block h-28 border-2 border-dashed rounded-lg items-center justify-center">
-          + Фото
-          <input
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={(e) =>
-              handleImageSelect(e, index)
-            }
-          />
-        </label>
-      )}
-
-      <div className="text-xs mt-2">
-        Фото {index + 1}
-      </div>
+      ))}
     </div>
-  ))}
-</div>
+  </div>
 
-        <button
-  disabled={loading}
-  className="w-full bg-green-600 text-white py-3 rounded-xl"
->
-  {loading ? "Загружаем фото и создаём объявление..." : "Создать объявление"}
-</button>
+  {/* 5. Цена */}
+  <div className="bg-white border rounded-2xl p-6">
+    <h2 className="font-semibold text-lg mb-4">
+      5. Цена
+    </h2>
 
-      </form>
+    <input
+      name="price"
+      value={form.price}
+      onChange={handleChange}
+      placeholder="Введите цену"
+      className="w-full p-3 border rounded-xl"
+    />
+  </div>
+
+  {/* 6. Местоположение */}
+  <div className="bg-white border rounded-2xl p-6">
+    <h2 className="font-semibold text-lg mb-4">
+      6. Местоположение
+    </h2>
+
+    <div className="space-y-4">
+      <select
+        value={region}
+        onChange={(e) => {
+          setRegion(e.target.value);
+          setCity("");
+        }}
+        className="w-full p-3 border rounded-xl"
+      >
+        <option value="">
+          Выберите область
+        </option>
+
+        {Object.keys(regions).map((regionName) => (
+          <option
+            key={regionName}
+            value={regionName}
+          >
+            {regionName}
+          </option>
+        ))}
+      </select>
+
+      <select
+        value={city}
+        onChange={(e) => setCity(e.target.value)}
+        disabled={!region}
+        className="w-full p-3 border rounded-xl"
+      >
+        <option value="">
+          Выберите город
+        </option>
+
+        {availableCities.map((cityName) => (
+          <option
+            key={cityName}
+            value={cityName}
+          >
+            {cityName}
+          </option>
+        ))}
+      </select>
+    </div>
+  </div>
+
+  {/* 7. О продавце */}
+  <div className="bg-white border rounded-2xl p-6">
+    <h2 className="font-semibold text-lg mb-4">
+      7. О продавце
+    </h2>
+
+    <div className="space-y-4">
+
+      <div>
+        <label className="block text-sm mb-2">
+          Имя
+        </label>
+
+        <input
+          type="text"
+          value={user?.name || ""}
+          className="w-full p-3 border rounded-xl"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm mb-2">
+          Телефон
+        </label>
+
+        <input
+          type="tel"
+          placeholder="+375 ..."
+          className="w-full p-3 border rounded-xl"
+        />
+      </div>
+
+    </div>
+  </div>
+
+  {/* Кнопка */}
+  <button
+    disabled={loading}
+    className="w-full bg-green-600 hover:bg-green-700 text-white py-4 rounded-2xl font-semibold"
+  >
+    {loading
+      ? "Публикация объявления..."
+      : "Подать объявление"}
+  </button>
+
+  <p className="text-center text-sm text-gray-500">
+    Публикуя объявление, вы соглашаетесь
+    с условиями Пользовательского соглашения
+  </p>
+
+</form>
     </div>
     </MainLayout> 
   );

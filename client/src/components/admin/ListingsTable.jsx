@@ -3,6 +3,7 @@ import {
   rejectListing,
   deleteListing,
 } from "../../api/adminApi";
+import  AdminImageSlider from "./AdminImageSlider";
 
 export default function ListingsTable({
   listings,
@@ -65,19 +66,14 @@ export default function ListingsTable({
         >
           {/* Фото */}
           <div className="relative">
-            <img
-              src={
-                l.images?.[0] ||
-                "https://via.placeholder.com/400x250?text=No+Photo"
-              }
-              alt={l.title}
-              className="w-full h-32 object-cover"
-            />
+  <div className="h-40">
+    <AdminImageSlider images={l.images} />
+  </div>
 
-            <div className="absolute top-2 right-2">
-              {getStatusBadge(l.status)}
-            </div>
-          </div>
+  <div className="absolute top-2 right-2">
+    {getStatusBadge(l.status)}
+  </div>
+</div>
 
           {/* Контент */}
           <div className="p-3">

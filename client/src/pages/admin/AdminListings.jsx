@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getAllListings, deleteListing } from "../../api/listingApi";
+import AdminImageSlider from "../../components/pages/admin/AdminImageSlider";
 
 export default function AdminListings() {
   const [listings, setListings] = useState([]);
@@ -25,7 +26,7 @@ export default function AdminListings() {
       </h1>
 
       <div className="bg-white rounded-xl shadow overflow-x-auto">
-  <table className="w-full min-w-[1000px]">
+  <table className="w-full min-w-250">
     <thead className="bg-gray-100">
       <tr>
         <th className="p-3 text-left">Фото</th>
@@ -47,18 +48,17 @@ export default function AdminListings() {
           className="border-t hover:bg-gray-50"
         >
           <td className="p-3">
-            <img
-              src={l.images?.[0]}
-              alt={l.title}
-              className="
-                w-20
-                h-20
-                rounded-lg
-                object-cover
-                bg-gray-100
-              "
-            />
-          </td>
+  <div className="flex gap-1 flex-wrap">
+    {l.images?.map((img, index) => (
+      <img
+        key={index}
+        src={img}
+        alt=""
+        className="w-12 h-12 object-cover rounded"
+      />
+    ))}
+  </div>
+</td>
 
           <td className="p-3 font-medium">
             {l.title}
