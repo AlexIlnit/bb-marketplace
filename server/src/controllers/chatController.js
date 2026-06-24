@@ -5,7 +5,9 @@ export const getConversations = async (req, res) => {
   try {
     const conversations = await Conversation.find({
       members: req.user._id,
-    });
+    })
+      .populate("members", "name avatar")
+      .sort({ updatedAt: -1 });
 
     res.json(conversations);
   } catch (err) {
@@ -19,15 +21,22 @@ export const sendMessage = async (req, res) => {
   try {
     const { conversationId, text } = req.body;
 
+    // 1. создаём сообщение
     const message = await Message.create({
       conversationId,
       text,
       senderId: req.user._id,
     });
 
+    // 2. обновляем диалог (ВАЖНО СРАЗУ ПОСЛЕ СООБЩЕНИЯ)
+    await Conversation.findByIdAndUpdate(conversationId, {
+      lastMessage: text,
+      updatedAt: new Date(),
+    });
+
+    // 3. возвращаем сообщение
     res.json(message);
   } catch (err) {
-    console.log(err);
     res.status(500).json({ message: err.message });
   }
 };
@@ -36,7 +45,9 @@ export const getMessages = async (req, res) => {
   try {
     const messages = await Message.find({
       conversationId: req.params.id,
-    }).sort({ createdAt: 1 });
+    })
+    .populate("senderId", "name")
+    .sort({ createdAt: 1 });
 
     res.json(messages);
   } catch (err) {

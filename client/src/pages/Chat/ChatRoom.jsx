@@ -60,6 +60,7 @@ export default function ChatRoom() {
       console.log("SEND ERROR:", err);
     }
   };
+  
 
   // ⛔ важно: НЕ блокируем UI вообще
   if (!id) {
@@ -78,25 +79,42 @@ export default function ChatRoom() {
           <p className="text-gray-400 text-center">Нет сообщений</p>
         ) : (
           messages.map((m) => {
-            const isMe =  String(m.senderId) === String(user?._id);
+  const isMe = m.senderId._id === user?._id;
 
-            return (
-              <div
-                key={m._id}
-                className={`flex ${isMe ? "justify-end" : "justify-start"}`}
-              >
-                <div
-                  className={`px-3 py-2 rounded-xl max-w-[70%] text-sm ${
-                    isMe
-                      ? "bg-green-600 text-white"
-                      : "bg-gray-100"
-                  }`}
-                >
-                  {m.text}
-                </div>
-              </div>
-            );
-          })
+  return (
+    <div
+      key={m._id}
+      className={`flex ${isMe ? "justify-end" : "justify-start"}`}
+    >
+      <div className="max-w-[70%]">
+
+        {/* 👤 имя сверху */}
+        <div
+          className={`text-xs mb-1 ${
+            isMe ? "text-right" : "text-left"
+          } text-gray-500`}
+        >
+          {m.senderId.name}
+        </div>
+
+        {/* 💬 сообщение */}
+        <div
+          className={`
+            px-3 py-2 rounded-xl text-sm
+            ${
+              isMe
+                ? "bg-green-600 text-white"
+                : "bg-gray-100 text-black"
+            }
+          `}
+        >
+          {m.text}
+        </div>
+
+      </div>
+    </div>
+  );
+})
         )}
 
         <div ref={bottomRef} />

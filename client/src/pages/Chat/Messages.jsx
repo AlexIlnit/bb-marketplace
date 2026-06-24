@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getConversations } from "../../api/chatApi";
+import { useAuthStore } from "../../store/authStore";
 
 export default function Messages() {
+  const user = useAuthStore((s) => s.user);
   const [conversations, setConversations] = useState([]);
-
+    
   useEffect(() => {
     loadConversations();
   }, []);
@@ -28,15 +30,23 @@ export default function Messages() {
         <p>Диалогов пока нет</p>
       ) : (
         <div className="space-y-3">
-          {conversations.map((conv) => (
-            <Link
-              key={conv._id}
-              to={`/chat/${conv._id}`}
-              className="block border rounded-xl p-4 hover:bg-gray-50"
-            >
-              Диалог #{conv._id.slice(-6)}
-            </Link>
-          ))}
+          {conversations.map((conv) => {
+  const otherUser = conv.members.find(
+    (m) => String(m._id) !== String(user._id)
+  );
+
+  return (
+    <Link
+      key={conv._id}
+      to={`/chat/${conv._id}`}
+      className="block border rounded-xl p-4 hover:bg-gray-50"
+    >
+      <div className="font-semibold">
+        {otherUser?.name}
+      </div>
+    </Link>
+  );
+})}
         </div>
       )}
     </div>
