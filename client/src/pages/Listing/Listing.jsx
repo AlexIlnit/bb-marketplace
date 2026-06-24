@@ -3,11 +3,15 @@ import { useParams } from "react-router-dom";
 import { getListingById } from "../../api/listingApi";
 import MainLayout from "../../layouts/MainLayout";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import api from "../../api/axios";
 
 import SEO from "../../components/seo/Seo";
 
 export default function Listing() {
   const { id } = useParams();
+
+  const navigate = useNavigate();
 
   const [listing, setListing] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -155,19 +159,30 @@ const images = listing.images || [];
 
           </div>
 
-          <button
-            className="
-              mt-8
-              w-full
-              bg-green-600
-              text-white
-              py-3
-              rounded-xl
-              font-semibold
-            "
-          >
-            Написать продавцу
-          </button>
+         <button
+  onClick={async () => {
+    try {
+      const { data } = await api.post("/chat/conversation", {
+        userId: listing.user._id,
+      });
+
+      navigate(`/chat/${data._id}`);
+    } catch (err) {
+      console.error(err);
+    }
+  }}
+  className="
+    mt-8
+    w-full
+    bg-green-600
+    text-white
+    py-3
+    rounded-xl
+    font-semibold
+  "
+>
+  Написать продавцу
+</button>
 <Link
   to={`/user/${listing.user?._id}`}
   className="

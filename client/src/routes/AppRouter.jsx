@@ -9,6 +9,7 @@ import AdminRoute from "./AdminRoute";
 // Главные страницы импортируем СИНХРОННО. Браузер отобразит их контент и картинки мгновенно!
 import Home from "../pages/Home/Home";
 import Listing from "../pages/Listing/Listing";
+import Messages from "../pages/Chat/Messages";
 
 // 💤 ЛЕНИВЫЕ СТРАНИЦЫ (оставляем lazy, они не влияют на первую загрузку сайта):
 const Login = lazy(() => import("../pages/Login/Login"));
@@ -17,6 +18,9 @@ const CreateListing = lazy(() => import("../pages/CreateListing/CreateListing"))
 const Profile = lazy(() => import("../pages/Profile/Profile"));
 const Favorites = lazy(() => import("../pages/Favorites/Favorites"));
 const UserProfile = lazy(() => import("../pages/UserProfile/UserProfile"));
+const ChatList = lazy(() => import("../pages/Chat/ChatList"));
+const ChatRoom = lazy(() => import("../pages/Chat/ChatRoom"));
+const ChatPage = lazy(() => import("../pages/Chat/ChatPage"));
 
 // Админка (lazy — идеальное решение для тяжелых панелей управления)
 const AdminDashboard = lazy(() => import("../pages/admin/AdminDashboard"));
@@ -79,6 +83,9 @@ export default function AppRouter() {
           }
         />
 
+        <Route path="/chat" element={<ProtectedRoute><ChatPage /></ProtectedRoute>} />
+        <Route path="/chat/:id" element={<ProtectedRoute><ChatRoom /></ProtectedRoute>} />
+
         <Route
           path="/admin"
           element={
@@ -96,6 +103,8 @@ export default function AppRouter() {
             </AdminRoute>
           }
         />
+
+        <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
 
         <Route
           path="/admin/users"

@@ -236,6 +236,10 @@ useEffect(() => {
               <Heart className="cursor-pointer" />
             </Link>
 
+<Link to="/messages">
+  Сообщения
+</Link>
+
             {/* 🔔 NOTIFICATIONS */}
             {user && (
               <div className="relative" ref={dropdownRef}>

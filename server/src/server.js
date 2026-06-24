@@ -7,6 +7,7 @@ import { connectDB } from "./config/db.js";
 import { seedCategories } from "./seeds/categorySeed.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
+import chatRoutes from "./routes/chatRoutes.js";
 
 const PORT = process.env.PORT;
 
@@ -20,6 +21,8 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/favorites", favoriteRoutes);
 
 app.use("/api/notifications",notificationRoutes);
+
+app.use("/api/chat", chatRoutes);
 
 const server = http.createServer(app);
 
