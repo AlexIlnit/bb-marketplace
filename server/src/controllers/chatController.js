@@ -46,7 +46,7 @@ export const getMessages = async (req, res) => {
     const messages = await Message.find({
       conversationId: req.params.id,
     })
-    .populate("senderId", "name")
+    .populate("senderId", "name avatar _id")
     .sort({ createdAt: 1 });
 
     res.json(messages);

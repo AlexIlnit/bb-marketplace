@@ -3,12 +3,14 @@ import User from "../models/User.js";
 import Listing from "../models/Listing.js";
 import { adminOnly } from "../middleware/adminMiddleware.js";
 import { createNotification } from "../utils/createNotification.js";
+import { authMiddleware } from "../middleware/auth.js";
+import bcrypt from "bcryptjs";
 
 const router = express.Router();
 
 /* ================= USERS ================= */
 
-router.get("/users", adminOnly, async (req, res) => {
+router.get("/users", authMiddleware, adminOnly, async (req, res) => {
   try {
     const users = await User.aggregate([
       {
@@ -42,12 +44,12 @@ router.get("/users", adminOnly, async (req, res) => {
 });
 
 
-router.delete("/users/:id", adminOnly, async (req, res) => {
+router.delete("/users/:id", authMiddleware, adminOnly, async (req, res) => {
   await User.findByIdAndDelete(req.params.id);
   res.json({ success: true });
 });
 
-router.patch("/users/:id/block", adminOnly, async (req, res) => {
+router.patch("/users/:id/block", authMiddleware, adminOnly, async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
 
@@ -72,7 +74,7 @@ router.patch("/users/:id/block", adminOnly, async (req, res) => {
 
 /* ================= LISTINGS ================= */
 
-router.get("/listings", adminOnly, async (req, res) => {
+router.get("/listings", authMiddleware, adminOnly, async (req, res) => {
   const listings = await Listing.find()
     .populate("user")
     .populate("category", "name slug") // 👈 ДОБАВИТЬ
@@ -81,7 +83,7 @@ router.get("/listings", adminOnly, async (req, res) => {
   res.json(listings);
 });
 
-router.patch("/listings/:id/approve", adminOnly, async (req, res) => {
+router.patch("/listings/:id/approve", authMiddleware, adminOnly, async (req, res) => {
   try {
     const listing = await Listing.findById(req.params.id);
 
@@ -107,7 +109,7 @@ await createNotification(
   }
 });
 
-router.patch("/listings/:id/reject", adminOnly, async (req, res) => {
+router.patch("/listings/:id/reject", authMiddleware, adminOnly, async (req, res) => {
   try {
     const listing = await Listing.findById(req.params.id);
 
@@ -131,11 +133,41 @@ router.patch("/listings/:id/reject", adminOnly, async (req, res) => {
   }
 });
 
-router.delete("/listings/:id", adminOnly, async (req, res) => {
+router.delete("/listings/:id", authMiddleware, adminOnly, async (req, res) => {
   await Listing.findByIdAndDelete(req.params.id);
   res.json({ success: true });
 });
 
+router.put("/me/avatar", authMiddleware, adminOnly, async (req, res) => {
+  try {
+    const { avatar } = req.body;
+
+    const user = await User.findByIdAndUpdate(
+      req.user._id,
+      { avatar },
+      { new: true }
+    ).select("-password");
+
+    res.json(user);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+router.put("/me/password", authMiddleware, adminOnly, async (req, res) => {
+  try {
+    const { password } = req.body;
+
+    const hash = await bcrypt.hash(password, 10);
+
+    await User.findByIdAndUpdate(req.user._id, {
+      password: hash,
+    });
+
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
 
 
 export default router;

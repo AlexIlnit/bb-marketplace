@@ -3,6 +3,7 @@ import { getAdminUsers, getAdminListings } from "../../api/adminApi";
 import ListingsTable from "../../components/admin/ListingsTable";
 import UsersTable from "../../components/admin/UsersTable";
 import MainLayout from "../../layouts/MainLayout";
+import AdminSettings from "./AdminSettings";
 
 export default function AdminDashboard() {
   const [tab, setTab] = useState("listings");
@@ -51,6 +52,14 @@ export default function AdminDashboard() {
           >
             Пользователи
           </button>
+          <button
+  onClick={() => setTab("settings")}
+  className={`px-4 py-2 rounded-xl ${
+    tab === "settings" ? "bg-green-600 text-white" : "bg-white"
+  }`}
+>
+  Настройки
+</button>
         </div>
 
         {/* LISTINGS SECTION */}
@@ -111,6 +120,10 @@ export default function AdminDashboard() {
         {tab === "users" && (
           <UsersTable users={users} setUsers={setUsers} reload={loadData} />
         )}
+
+        {tab === "settings" && (
+  <AdminSettings />
+)}
       </div>
     </MainLayout>
   );

@@ -79,39 +79,61 @@ export default function ChatRoom() {
           <p className="text-gray-400 text-center">Нет сообщений</p>
         ) : (
           messages.map((m) => {
-  const isMe = m.senderId._id === user?._id;
+  const isObject = typeof m.senderId === "object";
+
+  const senderId = isObject ? m.senderId._id : m.senderId;
+  const senderName = isObject ? m.senderId.name : "User";
+  const senderAvatar = isObject ? m.senderId.avatar : null;
+
+  const isMe = senderId === user?._id;
 
   return (
     <div
       key={m._id}
-      className={`flex ${isMe ? "justify-end" : "justify-start"}`}
+      className={`flex items-end gap-2 ${
+        isMe ? "justify-end" : "justify-start"
+      }`}
     >
-      <div className="max-w-[70%]">
 
-        {/* 👤 имя сверху */}
+      {/* 👤 AVATAR LEFT */}
+      {!isMe && (
+        <img
+          src={senderAvatar || "/default-avatar.png"}
+          className="w-8 h-8 rounded-full object-cover"
+        />
+      )}
+
+      {/* 💬 MESSAGE BLOCK */}
+      <div className={`flex flex-col max-w-[70%]`}>
+        
+        {/* NAME */}
         <div
-          className={`text-xs mb-1 ${
+          className={`text-xs mb-1 text-gray-500 ${
             isMe ? "text-right" : "text-left"
-          } text-gray-500`}
+          }`}
         >
-          {m.senderId.name}
+          {senderName}
         </div>
 
-        {/* 💬 сообщение */}
+        {/* BUBBLE */}
         <div
-          className={`
-            px-3 py-2 rounded-xl text-sm
-            ${
-              isMe
-                ? "bg-green-600 text-white"
-                : "bg-gray-100 text-black"
-            }
-          `}
+          className={`px-3 py-2 rounded-2xl text-sm break-words shadow-sm ${
+            isMe
+              ? "bg-green-600 text-white rounded-br-sm"
+              : "bg-gray-100 text-black rounded-bl-sm"
+          }`}
         >
           {m.text}
         </div>
-
       </div>
+
+      {/* 👤 AVATAR RIGHT */}
+      {isMe && (
+        <img
+          src={user?.avatar || "/default-avatar.png"}
+          className="w-8 h-8 rounded-full object-cover"
+        />
+      )}
     </div>
   );
 })

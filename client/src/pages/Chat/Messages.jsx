@@ -36,13 +36,33 @@ export default function Messages() {
   );
 
   return (
-    <Link
-      key={conv._id}
-      to={`/chat/${conv._id}`}
-      className="block border rounded-xl p-4 hover:bg-gray-50"
-    >
-      <div className="font-semibold">
-        {otherUser?.name}
+    <Link key={conv._id} to={`/chat/${conv._id}`}>
+      <div className="flex items-center gap-3 p-3 hover:bg-gray-100 rounded-xl">
+
+        {/* avatar */}
+        <div className="w-10 h-10 bg-gray-300 rounded-full" />
+
+        <div className="flex-1">
+
+          <div className="flex justify-between">
+            <p className="font-medium">
+              {otherUser?.name}
+            </p>
+
+            {/* unread badge */}
+            {conv.unreadCount > 0 && (
+              <span className="bg-green-600 text-white text-xs px-2 rounded-full">
+                {conv.unreadCount}
+              </span>
+            )}
+          </div>
+
+          {/* preview */}
+          <p className="text-sm text-gray-500 truncate">
+            {conv.lastMessage}
+          </p>
+
+        </div>
       </div>
     </Link>
   );
