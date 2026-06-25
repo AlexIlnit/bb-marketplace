@@ -3,7 +3,8 @@ import {
   User,
   Menu,
   Search,
-  LogOut
+  LogOut,
+  MessageCircle
 } from "lucide-react";
 
 import { useRef, useState, useEffect } from "react";
@@ -236,8 +237,16 @@ useEffect(() => {
               <Heart className="cursor-pointer" />
             </Link>
 
-<Link to="/messages">
-  Сообщения
+<Link
+  to="/messages"
+  className="relative flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 transition"
+>
+  <MessageCircle className="cursor-pointer" />
+
+  {/* badge */}
+  {/* <span className="absolute -top-1 -right-1 bg-green-600 text-white text-[10px] px-1.5 rounded-full">
+    3
+  </span> */}
 </Link>
 
             {/* 🔔 NOTIFICATIONS */}

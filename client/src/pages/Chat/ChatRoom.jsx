@@ -9,7 +9,7 @@ export default function ChatRoom({ chatId }) {
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(true);
 
-  const bottomRef = useRef(null);
+  const chatRef = useRef(null); // 👈 ВАЖНО
 
   const loadMessages = async () => {
     try {
@@ -30,20 +30,33 @@ export default function ChatRoom({ chatId }) {
     })();
   }, [chatId]);
 
+  // ✅ СТАБИЛЬНЫЙ СКРОЛЛ (без дерганий)
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    const el = chatRef.current;
+    if (!el) return;
+
+    el.scrollTop = el.scrollHeight;
   }, [messages]);
 
   const handleSendMessage = async () => {
     if (!text.trim()) return;
 
-    const tempText = text;
+    const temp = text;
     setText("");
+
+    // 🔥 оптимистично добавляем сообщение (без перерендера всей высоты)
+    const newMsg = {
+      _id: Date.now(),
+      text: temp,
+      senderId: user,
+    };
+
+    setMessages((prev) => [...prev, newMsg]);
 
     try {
       await sendMessage({
         conversationId: chatId,
-        text: tempText,
+        text: temp,
       });
 
       await loadMessages();
@@ -61,17 +74,20 @@ export default function ChatRoom({ chatId }) {
   }
 
   return (
-    <div className="h-full flex flex-col">
-
-      {/* MESSAGES */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-3">
-
+    <div className="flex flex-col h-full overflow-hidden">
+      
+      {/* CHAT AREA */}
+      <div
+        ref={chatRef}
+        className="flex-1 overflow-y-auto p-4 space-y-3"
+      >
         {loading ? (
           <div className="text-center text-gray-400">Загрузка...</div>
         ) : (
           messages.map((m) => {
             const isObject = typeof m.senderId === "object";
-            const isMe = (isObject ? m.senderId._id : m.senderId) === user?._id;
+            const isMe =
+              (isObject ? m.senderId._id : m.senderId) === user?._id;
 
             return (
               <div
@@ -80,35 +96,23 @@ export default function ChatRoom({ chatId }) {
                   isMe ? "justify-end" : "justify-start"
                 }`}
               >
-
                 {!isMe && (
                   <img
-                    src={
-                      m.senderId?.avatar ||
-                      "/default-avatar.png"
-                    }
+                    src={m.senderId?.avatar || "/default-avatar.png"}
                     className="w-8 h-8 rounded-full object-cover"
                   />
                 )}
 
                 <div className="flex flex-col max-w-[65%]">
-
-                  {/* NAME */}
-                  <span className="text-xs text-gray-500 mb-1">
-                    {isObject ? m.senderId.name : "User"}
-                  </span>
-
-                  {/* BUBBLE */}
                   <div
-                    className={`px-4 py-2 rounded-2xl text-sm shadow-sm wrap-break-words ${
+                    className={`px-4 py-2 rounded-2xl text-sm shadow-sm ${
                       isMe
-                        ? "bg-green-600 text-white rounded-br-sm"
-                        : "bg-gray-200 text-black rounded-bl-sm"
+                        ? "bg-green-600 text-white"
+                        : "bg-gray-200 text-black"
                     }`}
                   >
                     {m.text}
                   </div>
-
                 </div>
 
                 {isMe && (
@@ -121,12 +125,10 @@ export default function ChatRoom({ chatId }) {
             );
           })
         )}
-
-        <div ref={bottomRef} />
       </div>
 
-      {/* INPUT */}
-      <div className="p-3 border-t flex gap-2 bg-white">
+      {/* INPUT (ФИКСИРОВАННЫЙ, НЕ ПРЫГАЕТ) */}
+      <div className="shrink-0 p-3 border-t flex gap-2 bg-white">
         <input
           value={text}
           onChange={(e) => setText(e.target.value)}
@@ -142,7 +144,6 @@ export default function ChatRoom({ chatId }) {
           ➤
         </button>
       </div>
-
     </div>
   );
 }
