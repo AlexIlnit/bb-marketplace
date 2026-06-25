@@ -10,9 +10,14 @@ API.interceptors.request.use((req) => {
   return req;
 });
 
-export const getOrCreateConversation = (userId) =>
-  API.post("/chat/conversation", { userId });
-
+export const getOrCreateConversation = (
+  userId,
+  listingId
+) =>
+  API.post("/chat/conversation", {
+    userId,
+    listingId,
+  });
 export const getConversations = () =>
   API.get("/chat/conversations");
 

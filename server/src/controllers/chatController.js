@@ -7,6 +7,7 @@ export const getConversations = async (req, res) => {
       members: req.user._id,
     })
       .populate("members", "name avatar")
+      .populate("listing", "title images")
       .sort({ updatedAt: -1 });
 
     res.json(conversations);
@@ -57,15 +58,17 @@ export const getMessages = async (req, res) => {
 
 export const getOrCreateConversation = async (req, res) => {
   try {
-    const { userId } = req.body;
+    const { userId, listingId } = req.body;
 
     let conversation = await Conversation.findOne({
       members: { $all: [req.user._id, userId] },
+      listing: listingId,
     });
 
     if (!conversation) {
       conversation = await Conversation.create({
         members: [req.user._id, userId],
+        listing: listingId,
       });
     }
 

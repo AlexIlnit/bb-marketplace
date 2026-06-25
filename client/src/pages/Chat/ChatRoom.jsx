@@ -1,13 +1,9 @@
 import { useEffect, useState, useRef } from "react";
-import { useParams } from "react-router-dom";
 import { useAuthStore } from "../../store/authStore";
-
 import { getMessages, sendMessage } from "../../api/chatApi";
 
-export default function ChatRoom() {
-  const { id } = useParams();
-
-  const user = useAuthStore((state) => state.user);
+export default function ChatRoom({ chatId }) {
+  const user = useAuthStore((s) => s.user);
 
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
@@ -15,143 +11,128 @@ export default function ChatRoom() {
 
   const bottomRef = useRef(null);
 
-  // 📥 загрузка сообщений
   const loadMessages = async () => {
     try {
-      const { data } = await getMessages(id);
-      console.log("MESSAGES:", data);
+      const { data } = await getMessages(chatId);
       setMessages(data || []);
     } catch (err) {
-      console.log("LOAD MESSAGES ERROR:", err);
+      console.log(err);
     }
   };
 
-  // 🚀 init
   useEffect(() => {
-    if (!id) return;
+    if (!chatId) return;
 
-    const init = async () => {
+    (async () => {
       setLoading(true);
       await loadMessages();
       setLoading(false);
-    };
+    })();
+  }, [chatId]);
 
-    init();
-  }, [id]);
-
-  // 📌 автоскролл
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // 📤 отправка
   const handleSendMessage = async () => {
     if (!text.trim()) return;
 
+    const tempText = text;
+    setText("");
+
     try {
       await sendMessage({
-        conversationId: id,
-        text,
+        conversationId: chatId,
+        text: tempText,
       });
 
-      setText("");
       await loadMessages();
     } catch (err) {
-      console.log("SEND ERROR:", err);
+      console.log(err);
     }
   };
-  
 
-  // ⛔ важно: НЕ блокируем UI вообще
-  if (!id) {
-    return <div className="p-6 text-red-500">Нет chat id</div>;
+  if (!chatId) {
+    return (
+      <div className="h-full flex items-center justify-center text-gray-400">
+        Выберите диалог
+      </div>
+    );
   }
 
   return (
-    <div className="max-w-2xl mx-auto p-4 flex flex-col h-[80vh]">
+    <div className="h-full flex flex-col">
 
-      {/* 📩 messages */}
-      <div className="flex-1 overflow-y-auto space-y-3 p-3 border rounded-xl bg-white">
+      {/* MESSAGES */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-3">
 
         {loading ? (
-          <p className="text-gray-400 text-center">Загрузка...</p>
-        ) : messages.length === 0 ? (
-          <p className="text-gray-400 text-center">Нет сообщений</p>
+          <div className="text-center text-gray-400">Загрузка...</div>
         ) : (
           messages.map((m) => {
-  const isObject = typeof m.senderId === "object";
+            const isObject = typeof m.senderId === "object";
+            const isMe = (isObject ? m.senderId._id : m.senderId) === user?._id;
 
-  const senderId = isObject ? m.senderId._id : m.senderId;
-  const senderName = isObject ? m.senderId.name : "User";
-  const senderAvatar = isObject ? m.senderId.avatar : null;
+            return (
+              <div
+                key={m._id}
+                className={`flex items-end gap-2 ${
+                  isMe ? "justify-end" : "justify-start"
+                }`}
+              >
 
-  const isMe = senderId === user?._id;
+                {!isMe && (
+                  <img
+                    src={
+                      m.senderId?.avatar ||
+                      "/default-avatar.png"
+                    }
+                    className="w-8 h-8 rounded-full object-cover"
+                  />
+                )}
 
-  return (
-    <div
-      key={m._id}
-      className={`flex items-end gap-2 ${
-        isMe ? "justify-end" : "justify-start"
-      }`}
-    >
+                <div className="flex flex-col max-w-[65%]">
 
-      {/* 👤 AVATAR LEFT */}
-      {!isMe && (
-        <img
-          src={senderAvatar || "/default-avatar.png"}
-          className="w-8 h-8 rounded-full object-cover"
-        />
-      )}
+                  {/* NAME */}
+                  <span className="text-xs text-gray-500 mb-1">
+                    {isObject ? m.senderId.name : "User"}
+                  </span>
 
-      {/* 💬 MESSAGE BLOCK */}
-      <div className={`flex flex-col max-w-[70%]`}>
-        
-        {/* NAME */}
-        <div
-          className={`text-xs mb-1 text-gray-500 ${
-            isMe ? "text-right" : "text-left"
-          }`}
-        >
-          {senderName}
-        </div>
+                  {/* BUBBLE */}
+                  <div
+                    className={`px-4 py-2 rounded-2xl text-sm shadow-sm wrap-break-words ${
+                      isMe
+                        ? "bg-green-600 text-white rounded-br-sm"
+                        : "bg-gray-200 text-black rounded-bl-sm"
+                    }`}
+                  >
+                    {m.text}
+                  </div>
 
-        {/* BUBBLE */}
-        <div
-          className={`px-3 py-2 rounded-2xl text-sm break-words shadow-sm ${
-            isMe
-              ? "bg-green-600 text-white rounded-br-sm"
-              : "bg-gray-100 text-black rounded-bl-sm"
-          }`}
-        >
-          {m.text}
-        </div>
-      </div>
+                </div>
 
-      {/* 👤 AVATAR RIGHT */}
-      {isMe && (
-        <img
-          src={user?.avatar || "/default-avatar.png"}
-          className="w-8 h-8 rounded-full object-cover"
-        />
-      )}
-    </div>
-  );
-})
+                {isMe && (
+                  <img
+                    src={user?.avatar || "/default-avatar.png"}
+                    className="w-8 h-8 rounded-full object-cover"
+                  />
+                )}
+              </div>
+            );
+          })
         )}
 
         <div ref={bottomRef} />
       </div>
 
-      {/* ✍️ input */}
-      <div className="mt-3 flex gap-2">
+      {/* INPUT */}
+      <div className="p-3 border-t flex gap-2 bg-white">
         <input
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder="Написать сообщение..."
+          onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
           className="flex-1 border rounded-xl p-3"
-          onKeyDown={(e) => {
-            if (e.key === "Enter") handleSendMessage();
-          }}
+          placeholder="Написать сообщение..."
         />
 
         <button

@@ -163,8 +163,9 @@ const images = listing.images || [];
   onClick={async () => {
     try {
       const { data } = await api.post("/chat/conversation", {
-        userId: listing.user._id,
-      });
+  userId: listing.user._id,
+  listingId: listing._id,
+});
 
       navigate(`/chat/${data._id}`);
     } catch (err) {
