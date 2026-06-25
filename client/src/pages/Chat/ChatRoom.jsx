@@ -1,23 +1,22 @@
 import { useEffect, useState, useRef } from "react";
 import { useAuthStore } from "../../store/authStore";
 import { getMessages, sendMessage } from "../../api/chatApi";
+import { socket } from "../../socket";
 
-export default function ChatRoom({ chatId }) {
+export default function ChatRoom({ chatId, otherUserId }) {
   const user = useAuthStore((s) => s.user);
 
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(true);
+  const [typing, setTyping] = useState(false);
 
-  const chatRef = useRef(null); // 👈 ВАЖНО
+  const chatRef = useRef(null);
 
+  // 📥 load messages
   const loadMessages = async () => {
-    try {
-      const { data } = await getMessages(chatId);
-      setMessages(data || []);
-    } catch (err) {
-      console.log(err);
-    }
+    const { data } = await getMessages(chatId);
+    setMessages(data || []);
   };
 
   useEffect(() => {
@@ -30,21 +29,56 @@ export default function ChatRoom({ chatId }) {
     })();
   }, [chatId]);
 
-  // ✅ СТАБИЛЬНЫЙ СКРОЛЛ (без дерганий)
+  // 📡 new message
+  useEffect(() => {
+    const handler = (message) => {
+      setMessages((prev) => [...prev, message]);
+    };
+
+    socket.on("newMessage", handler);
+    return () => socket.off("newMessage", handler);
+  }, []);
+
+  // 📡 typing
+  useEffect(() => {
+    const handler = (status) => setTyping(status);
+
+    socket.on("typing", handler);
+    return () => socket.off("typing", handler);
+  }, []);
+
+  // 📜 stable scroll
   useEffect(() => {
     const el = chatRef.current;
     if (!el) return;
 
-    el.scrollTop = el.scrollHeight;
-  }, [messages]);
+    requestAnimationFrame(() => {
+      el.scrollTop = el.scrollHeight;
+    });
+  }, [messages.length]);
 
+  // ✍️ typing emit
+  const handleTyping = () => {
+    socket.emit("typing", {
+      receiverId: otherUserId,
+      isTyping: true,
+    });
+
+    setTimeout(() => {
+      socket.emit("typing", {
+        receiverId: otherUserId,
+        isTyping: false,
+      });
+    }, 800);
+  };
+
+  // 📤 send message
   const handleSendMessage = async () => {
     if (!text.trim()) return;
 
     const temp = text;
     setText("");
 
-    // 🔥 оптимистично добавляем сообщение (без перерендера всей высоты)
     const newMsg = {
       _id: Date.now(),
       text: temp,
@@ -59,7 +93,15 @@ export default function ChatRoom({ chatId }) {
         text: temp,
       });
 
-      await loadMessages();
+      socket.emit("sendMessage", {
+        receiverId: otherUserId,
+        message: {
+          _id: Date.now(),
+          text: temp,
+          senderId: user._id,
+          conversationId: chatId,
+        },
+      });
     } catch (err) {
       console.log(err);
     }
@@ -74,9 +116,9 @@ export default function ChatRoom({ chatId }) {
   }
 
   return (
-    <div className="flex flex-col h-full overflow-hidden">
-      
-      {/* CHAT AREA */}
+    <div className="h-full flex flex-col overflow-hidden">
+
+      {/* CHAT */}
       <div
         ref={chatRef}
         className="flex-1 overflow-y-auto p-4 space-y-3"
@@ -103,9 +145,9 @@ export default function ChatRoom({ chatId }) {
                   />
                 )}
 
-                <div className="flex flex-col max-w-[65%]">
+                <div className="max-w-[65%]">
                   <div
-                    className={`px-4 py-2 rounded-2xl text-sm shadow-sm ${
+                    className={`px-4 py-2 rounded-2xl text-sm ${
                       isMe
                         ? "bg-green-600 text-white"
                         : "bg-gray-200 text-black"
@@ -125,14 +167,26 @@ export default function ChatRoom({ chatId }) {
             );
           })
         )}
+
+        {/* typing INSIDE CHAT */}
+        {typing && (
+          <div className="text-xs text-gray-400 px-2">
+            печатает...
+          </div>
+        )}
       </div>
 
-      {/* INPUT (ФИКСИРОВАННЫЙ, НЕ ПРЫГАЕТ) */}
-      <div className="shrink-0 p-3 border-t flex gap-2 bg-white">
+      {/* INPUT FIXED */}
+      <div className="shrink-0 border-t bg-white p-3 flex gap-2">
         <input
           value={text}
-          onChange={(e) => setText(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
+          onChange={(e) => {
+            setText(e.target.value);
+            handleTyping();
+          }}
+          onKeyDown={(e) =>
+            e.key === "Enter" && handleSendMessage()
+          }
           className="flex-1 border rounded-xl p-3"
           placeholder="Написать сообщение..."
         />
@@ -144,6 +198,7 @@ export default function ChatRoom({ chatId }) {
           ➤
         </button>
       </div>
+
     </div>
   );
 }

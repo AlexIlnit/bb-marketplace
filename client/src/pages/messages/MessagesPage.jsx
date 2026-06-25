@@ -8,7 +8,7 @@ export default function MessagesPage() {
 
   return (
     <ChatLayout>
-      <div className="flex h-full overflow-hidden">
+      <div className="flex h-[calc(100vh-80px)] overflow-hidden">
 
         <div className="w-1/3 border-r bg-white overflow-y-auto">
           <ConversationsList
@@ -17,7 +17,7 @@ export default function MessagesPage() {
           />
         </div>
 
-        <div className="w-2/3 bg-gray-50 flex flex-col">
+        <div className="w-2/3 bg-gray-50 flex flex-col overflow-hidden">
           {selectedChat ? (
             <ChatRoom chatId={selectedChat} />
           ) : (
