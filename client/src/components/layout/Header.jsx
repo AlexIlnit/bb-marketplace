@@ -4,7 +4,8 @@ import {
   Menu,
   Search,
   LogOut,
-  MessageCircle
+  MessageCircle,
+  X
 } from "lucide-react";
 
 import { useRef, useState, useEffect } from "react";
@@ -375,46 +376,64 @@ useEffect(() => {
     >
 
   {/* HEADER */}
-  <div className="sticky top-0 z-20 bg-white p-6 border-b">
+<div className="sticky top-0 z-20 bg-white border-b p-6">
 
-    <h2 className="text-xl font-bold mb-2">
-      Выбор региона
-    </h2>
+  <div className="flex items-start justify-between mb-4">
 
-    <p className="text-sm text-gray-500 mb-4">
-      Текущий город:
-      <span className="font-semibold ml-1">
-        {selectedCity || "Все города"}
-      </span>
-    </p>
+    <div>
+      <h2 className="text-xl font-bold">
+        Выбор региона
+      </h2>
 
-    <input
-      value={citySearch}
-      onChange={(e) => setCitySearch(e.target.value)}
-      placeholder="Поиск города..."
-      className="w-full border rounded-xl p-2 mb-4"
-    />
-
-    <div className="flex flex-wrap gap-2">
-      {Object.keys(regions).map((region) => (
-        <button
-          key={region}
-          onClick={() => {
-            setSelectedRegion(region);
-            setCitySearch("");
-          }}
-          className={`px-3 py-2 border rounded-full text-sm ${
-            selectedRegion === region
-              ? "bg-blue-600 text-white"
-              : ""
-          }`}
-        >
-          {region}
-        </button>
-      ))}
+      <p className="text-sm text-gray-500 mt-1">
+        Текущий город:
+        <span className="font-semibold ml-1">
+          {selectedCity || "Все города"}
+        </span>
+      </p>
     </div>
 
+    <button
+      onClick={() => setCityModal(false)}
+      className="
+        p-2
+        rounded-lg
+        hover:bg-gray-100
+        transition
+      "
+    >
+      <X size={22} />
+    </button>
+
   </div>
+
+  <input
+    value={citySearch}
+    onChange={(e) => setCitySearch(e.target.value)}
+    placeholder="Поиск города..."
+    className="w-full border rounded-xl p-2 mb-4"
+  />
+
+  <div className="flex flex-wrap gap-2">
+    {Object.keys(regions).map((region) => (
+      <button
+        key={region}
+        onClick={() => {
+          setSelectedRegion(region);
+          setCitySearch("");
+        }}
+        className={`px-3 py-2 border rounded-full text-sm ${
+          selectedRegion === region
+            ? "bg-blue-600 text-white border-blue-600"
+            : "hover:border-blue-500"
+        }`}
+      >
+        {region}
+      </button>
+    ))}
+  </div>
+
+</div>
 
   {/* BODY */}
  <div className="flex-1 overflow-y-auto p-6">
