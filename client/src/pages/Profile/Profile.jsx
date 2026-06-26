@@ -226,7 +226,7 @@ const handleAvatarUpload = async () => {
     className="
       inline-block
       mt-4
-      bg-green-600
+      bg-blue-600
       text-white
       px-5
       py-3
@@ -542,7 +542,7 @@ const handleAvatarUpload = async () => {
           }}
           className="
             flex-1
-            bg-green-600
+            bg-blue-600
             text-white
             py-2
             rounded-xl

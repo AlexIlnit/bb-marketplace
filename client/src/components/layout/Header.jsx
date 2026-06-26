@@ -30,9 +30,11 @@ const [citySearch, setCitySearch] = useState("");
 const [selectedRegion, setSelectedRegion] =
   useState("Все города");
 
+const allCities = [...new Set(Object.values(regions).flat())];
+
 const citiesToShow =
   selectedRegion === "Все города"
-    ? Object.values(regions).flat()
+    ? allCities
     : regions[selectedRegion] || [];
 
 const filteredCities = citiesToShow.filter((city) =>
@@ -191,12 +193,12 @@ useEffect(() => {
           {/* LEFT */}
           <div className="flex items-center gap-8">
             <Link to="/">
-              <h1 className="text-green-600 font-bold text-2xl">
+              <h1 className="text-blue-600 font-bold text-2xl">
                 BB
               </h1>
             </Link>
 
-            <div className="hidden md:flex items-center bg-gray-100 px-4 rounded-xl w-112.5">
+            <div className="hidden md:flex items-center bg-gray-100 px-4 rounded-xl w-80">
               <Search
   size={18}
   className="cursor-pointer"
@@ -222,8 +224,7 @@ useEffect(() => {
     flex items-center gap-2
     px-2 py-1
     rounded-xl
-    hover:bg-gray-100
-    text-green-600
+    text-blue-600
   "
 >
   {city || "Вся Беларусь"}
@@ -319,7 +320,7 @@ useEffect(() => {
                       ? "/admin"
                       : "/profile"
                   }
-                  className="flex items-center gap-2 hover:text-green-600"
+                  className="flex items-center gap-2 hover:text-blue-600"
                 >
                   <User size={20} />
                   <span>{user.name}</span>
@@ -335,7 +336,7 @@ useEffect(() => {
             {/* BUTTON */}
             {user && (
               <Link to="/create-listing">
-  <button className="bg-green-600 text-white rounded-xl flex items-center justify-center transition-all
+  <button className="bg-blue-600 text-white rounded-xl flex items-center justify-center transition-all
     {/* Стили по умолчанию (для экранов МЕНЬШЕ 1200px): квадратная кнопка */}
     w-10 h-10 p-0
     {/* Стили для экранов ОТ 1200px (xl и выше): прямоугольная кнопка с текстом */}
@@ -365,113 +366,129 @@ useEffect(() => {
         </div>
 {cityModal && (
   <div
-    className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+    className="fixed inset-0 z-100 bg-black/50 flex items-center justify-center p-4"
     onClick={() => setCityModal(false)}
   >
     <div
       onClick={(e) => e.stopPropagation()}
-      className="bg-white rounded-2xl p-6 w-full max-w-lg max-h-[85vh] flex flex-col min-h-0"
+      className="bg-white rounded-2xl w-full max-w-3xl h-[95vh] flex flex-col overflow-hidden shadow-2xl"
     >
-      {/* ФИКСИРОВАННАЯ ВЕРХНЯЯ ЧАСТЬ */}
-      <div className="shrink-0">
-        {/* HEADER */}
-        <h2 className="text-xl font-bold mb-2">
-          Выбор региона
-        </h2>
 
-        <p className="text-sm text-gray-500 mb-4">
-          Текущий город:{" "}
-          <span className="font-semibold">
-            {selectedCity || "Все города"}
-          </span>
-        </p>
+  {/* HEADER */}
+  <div className="sticky top-0 z-20 bg-white p-6 border-b">
 
-        {/* SEARCH */}
-        <input
-          value={citySearch}
-          onChange={(e) => setCitySearch(e.target.value)}
-          placeholder="Поиск города..."
-          className="w-full border rounded-xl p-3 mb-4"
-        />
+    <h2 className="text-xl font-bold mb-2">
+      Выбор региона
+    </h2>
 
-        {/* REGIONS */}
-        <div className="flex flex-wrap gap-2 mb-4">
-          {Object.keys(regions).map((region) => (
-            <button
-              key={region}
-              onClick={() => {
-                setSelectedRegion(region);
-                setCitySearch("");
-              }}
-              className={`px-3 py-2 rounded-full text-sm ${
-                selectedRegion === region
-                  ? "bg-green-600 text-white"
-                  : "bg-gray-100"
-              }`}
-            >
-              {region}
-            </button>
-          ))}
-        </div>
-      </div>
+    <p className="text-sm text-gray-500 mb-4">
+      Текущий город:
+      <span className="font-semibold ml-1">
+        {selectedCity || "Все города"}
+      </span>
+    </p>
 
-      {/* СКРОЛЛИРУЕМЫЙ СПИСОК ГОРODОВ */}
-      {selectedRegion !== "Все города" && (
-        /* flex-1 и overflow-y-auto теперь работают корректно внутри min-h-0 */
-        <div className="flex-1 overflow-y-auto space-y-2 pr-1 min-h-25">
-          {citiesToShow
-            .filter((c) =>
-              c.toLowerCase().includes(citySearch.toLowerCase())
-            )
-            .map((city) => (
-              <label
-                key={city}
-                className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer"
-              >
-                <input
-                  type="radio"
-                  checked={city === selectedCity}
-                  onChange={() => setSelectedCity(city)}
-                  className="accent-green-600 w-4 h-4" 
-                />
-                {city}
-              </label>
-            ))}
-        </div>
-      )}
+    <input
+      value={citySearch}
+      onChange={(e) => setCitySearch(e.target.value)}
+      placeholder="Поиск города..."
+      className="w-full border rounded-xl p-2 mb-4"
+    />
 
-      {/* ФИКСИРОВАННАЯ НИЖНЯЯ ЧАСТЬ С КНОПКАМИ */}
-      <div className="shrink-0 pt-4 mt-4 border-t border-gray-100 flex gap-3">
-        {/* APPLY */}
+    <div className="flex flex-wrap gap-2">
+      {Object.keys(regions).map((region) => (
         <button
+          key={region}
           onClick={() => {
-            const finalCity = selectedCity || "Все города";
-
-            setCity(finalCity);
-            setSelectedCity(finalCity);
-
-            localStorage.setItem("city", finalCity);
-
-            setCityModal(false);
-            navigate("/");
+            setSelectedRegion(region);
+            setCitySearch("");
           }}
-          className="flex-1 bg-green-600 text-white py-3 rounded-xl font-medium"
+          className={`px-3 py-2 border rounded-full text-sm ${
+            selectedRegion === region
+              ? "bg-blue-600 text-white"
+              : ""
+          }`}
         >
-          Показать объявления ({adsCount})
+          {region}
         </button>
-
-        {/* RESET */}
-        {selectedCity !== "Все города" && (
-          <button
-            onClick={() => setSelectedCity("Вся Беларусь")}
-            className="flex-1 border py-3 rounded-xl font-medium hover:bg-gray-50 transition-colors"
-          >
-            Сбросить
-          </button>
-        )}
-      </div>
+      ))}
     </div>
+
   </div>
+
+  {/* BODY */}
+ <div className="flex-1 overflow-y-auto p-6">
+  <div className="grid grid-cols-2 md:grid-cols-3 gap-x-8 gap-y-2">
+
+    {filteredCities.map((city) => (
+      <label
+        key={city}
+        onClick={() => setSelectedCity(city)}
+        className="group flex items-center gap-3 cursor-pointer p-2"
+      >
+        <div
+          className={`w-5 h-5 border-2 rounded-sm flex items-center justify-center transition-colors ${
+            city === selectedCity
+              ? "bg-blue-600 border-blue-600"
+              : "border-gray-400 group-hover:border-blue-600"
+          }`}
+        >
+          {city === selectedCity && (
+            <svg
+              className="w-3 h-3 text-white"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="3"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+          )}
+        </div>
+
+        <span>{city}</span>
+      </label>
+    ))}
+
+  </div>
+</div>
+
+  {/* FOOTER */}
+  <div className="sticky bottom-0 z-20 bg-white border-t p-6 flex gap-3">
+
+    <button
+      onClick={() => {
+        const finalCity = selectedCity || "Все города";
+
+        setCity(finalCity);
+        setSelectedCity(finalCity);
+
+        localStorage.setItem("city", finalCity);
+
+        setCityModal(false);
+        navigate("/");
+      }}
+      className="flex-1 bg-blue-600 text-white py-3 rounded-xl font-medium"
+    >
+      Показать объявления ({adsCount})
+    </button>
+
+    {selectedCity !== "Все города" && (
+      <button
+        onClick={() => setSelectedCity("Вся Беларусь")}
+        className="flex-1 border py-3 rounded-xl hover:bg-gray-50"
+      >
+        Сбросить
+      </button>
+    )}
+
+  </div>
+ </div> 
+</div>
 )}
 
 

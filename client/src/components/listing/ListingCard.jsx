@@ -77,7 +77,7 @@ sizes="
 </div>
 
       <div className="p-4">
-      <div className="text-green-600 font-bold text-xl">
+      <div className="text-blue-600 font-bold text-xl">
         {listing.price} р.
       </div>
       <p className="font-semibold">{listing.title}</p>

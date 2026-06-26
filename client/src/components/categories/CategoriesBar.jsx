@@ -33,7 +33,7 @@ function CategoriesBar() {
               overflow-hidden
               relative
               border-2
-              ${!activeCategory ? "border-green-500" : "border-transparent"}
+              ${!activeCategory ? "border-blue-500" : "border-transparent"}
             `}
           >
             <img
@@ -62,7 +62,7 @@ function CategoriesBar() {
                   overflow-hidden
                   relative
                   transition
-                  ${isActive ? "border-2 border-green-500" : ""}
+                  ${isActive ? "border-2 border-blue-500" : ""}
                 `}
               >
                 <img

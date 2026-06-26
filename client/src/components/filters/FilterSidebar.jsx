@@ -53,7 +53,7 @@ export default function FilterSidebar() {
   const fieldClass = `
     border border-gray-300 bg-white text-gray-900
     rounded-xl p-3 w-full
-    focus:outline-none focus:border-green-500
+    focus:outline-none focus:border-blue-500
     text-sm
   `;
 
@@ -206,7 +206,7 @@ export default function FilterSidebar() {
       <div className="lg:hidden mb-4">
         <button
           onClick={() => setOpen(true)}
-          className="bg-green-600 text-white py-2 px-4 rounded-xl text-sm"
+          className="bg-blue-600 text-white py-2 px-4 rounded-xl text-sm"
         >
           Фильтры
         </button>

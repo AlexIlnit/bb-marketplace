@@ -94,7 +94,7 @@ export default function Home() {
                   onClick={() => setPage(index + 1)}
                   className={`px-4 py-2 rounded-xl border ${
                     page === index + 1
-                      ? "bg-green-600 text-white"
+                      ? "bg-blue-600 text-white"
                       : "bg-white"
                   }`}
                 >

@@ -175,7 +175,7 @@ const images = listing.images || [];
   className="
     mt-8
     w-full
-    bg-green-600
+    bg-blue-600
     text-white
     py-3
     rounded-xl
@@ -230,7 +230,7 @@ const images = listing.images || [];
         {listing.sellerListingsCount}
       </div>
 
-      <div className="text-green-600 text-sm mt-1">
+      <div className="text-blue-600 text-sm mt-1">
         Смотреть профиль →
       </div>
 
