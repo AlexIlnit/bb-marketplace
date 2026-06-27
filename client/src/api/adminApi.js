@@ -16,3 +16,14 @@ export const rejectListing = (id) =>
 
 export const deleteListing = (id) =>
   api.delete(`/admin/listings/${id}`);
+
+// CHATS
+
+export const getAdminChats = () =>
+  api.get("/chat/admin/conversations");
+
+export const getAdminChatMessages = (id) =>
+  api.get(`/chat/admin/messages/${id}`);
+
+export const deleteAdminChat = (id) =>
+  api.delete(`/chat/admin/conversation/${id}`);

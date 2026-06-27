@@ -316,16 +316,20 @@ useEffect(() => {
               <div className="flex items-center gap-4">
 
                 <Link
-                  to={
-                    user?.role === "admin"
-                      ? "/admin"
-                      : "/profile"
-                  }
-                  className="flex items-center gap-2 hover:text-blue-600"
-                >
-                  <User size={20} />
-                  <span>{user.name}</span>
-                </Link>
+  to={user?.role === "admin" ? "/admin" : "/profile"}
+  className="hover:opacity-90 transition"
+>
+  <img
+    src={
+      user?.avatar ||
+      `https://ui-avatars.com/api/?name=${encodeURIComponent(
+        user?.name || "User"
+      )}&background=2563eb&color=fff&size=128`
+    }
+    alt={user?.name}
+    className="w-10 h-10 rounded-full object-cover border"
+  />
+</Link>
 
                 <LogOut
                   className="cursor-pointer text-red-500"

@@ -84,8 +84,10 @@ sizes="
 
   
 
-      <div className="text-gray-500">
-      {listing.city}
+      <div className="text-xs pt-1 text-gray-500">
+        {listing.city}
+        {listing.region &&
+          `, ${listing.region.replace("область", "обл.")}`}
       </div>
 
   <div className="text-xs text-gray-400 mt-2">

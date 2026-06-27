@@ -4,6 +4,7 @@ import ListingsTable from "../../components/admin/ListingsTable";
 import UsersTable from "../../components/admin/UsersTable";
 import MainLayout from "../../layouts/MainLayout";
 import AdminSettings from "./AdminSettings";
+import AdminChats from "./AdminChats";
 
 export default function AdminDashboard() {
   const [tab, setTab] = useState("listings");
@@ -52,6 +53,16 @@ export default function AdminDashboard() {
           >
             Пользователи
           </button>
+          <button
+  onClick={() => setTab("chats")}
+  className={`px-4 py-2 rounded-xl ${
+    tab === "chats"
+      ? "bg-green-600 text-white"
+      : "bg-white"
+  }`}
+>
+  Чаты
+</button>
           <button
   onClick={() => setTab("settings")}
   className={`px-4 py-2 rounded-xl ${
@@ -123,6 +134,9 @@ export default function AdminDashboard() {
 
         {tab === "settings" && (
   <AdminSettings />
+)}
+{tab === "chats" && (
+  <AdminChats />
 )}
       </div>
     </MainLayout>
