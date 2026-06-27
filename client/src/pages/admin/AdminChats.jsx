@@ -1,193 +1,164 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
   getAdminChats,
   getAdminChatMessages,
-  deleteAdminChat,
+  deleteChat,
 } from "../../api/adminApi";
-import { Trash2 } from "lucide-react";
+import { useAuthStore } from "../../store/authStore";
 
 export default function AdminChats() {
   const [chats, setChats] = useState([]);
-  const [activeChat, setActiveChat] = useState(null);
+  const [selectedChat, setSelectedChat] = useState(null);
   const [messages, setMessages] = useState([]);
-  const [loading, setLoading] = useState(false);
 
-  // =====================
-  // LOAD ALL CHATS
-  // =====================
-  const loadChats = async () => {
-    try {
-      const { data } = await getAdminChats();
-      setChats(data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  const user = useAuthStore((s) => s.user);
+
+  const messagesEndRef = useRef(null);
 
   useEffect(() => {
     loadChats();
   }, []);
 
-  // =====================
-  // OPEN CHAT
-  // =====================
-  const openChat = async (chat) => {
-    setActiveChat(chat);
-    setLoading(true);
+  // авто-scroll вниз при открытии/новых сообщениях
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
-    try {
-      const { data } = await getAdminChatMessages(chat._id);
-      setMessages(data);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
+  const loadChats = async () => {
+    const { data } = await getAdminChats();
+    setChats(data);
   };
 
-  // =====================
-  // DELETE CHAT
-  // =====================
+  const openChat = async (chat) => {
+    setSelectedChat(chat);
+
+    const { data } = await getAdminChatMessages(chat._id);
+    setMessages(data);
+  };
+
   const handleDelete = async (id) => {
-    if (!confirm("Удалить этот чат?")) return;
+    const ok = window.confirm("Удалить чат?");
+    if (!ok) return;
 
-    try {
-      await deleteAdminChat(id);
+    await deleteChat(id);
 
-      setActiveChat(null);
+    setChats((prev) => prev.filter((c) => c._id !== id));
+
+    if (selectedChat?._id === id) {
+      setSelectedChat(null);
       setMessages([]);
-      loadChats();
-    } catch (err) {
-      console.error(err);
     }
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6">
 
-      {/* ===================== */}
-      {/* LEFT: CHAT LIST */}
-      {/* ===================== */}
-      <div className="border rounded-xl bg-white p-4 h-[75vh] overflow-y-auto">
-
-        <h2 className="font-bold text-lg mb-4">
-          Чаты пользователей
-        </h2>
+      {/* LEFT — CHATS LIST */}
+      <div className="bg-white rounded-xl p-4 border h-[80vh] overflow-y-auto">
+        <h2 className="font-bold mb-4">Чаты</h2>
 
         {chats.map((chat) => (
           <div
             key={chat._id}
             onClick={() => openChat(chat)}
-            className={`p-3 border-b cursor-pointer rounded-lg mb-2 transition
-              hover:bg-gray-50 ${
-                activeChat?._id === chat._id
-                  ? "bg-blue-50"
-                  : ""
-              }`}
+            className="p-3 border-b cursor-pointer hover:bg-gray-50 transition"
           >
-
             {/* USERS */}
-            <div className="flex items-center gap-2 text-sm font-semibold">
-              {chat.members?.map((u, i) => (
-                <span key={u._id}>
-                  {u.name}
-                  {i === 0 && chat.members.length > 1 && " ↔ "}
-                </span>
-              ))}
+            <div className="font-semibold text-sm">
+              {chat.members?.map((m) => m.name).join(" ↔ ")}
             </div>
 
-            {/* LISTING */}
-            <div className="text-xs text-gray-500 mt-1">
-              📦 {chat.listing?.title || "Без объявления"}
+            {/* LAST MESSAGE */}
+            <div className="text-xs text-gray-500 mt-1 truncate">
+              {chat.lastMessage || "Нет сообщений"}
             </div>
 
-            <div className="text-xs text-gray-400 mt-1">
-              {new Date(chat.updatedAt).toLocaleString()}
+            {/* DATE */}
+            <div className="text-[10px] text-gray-400 mt-1">
+              📅{" "}
+              {new Date(chat.updatedAt || chat.createdAt).toLocaleString(
+                "ru-RU",
+                {
+                  day: "2-digit",
+                  month: "2-digit",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                }
+              )}
             </div>
 
+            {/* DELETE */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDelete(chat._id);
+              }}
+              className="text-red-500 text-xs mt-2 hover:text-red-700"
+            >
+              удалить
+            </button>
           </div>
         ))}
       </div>
 
-      {/* ===================== */}
-      {/* RIGHT: MESSAGES */}
-      {/* ===================== */}
-      <div className="md:col-span-2 border rounded-xl bg-white p-4 h-[75vh] flex flex-col">
+      {/* RIGHT — MESSAGES */}
+      <div className="md:col-span-2 bg-white rounded-xl p-4 border h-[80vh] flex flex-col">
 
-        {!activeChat ? (
-          <div className="text-gray-500 text-center mt-20">
-            Выберите чат
-          </div>
+        {!selectedChat ? (
+          <div className="text-gray-500">Выбери чат</div>
         ) : (
           <>
-            {/* HEADER */}
-            <div className="flex items-center justify-between border-b pb-3 mb-3">
+            <h2 className="font-bold mb-4 border-b pb-2">
+              Сообщения
+            </h2>
 
-              <div>
-                <h3 className="font-bold">
-                  {activeChat.members
-                    .map((m) => m.name)
-                    .join(" ↔ ")}
-                </h3>
+            {/* CHAT AREA */}
+            <div className="flex-1 overflow-y-auto space-y-3 pr-2">
 
-                <p className="text-xs text-gray-500">
-                  📦 {activeChat.listing?.title}
-                </p>
-              </div>
+              {messages.map((m) => {
+                const isMe = m.senderId?._id === user?._id;
 
-              <button
-                onClick={() =>
-                  handleDelete(activeChat._id)
-                }
-                className="text-red-600 hover:text-red-800"
-              >
-                <Trash2 />
-              </button>
-            </div>
-
-            {/* MESSAGES */}
-            <div className="flex-1 overflow-y-auto space-y-3 p-2">
-
-              {loading ? (
-                <p className="text-gray-500">
-                  Загрузка...
-                </p>
-              ) : (
-                messages.map((msg) => (
+                return (
                   <div
-                    key={msg._id}
-                    className={`p-2 rounded-lg max-w-[70%]
-                      ${
-                        msg.senderId?._id ===
-                        activeChat.members[0]._id
-                          ? "bg-gray-100"
-                          : "bg-blue-100 ml-auto"
-                      }`}
+                    key={m._id}
+                    className={`flex ${isMe ? "justify-end" : "justify-start"}`}
                   >
+                    <div
+                      className={`
+                        max-w-md px-4 py-2 rounded-2xl shadow-sm wrap-break-words
+                        ${isMe
+                          ? "bg-blue-600 text-white rounded-br-sm"
+                          : "bg-gray-100 text-gray-900 rounded-bl-sm"}
+                      `}
+                    >
+                      {/* NAME */}
+                      <div className="text-[11px] opacity-70 mb-1">
+                        {m.senderId?.name}
+                      </div>
 
-                    <div className="text-xs font-semibold">
-                      {msg.senderId?.name}
+                      {/* TEXT */}
+                      <div className="text-sm whitespace-pre-wrap">
+                        {m.text}
+                      </div>
+
+                      {/* TIME */}
+                      <div className="text-[10px] mt-1 opacity-60 text-right">
+                        {new Date(m.createdAt).toLocaleTimeString("ru-RU", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </div>
                     </div>
-
-                    <div className="text-sm">
-                      {msg.text}
-                    </div>
-
-                    <div className="text-[10px] text-gray-400">
-                      {new Date(
-                        msg.createdAt
-                      ).toLocaleString()}
-                    </div>
-
                   </div>
-                ))
-              )}
+                );
+              })}
 
+              {/* auto scroll anchor */}
+              <div ref={messagesEndRef} />
             </div>
           </>
         )}
       </div>
-
     </div>
   );
 }

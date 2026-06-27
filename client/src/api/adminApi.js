@@ -19,11 +19,9 @@ export const deleteListing = (id) =>
 
 // CHATS
 
-export const getAdminChats = () =>
-  api.get("/chat/admin/conversations");
-
+export const getAdminChats = () => api.get("/admin/chats");
 export const getAdminChatMessages = (id) =>
-  api.get(`/chat/admin/messages/${id}`);
+  api.get(`/admin/chats/${id}/messages`);
 
-export const deleteAdminChat = (id) =>
-  api.delete(`/chat/admin/conversation/${id}`);
+export const deleteChat = (id) =>
+  api.delete(`/admin/chats/${id}`);

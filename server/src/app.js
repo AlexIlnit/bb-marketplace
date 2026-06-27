@@ -8,6 +8,7 @@ import userRoutes from "./routes/userRoutes.js";
 import favoriteRoutes from "./routes/favoriteRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
+import adminChatRoutes from "./routes/adminChatRoutes.js";
 
 const app = express();
 
@@ -30,6 +31,8 @@ app.use("/api/favorites", favoriteRoutes);
 app.use("/api/categories", categoryRoutes);
 
 app.use("/api/notifications", notificationRoutes);
+
+app.use("/api/admin", adminChatRoutes);
 
 app.get("/", (req, res) => {
   res.json({
