@@ -114,6 +114,7 @@ export const getListings = async (req, res) => {
     // console.log("FINAL FILTER 👉", filter);
 
     const listings = await Listing.find(filter)
+      .populate("category", "name slug")
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);
@@ -132,7 +133,8 @@ export const getListings = async (req, res) => {
 export const getListingById = async (req, res) => {
   try {
     const listing = await Listing.findById(req.params.id)
-      .populate("user", "name email avatar");
+      .populate("user", "name email avatar")
+      .populate("category")
 
     if (!listing) {
       return res.status(404).json({

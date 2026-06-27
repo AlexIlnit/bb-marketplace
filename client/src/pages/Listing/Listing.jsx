@@ -31,7 +31,7 @@ export default function Listing() {
       setLoading(false);
     }
   };
-
+  
   if (loading) {
     return (
       <div className="p-10 text-center">
@@ -144,7 +144,7 @@ const images = listing.images || [];
             </p>
 
             <p>
-              🏷️ {listing.category}
+              🏷️ {listing.category?.name}
             </p>
 
             <div className="text-xs text-gray-500 mt-1">

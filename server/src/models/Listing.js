@@ -25,7 +25,12 @@ const listingSchema = new mongoose.Schema(
       type: String,
       required: true
     },
-    category: String,
+    
+    category: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category"
+    },
+
     views: {
       type: Number,
       default: 0
