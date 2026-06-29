@@ -4,6 +4,7 @@ import { getMyListings } from "../controllers/userController.js";
 import User from "../models/User.js";
 import Listing from "../models/Listing.js";
 import { adminOnly } from "../middleware/adminMiddleware.js";
+import { updateProfile } from "../controllers/userController.js";
 
 const router = express.Router();
 
@@ -60,5 +61,7 @@ router.get("/:id/profile", async (req, res) => {
     });
   }
 });
+
+router.put("/profile", authMiddleware, updateProfile);
 
 export default router;

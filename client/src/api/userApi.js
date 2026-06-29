@@ -12,10 +12,13 @@ export const deleteUser = (id) =>
 export const getAllUsers = () => {
   return api.get("/admin/users");
 };
-export const updateProfile = (data) =>
-  api.put("/auth/profile", data);
+// export const updateProfile = (data) =>
+//   api.put("/auth/profile", data);
 
 export const getUserProfile = (id) =>
   api.get(`/users/${id}/profile`);
+
+export const updateProfile = (data) =>
+  api.put("/users/profile", data);
 
 export const getMe = () => api.get("/auth/me");

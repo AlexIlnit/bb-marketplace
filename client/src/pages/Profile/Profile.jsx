@@ -11,6 +11,7 @@ import { getMe } from "../../api/userApi";
 import api from "../../api/axios";
 import { Helmet } from "react-helmet-async";
 import { LogOut } from "lucide-react";
+import { updateProfile } from "../../api/userApi";
 
 export default function Profile() {
   const user = useAuthStore((s) => s.user);
@@ -31,6 +32,13 @@ export default function Profile() {
   description: "",
     });
 const setUser = useAuthStore((s) => s.setUser);
+
+const [profileModal, setProfileModal] = useState(false);
+const [profileForm, setProfileForm] = useState({
+  name: user?.name || "",
+  oldPassword: "",
+  newPassword: "",
+});
 
 const refreshUser = async () => {
   try {
@@ -149,6 +157,24 @@ const handleAvatarUpload = async () => {
   setImageFile(null);
   setImagePreview("");
 };
+const handleUpdateProfile = async () => {
+  try {
+    const { data } = await updateProfile(profileForm);
+
+    setUser(data, localStorage.getItem("token"));
+
+    setProfileModal(false);
+    setProfileForm({
+      name: data.name,
+      oldPassword: "",
+      newPassword: "",
+    });
+
+    alert("Профиль обновлён");
+  } catch (err) {
+    alert(err.response?.data?.message || "Ошибка");
+  }
+};
 
   if (loading) {
     return (
@@ -168,98 +194,116 @@ const handleAvatarUpload = async () => {
   />
 </Helmet>
     <div className="max-w-7xl mx-auto p-6">
-
-      <div className="bg-white p-6 rounded-2xl shadow-sm mb-8">
-
-        <h1 className="text-3xl font-bold">
+      <h1 className="text-3xl font-bold mb-3">
           Профиль
         </h1>
+      <div className="bg-white p-6 rounded-2xl shadow-sm mb-8">
 
-<div className="flex items-center justify-between mb-6">
+  {/* HEADER */}
+  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
 
-  <div className="flex items-center gap-4">
+    {/* LEFT: PROFILE INFO */}
+    <div className="flex items-center gap-5">
 
-    <img
-      src={
-        user?.avatar ||
-        `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || "")}`
-      }
-      alt=""
-      onClick={() => setAvatarModal(true)}
-      className="
-        w-24 h-24 rounded-full object-cover border
-        cursor-pointer hover:opacity-80 transition
-      "
-    />
+      <img
+        src={
+          user?.avatar ||
+          `https://ui-avatars.com/api/?name=${encodeURIComponent(
+            user?.name || ""
+          )}`
+        }
+        alt=""
+        onClick={() => setAvatarModal(true)}
+        className="
+          w-20 h-20 md:w-24 md:h-24
+          rounded-full object-cover border
+          cursor-pointer hover:opacity-80 transition
+        "
+      />
 
-    <div>
-      <p><strong>Имя:</strong> {user?.name}</p>
-      <p><strong>Email:</strong> {user?.email}</p>
+      <div className="space-y-1">
+        <h1 className="text-2xl md:text-3xl font-bold">
+          {user?.name}
+        </h1>
+
+        <p className="text-gray-500 text-sm">
+          {user?.email}
+        </p>
+      </div>
+
+    </div>
+
+    {/* RIGHT: ACTIONS */}
+    <div className="flex flex-col sm:flex-row gap-3">
+
+      <button
+        onClick={() => setProfileModal(true)}
+        className="
+          px-4 py-2
+          rounded-xl
+          bg-gray-100 hover:bg-gray-200
+          transition
+          text-sm font-medium
+        "
+      >
+        Редактировать профиль
+      </button>
+
+      <button
+        onClick={handleLogout}
+        className="
+          flex items-center justify-center gap-2
+          px-4 py-2
+          rounded-xl
+          bg-red-50 hover:bg-red-100
+          text-red-600
+          transition
+          text-sm font-medium
+        "
+      >
+        <LogOut size={16} />
+        Выйти
+      </button>
+
     </div>
 
   </div>
 
-  <button
-    onClick={handleLogout}
-    className="
-      flex items-center gap-2
-      px-4 py-2
-      rounded-xl
-      bg-red-50
-      text-red-600
-      hover:bg-red-100
-      transition
-    "
-  >
-    <LogOut size={18} />
-    Выйти
-  </button>
+  {/* BLOCKED MESSAGE */}
+  {user?.isBlocked && (
+    <div className="mt-6 bg-red-50 border border-red-200 text-red-700 rounded-xl p-4">
+      <div className="font-semibold">
+        🚫 Ваш аккаунт заблокирован
+      </div>
+
+      <div className="text-sm mt-1">
+        Размещение и редактирование объявлений недоступно.
+        Обратитесь к администрации.
+      </div>
+    </div>
+  )}
+
+  {/* CREATE BUTTON */}
+  {!user?.isBlocked && (
+    <div className="mt-6">
+      <Link
+        to="/create-listing"
+        className="
+          inline-flex items-center justify-center
+          bg-blue-600 hover:bg-blue-700
+          text-white
+          px-5 py-3
+          rounded-xl
+          transition
+          text-sm font-medium
+        "
+      >
+        Создать объявление
+      </Link>
+    </div>
+  )}
 
 </div>
-
-{user?.isBlocked && (
-  <div
-    className="
-      mt-4
-      bg-red-50
-      border
-      border-red-200
-      text-red-700
-      rounded-xl
-      p-4
-    "
-  >
-    <div className="font-semibold">
-      🚫 Ваш аккаунт заблокирован
-    </div>
-
-    <div className="text-sm mt-1">
-      Размещение и редактирование объявлений недоступно.
-      Обратитесь к администрации.
-    </div>
-  </div>
-)}
-
-{!user?.isBlocked && (
-  <Link
-    to="/create-listing"
-    className="
-      inline-block
-      mt-4
-      bg-blue-600
-       hover:bg-blue-700
-      text-white
-      px-5
-      py-3
-      rounded-xl
-    "
-  >
-    Создать объявление
-  </Link>
-  
-)}
-
-      </div>
 
       <h2 className="text-2xl font-bold mb-6">
         Мои объявления
@@ -573,6 +617,74 @@ const handleAvatarUpload = async () => {
           Сохранить
         </button>
       </div>
+    </div>
+  </div>
+)}
+{profileModal && (
+  <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div className="bg-white p-6 rounded-xl w-full max-w-md">
+
+      <h2 className="text-xl font-bold mb-4">
+        Редактировать профиль
+      </h2>
+
+      {/* NAME */}
+      <input
+        className="w-full border p-2 mb-3 rounded"
+        value={profileForm.name}
+        onChange={(e) =>
+          setProfileForm({
+            ...profileForm,
+            name: e.target.value,
+          })
+        }
+        placeholder="Имя"
+      />
+
+      {/* OLD PASSWORD */}
+      <input
+        type="password"
+        className="w-full border p-2 mb-3 rounded"
+        value={profileForm.oldPassword}
+        onChange={(e) =>
+          setProfileForm({
+            ...profileForm,
+            oldPassword: e.target.value,
+          })
+        }
+        placeholder="Старый пароль"
+      />
+
+      {/* NEW PASSWORD */}
+      <input
+        type="password"
+        className="w-full border p-2 mb-3 rounded"
+        value={profileForm.newPassword}
+        onChange={(e) =>
+          setProfileForm({
+            ...profileForm,
+            newPassword: e.target.value,
+          })
+        }
+        placeholder="Новый пароль"
+      />
+
+      <div className="flex gap-2 mt-4">
+        <button
+          onClick={() => setProfileModal(false)}
+          className="flex-1 bg-gray-200 py-2 rounded-xl"
+        >
+          Отмена
+        </button>
+
+        <button
+          onClick={handleUpdateProfile}
+          className="flex-1 bg-blue-600 text-white py-2 rounded-xl"
+        >
+          Сохранить
+        </button>
+      </div>
+
     </div>
   </div>
 )}
