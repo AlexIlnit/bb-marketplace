@@ -1,0 +1,1402 @@
+[
+  {
+    "title": "Товар 1",
+    "description": "Описание товара 1",
+    "price": 874,
+    "images": [
+      "https://picsum.photos/600/400?random=1"
+    ],
+    "city": "Витебск",
+    "region": "Витебская область",
+    "category": "real-estate",
+    "condition": "used",
+    "sellerType": "agency",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 2",
+    "description": "Описание товара 2",
+    "price": 5651,
+    "images": [
+      "https://picsum.photos/600/400?random=2"
+    ],
+    "city": "Витебск",
+    "region": "Витебская область",
+    "category": "clothes",
+    "condition": "used",
+    "sellerType": "dealer",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 3",
+    "description": "Описание товара 3",
+    "price": 6990,
+    "images": [
+      "https://picsum.photos/600/400?random=3"
+    ],
+    "city": "Витебск",
+    "region": "Витебская область",
+    "category": "cars",
+    "condition": "new",
+    "sellerType": "private",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 4",
+    "description": "Описание товара 4",
+    "price": 33881,
+    "images": [
+      "https://picsum.photos/600/400?random=4"
+    ],
+    "city": "Гомель",
+    "region": "Гомельская область",
+    "category": "services",
+    "condition": "used",
+    "sellerType": "private",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 5",
+    "description": "Описание товара 5",
+    "price": 8464,
+    "images": [
+      "https://picsum.photos/600/400?random=5"
+    ],
+    "city": "Гомель",
+    "region": "Гомельская область",
+    "category": "furniture",
+    "condition": "new",
+    "sellerType": "dealer",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 6",
+    "description": "Описание товара 6",
+    "price": 48777,
+    "images": [
+      "https://picsum.photos/600/400?random=6"
+    ],
+    "city": "Гомель",
+    "region": "Гомельская область",
+    "category": "electronics",
+    "condition": "used",
+    "sellerType": "private",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 7",
+    "description": "Описание товара 7",
+    "price": 29203,
+    "images": [
+      "https://picsum.photos/600/400?random=7"
+    ],
+    "city": "Брест",
+    "region": "Брестская область",
+    "category": "services",
+    "condition": "used",
+    "sellerType": "agency",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 8",
+    "description": "Описание товара 8",
+    "price": 16401,
+    "images": [
+      "https://picsum.photos/600/400?random=8"
+    ],
+    "city": "Могилев",
+    "region": "Могилевская область",
+    "category": "electronics",
+    "condition": "used",
+    "sellerType": "private",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 9",
+    "description": "Описание товара 9",
+    "price": 6201,
+    "images": [
+      "https://picsum.photos/600/400?random=9"
+    ],
+    "city": "Брест",
+    "region": "Брестская область",
+    "category": "furniture",
+    "condition": "new",
+    "sellerType": "dealer",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 10",
+    "description": "Описание товара 10",
+    "price": 6031,
+    "images": [
+      "https://picsum.photos/600/400?random=10"
+    ],
+    "city": "Витебск",
+    "region": "Витебская область",
+    "category": "real-estate",
+    "condition": "new",
+    "sellerType": "dealer",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 11",
+    "description": "Описание товара 11",
+    "price": 10626,
+    "images": [
+      "https://picsum.photos/600/400?random=11"
+    ],
+    "city": "Брест",
+    "region": "Брестская область",
+    "category": "cars",
+    "condition": "used",
+    "sellerType": "private",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 12",
+    "description": "Описание товара 12",
+    "price": 44744,
+    "images": [
+      "https://picsum.photos/600/400?random=12"
+    ],
+    "city": "Минск",
+    "region": "Минская область",
+    "category": "cars",
+    "condition": "new",
+    "sellerType": "private",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 13",
+    "description": "Описание товара 13",
+    "price": 31358,
+    "images": [
+      "https://picsum.photos/600/400?random=13"
+    ],
+    "city": "Брест",
+    "region": "Брестская область",
+    "category": "furniture",
+    "condition": "new",
+    "sellerType": "agency",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 14",
+    "description": "Описание товара 14",
+    "price": 24656,
+    "images": [
+      "https://picsum.photos/600/400?random=14"
+    ],
+    "city": "Гомель",
+    "region": "Гомельская область",
+    "category": "services",
+    "condition": "used",
+    "sellerType": "private",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 15",
+    "description": "Описание товара 15",
+    "price": 29473,
+    "images": [
+      "https://picsum.photos/600/400?random=15"
+    ],
+    "city": "Могилев",
+    "region": "Могилевская область",
+    "category": "services",
+    "condition": "new",
+    "sellerType": "private",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 16",
+    "description": "Описание товара 16",
+    "price": 38021,
+    "images": [
+      "https://picsum.photos/600/400?random=16"
+    ],
+    "city": "Гродно",
+    "region": "Гродненская область",
+    "category": "clothes",
+    "condition": "new",
+    "sellerType": "agency",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 17",
+    "description": "Описание товара 17",
+    "price": 4537,
+    "images": [
+      "https://picsum.photos/600/400?random=17"
+    ],
+    "city": "Витебск",
+    "region": "Витебская область",
+    "category": "furniture",
+    "condition": "used",
+    "sellerType": "private",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 18",
+    "description": "Описание товара 18",
+    "price": 20473,
+    "images": [
+      "https://picsum.photos/600/400?random=18"
+    ],
+    "city": "Могилев",
+    "region": "Могилевская область",
+    "category": "furniture",
+    "condition": "used",
+    "sellerType": "private",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 19",
+    "description": "Описание товара 19",
+    "price": 37244,
+    "images": [
+      "https://picsum.photos/600/400?random=19"
+    ],
+    "city": "Минск",
+    "region": "Минская область",
+    "category": "electronics",
+    "condition": "used",
+    "sellerType": "dealer",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 20",
+    "description": "Описание товара 20",
+    "price": 46440,
+    "images": [
+      "https://picsum.photos/600/400?random=20"
+    ],
+    "city": "Могилев",
+    "region": "Могилевская область",
+    "category": "cars",
+    "condition": "new",
+    "sellerType": "agency",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 21",
+    "description": "Описание товара 21",
+    "price": 15611,
+    "images": [
+      "https://picsum.photos/600/400?random=21"
+    ],
+    "city": "Гродно",
+    "region": "Гродненская область",
+    "category": "cars",
+    "condition": "used",
+    "sellerType": "private",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 22",
+    "description": "Описание товара 22",
+    "price": 48873,
+    "images": [
+      "https://picsum.photos/600/400?random=22"
+    ],
+    "city": "Гомель",
+    "region": "Гомельская область",
+    "category": "electronics",
+    "condition": "used",
+    "sellerType": "private",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 23",
+    "description": "Описание товара 23",
+    "price": 35372,
+    "images": [
+      "https://picsum.photos/600/400?random=23"
+    ],
+    "city": "Минск",
+    "region": "Минская область",
+    "category": "real-estate",
+    "condition": "used",
+    "sellerType": "private",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 24",
+    "description": "Описание товара 24",
+    "price": 12544,
+    "images": [
+      "https://picsum.photos/600/400?random=24"
+    ],
+    "city": "Минск",
+    "region": "Минская область",
+    "category": "furniture",
+    "condition": "new",
+    "sellerType": "agency",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 25",
+    "description": "Описание товара 25",
+    "price": 7702,
+    "images": [
+      "https://picsum.photos/600/400?random=25"
+    ],
+    "city": "Гродно",
+    "region": "Гродненская область",
+    "category": "cars",
+    "condition": "used",
+    "sellerType": "private",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 26",
+    "description": "Описание товара 26",
+    "price": 24000,
+    "images": [
+      "https://picsum.photos/600/400?random=26"
+    ],
+    "city": "Гомель",
+    "region": "Гомельская область",
+    "category": "services",
+    "condition": "new",
+    "sellerType": "dealer",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 27",
+    "description": "Описание товара 27",
+    "price": 30753,
+    "images": [
+      "https://picsum.photos/600/400?random=27"
+    ],
+    "city": "Витебск",
+    "region": "Витебская область",
+    "category": "furniture",
+    "condition": "new",
+    "sellerType": "private",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 28",
+    "description": "Описание товара 28",
+    "price": 35601,
+    "images": [
+      "https://picsum.photos/600/400?random=28"
+    ],
+    "city": "Минск",
+    "region": "Минская область",
+    "category": "cars",
+    "condition": "new",
+    "sellerType": "agency",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 29",
+    "description": "Описание товара 29",
+    "price": 23168,
+    "images": [
+      "https://picsum.photos/600/400?random=29"
+    ],
+    "city": "Брест",
+    "region": "Брестская область",
+    "category": "real-estate",
+    "condition": "new",
+    "sellerType": "private",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 30",
+    "description": "Описание товара 30",
+    "price": 36582,
+    "images": [
+      "https://picsum.photos/600/400?random=30"
+    ],
+    "city": "Гомель",
+    "region": "Гомельская область",
+    "category": "furniture",
+    "condition": "new",
+    "sellerType": "agency",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 31",
+    "description": "Описание товара 31",
+    "price": 29426,
+    "images": [
+      "https://picsum.photos/600/400?random=31"
+    ],
+    "city": "Могилев",
+    "region": "Могилевская область",
+    "category": "furniture",
+    "condition": "used",
+    "sellerType": "agency",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 32",
+    "description": "Описание товара 32",
+    "price": 48594,
+    "images": [
+      "https://picsum.photos/600/400?random=32"
+    ],
+    "city": "Гродно",
+    "region": "Гродненская область",
+    "category": "clothes",
+    "condition": "new",
+    "sellerType": "dealer",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 33",
+    "description": "Описание товара 33",
+    "price": 47260,
+    "images": [
+      "https://picsum.photos/600/400?random=33"
+    ],
+    "city": "Брест",
+    "region": "Брестская область",
+    "category": "real-estate",
+    "condition": "new",
+    "sellerType": "agency",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 34",
+    "description": "Описание товара 34",
+    "price": 13291,
+    "images": [
+      "https://picsum.photos/600/400?random=34"
+    ],
+    "city": "Брест",
+    "region": "Брестская область",
+    "category": "services",
+    "condition": "used",
+    "sellerType": "dealer",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 35",
+    "description": "Описание товара 35",
+    "price": 24644,
+    "images": [
+      "https://picsum.photos/600/400?random=35"
+    ],
+    "city": "Гродно",
+    "region": "Гродненская область",
+    "category": "electronics",
+    "condition": "new",
+    "sellerType": "private",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 36",
+    "description": "Описание товара 36",
+    "price": 12142,
+    "images": [
+      "https://picsum.photos/600/400?random=36"
+    ],
+    "city": "Минск",
+    "region": "Минская область",
+    "category": "electronics",
+    "condition": "used",
+    "sellerType": "private",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 37",
+    "description": "Описание товара 37",
+    "price": 17441,
+    "images": [
+      "https://picsum.photos/600/400?random=37"
+    ],
+    "city": "Гродно",
+    "region": "Гродненская область",
+    "category": "real-estate",
+    "condition": "used",
+    "sellerType": "dealer",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 38",
+    "description": "Описание товара 38",
+    "price": 290,
+    "images": [
+      "https://picsum.photos/600/400?random=38"
+    ],
+    "city": "Могилев",
+    "region": "Могилевская область",
+    "category": "services",
+    "condition": "used",
+    "sellerType": "private",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 39",
+    "description": "Описание товара 39",
+    "price": 5676,
+    "images": [
+      "https://picsum.photos/600/400?random=39"
+    ],
+    "city": "Могилев",
+    "region": "Могилевская область",
+    "category": "services",
+    "condition": "used",
+    "sellerType": "agency",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 40",
+    "description": "Описание товара 40",
+    "price": 25881,
+    "images": [
+      "https://picsum.photos/600/400?random=40"
+    ],
+    "city": "Брест",
+    "region": "Брестская область",
+    "category": "cars",
+    "condition": "new",
+    "sellerType": "private",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 41",
+    "description": "Описание товара 41",
+    "price": 38521,
+    "images": [
+      "https://picsum.photos/600/400?random=41"
+    ],
+    "city": "Витебск",
+    "region": "Витебская область",
+    "category": "services",
+    "condition": "used",
+    "sellerType": "agency",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 42",
+    "description": "Описание товара 42",
+    "price": 18949,
+    "images": [
+      "https://picsum.photos/600/400?random=42"
+    ],
+    "city": "Могилев",
+    "region": "Могилевская область",
+    "category": "cars",
+    "condition": "new",
+    "sellerType": "dealer",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 43",
+    "description": "Описание товара 43",
+    "price": 43516,
+    "images": [
+      "https://picsum.photos/600/400?random=43"
+    ],
+    "city": "Брест",
+    "region": "Брестская область",
+    "category": "real-estate",
+    "condition": "new",
+    "sellerType": "dealer",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 44",
+    "description": "Описание товара 44",
+    "price": 19024,
+    "images": [
+      "https://picsum.photos/600/400?random=44"
+    ],
+    "city": "Гомель",
+    "region": "Гомельская область",
+    "category": "cars",
+    "condition": "used",
+    "sellerType": "agency",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 45",
+    "description": "Описание товара 45",
+    "price": 3805,
+    "images": [
+      "https://picsum.photos/600/400?random=45"
+    ],
+    "city": "Могилев",
+    "region": "Могилевская область",
+    "category": "cars",
+    "condition": "used",
+    "sellerType": "private",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 46",
+    "description": "Описание товара 46",
+    "price": 40499,
+    "images": [
+      "https://picsum.photos/600/400?random=46"
+    ],
+    "city": "Гродно",
+    "region": "Гродненская область",
+    "category": "furniture",
+    "condition": "new",
+    "sellerType": "dealer",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 47",
+    "description": "Описание товара 47",
+    "price": 48679,
+    "images": [
+      "https://picsum.photos/600/400?random=47"
+    ],
+    "city": "Витебск",
+    "region": "Витебская область",
+    "category": "clothes",
+    "condition": "used",
+    "sellerType": "dealer",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 48",
+    "description": "Описание товара 48",
+    "price": 14521,
+    "images": [
+      "https://picsum.photos/600/400?random=48"
+    ],
+    "city": "Могилев",
+    "region": "Могилевская область",
+    "category": "services",
+    "condition": "used",
+    "sellerType": "private",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 49",
+    "description": "Описание товара 49",
+    "price": 13297,
+    "images": [
+      "https://picsum.photos/600/400?random=49"
+    ],
+    "city": "Гродно",
+    "region": "Гродненская область",
+    "category": "services",
+    "condition": "used",
+    "sellerType": "agency",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 50",
+    "description": "Описание товара 50",
+    "price": 36440,
+    "images": [
+      "https://picsum.photos/600/400?random=50"
+    ],
+    "city": "Могилев",
+    "region": "Могилевская область",
+    "category": "cars",
+    "condition": "used",
+    "sellerType": "dealer",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 51",
+    "description": "Описание товара 51",
+    "price": 7310,
+    "images": [
+      "https://picsum.photos/600/400?random=51"
+    ],
+    "city": "Гродно",
+    "region": "Гродненская область",
+    "category": "clothes",
+    "condition": "used",
+    "sellerType": "agency",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 52",
+    "description": "Описание товара 52",
+    "price": 7966,
+    "images": [
+      "https://picsum.photos/600/400?random=52"
+    ],
+    "city": "Витебск",
+    "region": "Витебская область",
+    "category": "services",
+    "condition": "used",
+    "sellerType": "dealer",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 53",
+    "description": "Описание товара 53",
+    "price": 11690,
+    "images": [
+      "https://picsum.photos/600/400?random=53"
+    ],
+    "city": "Гомель",
+    "region": "Гомельская область",
+    "category": "cars",
+    "condition": "new",
+    "sellerType": "dealer",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 54",
+    "description": "Описание товара 54",
+    "price": 48725,
+    "images": [
+      "https://picsum.photos/600/400?random=54"
+    ],
+    "city": "Витебск",
+    "region": "Витебская область",
+    "category": "services",
+    "condition": "used",
+    "sellerType": "dealer",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 55",
+    "description": "Описание товара 55",
+    "price": 24944,
+    "images": [
+      "https://picsum.photos/600/400?random=55"
+    ],
+    "city": "Брест",
+    "region": "Брестская область",
+    "category": "clothes",
+    "condition": "used",
+    "sellerType": "private",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 56",
+    "description": "Описание товара 56",
+    "price": 9391,
+    "images": [
+      "https://picsum.photos/600/400?random=56"
+    ],
+    "city": "Витебск",
+    "region": "Витебская область",
+    "category": "electronics",
+    "condition": "new",
+    "sellerType": "private",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 57",
+    "description": "Описание товара 57",
+    "price": 37001,
+    "images": [
+      "https://picsum.photos/600/400?random=57"
+    ],
+    "city": "Витебск",
+    "region": "Витебская область",
+    "category": "furniture",
+    "condition": "used",
+    "sellerType": "dealer",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 58",
+    "description": "Описание товара 58",
+    "price": 19725,
+    "images": [
+      "https://picsum.photos/600/400?random=58"
+    ],
+    "city": "Гомель",
+    "region": "Гомельская область",
+    "category": "real-estate",
+    "condition": "new",
+    "sellerType": "dealer",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 59",
+    "description": "Описание товара 59",
+    "price": 23300,
+    "images": [
+      "https://picsum.photos/600/400?random=59"
+    ],
+    "city": "Витебск",
+    "region": "Витебская область",
+    "category": "furniture",
+    "condition": "used",
+    "sellerType": "dealer",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 60",
+    "description": "Описание товара 60",
+    "price": 36146,
+    "images": [
+      "https://picsum.photos/600/400?random=60"
+    ],
+    "city": "Брест",
+    "region": "Брестская область",
+    "category": "clothes",
+    "condition": "new",
+    "sellerType": "agency",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 61",
+    "description": "Описание товара 61",
+    "price": 41653,
+    "images": [
+      "https://picsum.photos/600/400?random=61"
+    ],
+    "city": "Могилев",
+    "region": "Могилевская область",
+    "category": "electronics",
+    "condition": "new",
+    "sellerType": "agency",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 62",
+    "description": "Описание товара 62",
+    "price": 37914,
+    "images": [
+      "https://picsum.photos/600/400?random=62"
+    ],
+    "city": "Могилев",
+    "region": "Могилевская область",
+    "category": "real-estate",
+    "condition": "used",
+    "sellerType": "private",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 63",
+    "description": "Описание товара 63",
+    "price": 5236,
+    "images": [
+      "https://picsum.photos/600/400?random=63"
+    ],
+    "city": "Гомель",
+    "region": "Гомельская область",
+    "category": "real-estate",
+    "condition": "used",
+    "sellerType": "dealer",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 64",
+    "description": "Описание товара 64",
+    "price": 13636,
+    "images": [
+      "https://picsum.photos/600/400?random=64"
+    ],
+    "city": "Минск",
+    "region": "Минская область",
+    "category": "electronics",
+    "condition": "used",
+    "sellerType": "private",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 65",
+    "description": "Описание товара 65",
+    "price": 2715,
+    "images": [
+      "https://picsum.photos/600/400?random=65"
+    ],
+    "city": "Минск",
+    "region": "Минская область",
+    "category": "electronics",
+    "condition": "new",
+    "sellerType": "agency",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 66",
+    "description": "Описание товара 66",
+    "price": 43327,
+    "images": [
+      "https://picsum.photos/600/400?random=66"
+    ],
+    "city": "Витебск",
+    "region": "Витебская область",
+    "category": "cars",
+    "condition": "new",
+    "sellerType": "agency",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 67",
+    "description": "Описание товара 67",
+    "price": 31870,
+    "images": [
+      "https://picsum.photos/600/400?random=67"
+    ],
+    "city": "Брест",
+    "region": "Брестская область",
+    "category": "clothes",
+    "condition": "new",
+    "sellerType": "private",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 68",
+    "description": "Описание товара 68",
+    "price": 18285,
+    "images": [
+      "https://picsum.photos/600/400?random=68"
+    ],
+    "city": "Брест",
+    "region": "Брестская область",
+    "category": "electronics",
+    "condition": "new",
+    "sellerType": "dealer",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 69",
+    "description": "Описание товара 69",
+    "price": 17364,
+    "images": [
+      "https://picsum.photos/600/400?random=69"
+    ],
+    "city": "Гродно",
+    "region": "Гродненская область",
+    "category": "real-estate",
+    "condition": "new",
+    "sellerType": "agency",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 70",
+    "description": "Описание товара 70",
+    "price": 10066,
+    "images": [
+      "https://picsum.photos/600/400?random=70"
+    ],
+    "city": "Гродно",
+    "region": "Гродненская область",
+    "category": "cars",
+    "condition": "new",
+    "sellerType": "dealer",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 71",
+    "description": "Описание товара 71",
+    "price": 19685,
+    "images": [
+      "https://picsum.photos/600/400?random=71"
+    ],
+    "city": "Гомель",
+    "region": "Гомельская область",
+    "category": "clothes",
+    "condition": "used",
+    "sellerType": "agency",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 72",
+    "description": "Описание товара 72",
+    "price": 46820,
+    "images": [
+      "https://picsum.photos/600/400?random=72"
+    ],
+    "city": "Гомель",
+    "region": "Гомельская область",
+    "category": "furniture",
+    "condition": "new",
+    "sellerType": "agency",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 73",
+    "description": "Описание товара 73",
+    "price": 1296,
+    "images": [
+      "https://picsum.photos/600/400?random=73"
+    ],
+    "city": "Минск",
+    "region": "Минская область",
+    "category": "clothes",
+    "condition": "used",
+    "sellerType": "private",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 74",
+    "description": "Описание товара 74",
+    "price": 38571,
+    "images": [
+      "https://picsum.photos/600/400?random=74"
+    ],
+    "city": "Витебск",
+    "region": "Витебская область",
+    "category": "services",
+    "condition": "used",
+    "sellerType": "agency",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 75",
+    "description": "Описание товара 75",
+    "price": 49081,
+    "images": [
+      "https://picsum.photos/600/400?random=75"
+    ],
+    "city": "Могилев",
+    "region": "Могилевская область",
+    "category": "electronics",
+    "condition": "new",
+    "sellerType": "dealer",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 76",
+    "description": "Описание товара 76",
+    "price": 38985,
+    "images": [
+      "https://picsum.photos/600/400?random=76"
+    ],
+    "city": "Витебск",
+    "region": "Витебская область",
+    "category": "clothes",
+    "condition": "new",
+    "sellerType": "private",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 77",
+    "description": "Описание товара 77",
+    "price": 31605,
+    "images": [
+      "https://picsum.photos/600/400?random=77"
+    ],
+    "city": "Гомель",
+    "region": "Гомельская область",
+    "category": "services",
+    "condition": "used",
+    "sellerType": "dealer",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 78",
+    "description": "Описание товара 78",
+    "price": 1843,
+    "images": [
+      "https://picsum.photos/600/400?random=78"
+    ],
+    "city": "Могилев",
+    "region": "Могилевская область",
+    "category": "electronics",
+    "condition": "used",
+    "sellerType": "private",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 79",
+    "description": "Описание товара 79",
+    "price": 45845,
+    "images": [
+      "https://picsum.photos/600/400?random=79"
+    ],
+    "city": "Гомель",
+    "region": "Гомельская область",
+    "category": "cars",
+    "condition": "used",
+    "sellerType": "private",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 80",
+    "description": "Описание товара 80",
+    "price": 39449,
+    "images": [
+      "https://picsum.photos/600/400?random=80"
+    ],
+    "city": "Могилев",
+    "region": "Могилевская область",
+    "category": "furniture",
+    "condition": "new",
+    "sellerType": "agency",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 81",
+    "description": "Описание товара 81",
+    "price": 45572,
+    "images": [
+      "https://picsum.photos/600/400?random=81"
+    ],
+    "city": "Минск",
+    "region": "Минская область",
+    "category": "services",
+    "condition": "new",
+    "sellerType": "dealer",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 82",
+    "description": "Описание товара 82",
+    "price": 468,
+    "images": [
+      "https://picsum.photos/600/400?random=82"
+    ],
+    "city": "Гродно",
+    "region": "Гродненская область",
+    "category": "real-estate",
+    "condition": "new",
+    "sellerType": "agency",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 83",
+    "description": "Описание товара 83",
+    "price": 24611,
+    "images": [
+      "https://picsum.photos/600/400?random=83"
+    ],
+    "city": "Минск",
+    "region": "Минская область",
+    "category": "clothes",
+    "condition": "new",
+    "sellerType": "private",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 84",
+    "description": "Описание товара 84",
+    "price": 21199,
+    "images": [
+      "https://picsum.photos/600/400?random=84"
+    ],
+    "city": "Брест",
+    "region": "Брестская область",
+    "category": "services",
+    "condition": "used",
+    "sellerType": "agency",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 85",
+    "description": "Описание товара 85",
+    "price": 13169,
+    "images": [
+      "https://picsum.photos/600/400?random=85"
+    ],
+    "city": "Гомель",
+    "region": "Гомельская область",
+    "category": "services",
+    "condition": "new",
+    "sellerType": "private",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 86",
+    "description": "Описание товара 86",
+    "price": 28403,
+    "images": [
+      "https://picsum.photos/600/400?random=86"
+    ],
+    "city": "Витебск",
+    "region": "Витебская область",
+    "category": "clothes",
+    "condition": "used",
+    "sellerType": "agency",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 87",
+    "description": "Описание товара 87",
+    "price": 4960,
+    "images": [
+      "https://picsum.photos/600/400?random=87"
+    ],
+    "city": "Витебск",
+    "region": "Витебская область",
+    "category": "real-estate",
+    "condition": "used",
+    "sellerType": "private",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 88",
+    "description": "Описание товара 88",
+    "price": 6023,
+    "images": [
+      "https://picsum.photos/600/400?random=88"
+    ],
+    "city": "Гродно",
+    "region": "Гродненская область",
+    "category": "clothes",
+    "condition": "new",
+    "sellerType": "agency",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 89",
+    "description": "Описание товара 89",
+    "price": 224,
+    "images": [
+      "https://picsum.photos/600/400?random=89"
+    ],
+    "city": "Гродно",
+    "region": "Гродненская область",
+    "category": "services",
+    "condition": "used",
+    "sellerType": "agency",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 90",
+    "description": "Описание товара 90",
+    "price": 20018,
+    "images": [
+      "https://picsum.photos/600/400?random=90"
+    ],
+    "city": "Гродно",
+    "region": "Гродненская область",
+    "category": "services",
+    "condition": "new",
+    "sellerType": "private",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 91",
+    "description": "Описание товара 91",
+    "price": 43347,
+    "images": [
+      "https://picsum.photos/600/400?random=91"
+    ],
+    "city": "Могилев",
+    "region": "Могилевская область",
+    "category": "services",
+    "condition": "new",
+    "sellerType": "private",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 92",
+    "description": "Описание товара 92",
+    "price": 48714,
+    "images": [
+      "https://picsum.photos/600/400?random=92"
+    ],
+    "city": "Витебск",
+    "region": "Витебская область",
+    "category": "services",
+    "condition": "new",
+    "sellerType": "private",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 93",
+    "description": "Описание товара 93",
+    "price": 20367,
+    "images": [
+      "https://picsum.photos/600/400?random=93"
+    ],
+    "city": "Брест",
+    "region": "Брестская область",
+    "category": "clothes",
+    "condition": "used",
+    "sellerType": "dealer",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 94",
+    "description": "Описание товара 94",
+    "price": 39172,
+    "images": [
+      "https://picsum.photos/600/400?random=94"
+    ],
+    "city": "Витебск",
+    "region": "Витебская область",
+    "category": "cars",
+    "condition": "used",
+    "sellerType": "dealer",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 95",
+    "description": "Описание товара 95",
+    "price": 21884,
+    "images": [
+      "https://picsum.photos/600/400?random=95"
+    ],
+    "city": "Гродно",
+    "region": "Гродненская область",
+    "category": "furniture",
+    "condition": "new",
+    "sellerType": "dealer",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 96",
+    "description": "Описание товара 96",
+    "price": 23023,
+    "images": [
+      "https://picsum.photos/600/400?random=96"
+    ],
+    "city": "Витебск",
+    "region": "Витебская область",
+    "category": "electronics",
+    "condition": "used",
+    "sellerType": "dealer",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 97",
+    "description": "Описание товара 97",
+    "price": 15059,
+    "images": [
+      "https://picsum.photos/600/400?random=97"
+    ],
+    "city": "Брест",
+    "region": "Брестская область",
+    "category": "furniture",
+    "condition": "used",
+    "sellerType": "dealer",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 98",
+    "description": "Описание товара 98",
+    "price": 29433,
+    "images": [
+      "https://picsum.photos/600/400?random=98"
+    ],
+    "city": "Минск",
+    "region": "Минская область",
+    "category": "cars",
+    "condition": "used",
+    "sellerType": "dealer",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 99",
+    "description": "Описание товара 99",
+    "price": 40252,
+    "images": [
+      "https://picsum.photos/600/400?random=99"
+    ],
+    "city": "Витебск",
+    "region": "Витебская область",
+    "category": "real-estate",
+    "condition": "used",
+    "sellerType": "dealer",
+    "status": "approved"
+  },
+  {
+    "title": "Товар 100",
+    "description": "Описание товара 100",
+    "price": 17221,
+    "images": [
+      "https://picsum.photos/600/400?random=100"
+    ],
+    "city": "Брест",
+    "region": "Брестская область",
+    "category": "services",
+    "condition": "used",
+    "sellerType": "dealer",
+    "status": "approved"
+  }
+]

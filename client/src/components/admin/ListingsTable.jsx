@@ -81,7 +81,7 @@ export default function ListingsTable({
               {l.title}
             </h3>
 
-            <p className="text-green-600 font-bold text-lg">
+            <p className="text-blue-600 font-bold text-lg">
               {l.price} BYN
             </p>
 

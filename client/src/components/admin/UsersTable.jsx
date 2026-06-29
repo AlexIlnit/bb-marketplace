@@ -67,7 +67,7 @@ const handleToggleBlock = async (id) => {
           <div className="text-gray-500 text-sm">
             Найдено по поиску
           </div>
-          <div className="text-2xl font-bold text-green-600">
+          <div className="text-2xl font-bold text-blue-600">
             {filteredUsers.length}
           </div>
         </div>
@@ -89,7 +89,7 @@ const handleToggleBlock = async (id) => {
             rounded-xl
             p-3
             outline-none
-            focus:border-green-500
+            focus:border-blue-500
           "
         />
       </div>

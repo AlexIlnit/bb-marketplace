@@ -41,7 +41,7 @@ export default function AdminDashboard() {
     onClick={() => setTab("listings")}
     className={`px-4 py-3 rounded-xl font-medium transition ${
       tab === "listings"
-        ? "bg-green-600 text-white"
+        ? "bg-blue-600 text-white"
         : "bg-white border"
     }`}
   >
@@ -52,7 +52,7 @@ export default function AdminDashboard() {
     onClick={() => setTab("users")}
     className={`px-4 py-3 rounded-xl font-medium transition ${
       tab === "users"
-        ? "bg-green-600 text-white"
+        ? "bg-blue-600 text-white"
         : "bg-white border"
     }`}
   >
@@ -63,7 +63,7 @@ export default function AdminDashboard() {
     onClick={() => setTab("chats")}
     className={`px-4 py-3 rounded-xl font-medium transition ${
       tab === "chats"
-        ? "bg-green-600 text-white"
+        ? "bg-blue-600 text-white"
         : "bg-white border"
     }`}
   >
@@ -74,7 +74,7 @@ export default function AdminDashboard() {
     onClick={() => setTab("settings")}
     className={`px-4 py-3 rounded-xl font-medium transition ${
       tab === "settings"
-        ? "bg-green-600 text-white"
+        ? "bg-blue-600 text-white"
         : "bg-white border"
     }`}
   >

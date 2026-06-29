@@ -107,7 +107,7 @@ export default function AdminAvatar() {
             <button
               onClick={uploadAvatar}
               disabled={loading}
-              className="w-full bg-green-600 text-white py-2 rounded-xl"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-xl"
             >
               {loading ? "Загрузка..." : "Сохранить"}
             </button>

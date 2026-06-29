@@ -4,6 +4,7 @@ import Listing from "../models/Listing.js";
 import { adminOnly } from "../middleware/adminMiddleware.js";
 import { createNotification } from "../utils/createNotification.js";
 import { authMiddleware } from "../middleware/auth.js";
+import { changeAdminPassword } from "../controllers/adminController.js";
 import bcrypt from "bcryptjs";
 
 const router = express.Router();
@@ -169,5 +170,6 @@ router.put("/me/password", authMiddleware, adminOnly, async (req, res) => {
   }
 });
 
+router.put("/change-password", authMiddleware, changeAdminPassword);
 
 export default router;

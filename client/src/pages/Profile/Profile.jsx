@@ -78,7 +78,7 @@ const handleUpload = async () => {
    const handleLogout = () => {
   logout();
   };
-  
+
   const loadListings = async () => {
     try {
       const { data } = await getMyListings();
@@ -247,6 +247,7 @@ const handleAvatarUpload = async () => {
       inline-block
       mt-4
       bg-blue-600
+       hover:bg-blue-700
       text-white
       px-5
       py-3
