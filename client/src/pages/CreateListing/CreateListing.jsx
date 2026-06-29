@@ -92,25 +92,25 @@ useEffect(() => {
     });
   };
 
-  const handleUpload = async () => {
-    if (!imageFile) return;
+  // const handleUpload = async () => {
+  //   if (!imageFile) return;
 
-    setUploading(true);
+  //   setUploading(true);
 
-    try {
-      const { data } = await uploadImage(imageFile);
-      setImageUrl(data.url);
-    } catch (err) {
-      alert("Ошибка загрузки фото");
-    } finally {
-      setUploading(false);
-    }
-  };
-const formData = new FormData();
+  //   try {
+  //     const { data } = await uploadImage(imageFile);
+  //     setImageUrl(data.url);
+  //   } catch (err) {
+  //     alert("Ошибка загрузки фото");
+  //   } finally {
+  //     setUploading(false);
+  //   }
+  // };
+// const formData = new FormData();
 
-images.forEach((file) => {
-  formData.append("images", file);
-});
+// images.forEach((file) => {
+//   formData.append("images", file);
+// });
 
  const submit = async (e) => {
   e.preventDefault();
@@ -129,6 +129,11 @@ images.forEach((file) => {
   images.forEach((file) => {
     formData.append("images", file);
   });
+
+  if (!user?.phone) {
+  alert("Перед публикацией объявления укажите номер телефона в профиле.");
+  return;
+}
 
   await createListing(formData);
 
@@ -356,16 +361,23 @@ const availableCities = region
       </div>
 
       <div>
-        <label className="block text-sm mb-2">
-          Телефон
-        </label>
+  <label className="block text-sm mb-2">
+    Телефон
+  </label>
 
-        <input
-          type="tel"
-          placeholder="+375 ..."
-          className="w-full p-3 border rounded-xl"
-        />
-      </div>
+  <input
+    type="tel"
+    value={user?.phone || ""}
+    readOnly
+    className="w-full p-3 border rounded-xl bg-gray-50"
+  />
+
+  {!user?.phone && (
+    <p className="text-sm text-red-500 mt-2">
+      Добавьте номер телефона в профиле.
+    </p>
+  )}
+</div>
 
     </div>
   </div>

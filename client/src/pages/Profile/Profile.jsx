@@ -35,11 +35,20 @@ const setUser = useAuthStore((s) => s.setUser);
 
 const [profileModal, setProfileModal] = useState(false);
 const [profileForm, setProfileForm] = useState({
-  name: user?.name || "",
+  name: "",
+  phone: "",
   oldPassword: "",
   newPassword: "",
 });
-
+useEffect(() => {
+  if (user) {
+    setProfileForm((prev) => ({
+      ...prev,
+      name: user.name || "",
+      phone: user.phone || "",
+    }));
+  }
+}, [user]);
 const refreshUser = async () => {
   try {
     const { data } = await getMe();
@@ -166,6 +175,7 @@ const handleUpdateProfile = async () => {
     setProfileModal(false);
     setProfileForm({
       name: data.name,
+      phone: data.phone || "",
       oldPassword: "",
       newPassword: "",
     });
@@ -229,6 +239,19 @@ const handleUpdateProfile = async () => {
         <p className="text-gray-500 text-sm">
           {user?.email}
         </p>
+        <p className="text-gray-500 text-sm">
+  {user?.phone || "Телефон не указан"}
+</p>
+        <p className="text-gray-500">
+                На сайте с{" "}
+                {new Date(
+                  user.createdAt
+                ).toLocaleDateString("ru-RU")}
+              </p>
+
+              <p className="mt-2">
+                Объявлений: {listings.length}
+              </p>
       </div>
 
     </div>
@@ -640,6 +663,20 @@ const handleUpdateProfile = async () => {
         }
         placeholder="Имя"
       />
+
+       {/* PHONE */}
+      <input
+        className="w-full border p-2 mb-3 rounded"
+        value={profileForm.phone}
+        onChange={(e) =>
+          setProfileForm({
+            ...profileForm,
+            phone: e.target.value,
+          })
+        }
+        placeholder="Номер телефона"
+      />
+
 
       {/* OLD PASSWORD */}
       <input

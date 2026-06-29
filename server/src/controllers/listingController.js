@@ -2,6 +2,7 @@ import Listing from "../models/Listing.js";
 import { createNotification } from "../utils/createNotification.js";
 import User from "../models/User.js";
 import cloudinary from "../config/cloudinary.js";
+import Category from "../models/Category.js";
 // CREATE LISTING
 export const createListing = async (req, res) => {
   try {
@@ -72,8 +73,19 @@ export const getListings = async (req, res) => {
     const region = req.query.region; // Получаем область из фронтенда
 
     if (req.query.category) {
-      filter.category = req.query.category;
-    }
+  const category = await Category.findOne({
+    slug: req.query.category,
+  });
+
+  if (!category) {
+    return res.json({
+      listings: [],
+      totalPages: 0,
+    });
+  }
+
+  filter.category = category._id;
+}
     
     // 🔥 ПРЯМАЯ ФИЛЬТРАЦИЯ ПО ОБЛАСТЯМ И ГОРОДАМ
     if (city && city !== "Вся Беларусь" && city !== "Все города" && city !== "Все области") {
