@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
 
+
 export default function Footer() {
+
   return (
     <footer className="bg-gray-900 text-gray-300 mt-12">
       <div className="max-w-7xl mx-auto px-4 py-10">
@@ -8,6 +10,7 @@ export default function Footer() {
         <div className="grid md:grid-cols-4 gap-8">
 
           <div>
+            
             <h3 className="text-white font-bold text-xl mb-4">
               BB Market
             </h3>

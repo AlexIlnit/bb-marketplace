@@ -10,10 +10,12 @@ import { uploadImage } from "../../api/uploadApi";
 import { getMe } from "../../api/userApi";
 import api from "../../api/axios";
 import { Helmet } from "react-helmet-async";
+import { LogOut } from "lucide-react";
 
 export default function Profile() {
   const user = useAuthStore((s) => s.user);
 
+  const logout = useAuthStore((s) => s.logout);
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editItem, setEditItem] = useState(null);
@@ -73,6 +75,10 @@ const handleUpload = async () => {
     refreshUser();
   }, []);
 
+   const handleLogout = () => {
+  logout();
+  };
+  
   const loadListings = async () => {
     try {
       const { data } = await getMyListings();
@@ -137,7 +143,7 @@ const handleAvatarUpload = async () => {
 
     refreshUser();
 
-  } catch (err) {
+   } catch (err) {
     console.error(err);
   }
   setImageFile(null);
@@ -169,31 +175,45 @@ const handleAvatarUpload = async () => {
           Профиль
         </h1>
 
-<div className="flex items-center gap-4 mb-4">
+<div className="flex items-center justify-between mb-6">
 
-  <img
-  src={
-    user?.avatar ||
-    `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || "")}`
-  }
-  alt=""
-  onClick={() => setAvatarModal(true)}
-  className="
-    w-24
-    h-24
-    rounded-full
-    object-cover
-    border
-    cursor-pointer
-    hover:opacity-80
-    transition
-  "
-/>
+  <div className="flex items-center gap-4">
 
-  <div>
-    <p><strong>Имя:</strong> {user?.name}</p>
-    <p><strong>Email:</strong> {user?.email}</p>
+    <img
+      src={
+        user?.avatar ||
+        `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || "")}`
+      }
+      alt=""
+      onClick={() => setAvatarModal(true)}
+      className="
+        w-24 h-24 rounded-full object-cover border
+        cursor-pointer hover:opacity-80 transition
+      "
+    />
+
+    <div>
+      <p><strong>Имя:</strong> {user?.name}</p>
+      <p><strong>Email:</strong> {user?.email}</p>
+    </div>
+
   </div>
+
+  <button
+    onClick={handleLogout}
+    className="
+      flex items-center gap-2
+      px-4 py-2
+      rounded-xl
+      bg-red-50
+      text-red-600
+      hover:bg-red-100
+      transition
+    "
+  >
+    <LogOut size={18} />
+    Выйти
+  </button>
 
 </div>
 
@@ -235,6 +255,7 @@ const handleAvatarUpload = async () => {
   >
     Создать объявление
   </Link>
+  
 )}
 
       </div>

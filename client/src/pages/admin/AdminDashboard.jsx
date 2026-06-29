@@ -32,52 +32,62 @@ export default function AdminDashboard() {
 
   return (
     <MainLayout>
-      <div className="max-w-7xl mx-auto p-6">
+      <div className="max-w-7xl mx-auto p-3 sm:p-4 md:p-6">
 
         {/* TOP NAV */}
-        <div className="flex gap-4 mb-6">
-          <button
-            onClick={() => setTab("listings")}
-            className={`px-4 py-2 rounded-xl ${
-              tab === "listings" ? "bg-green-600 text-white" : "bg-white"
-            }`}
-          >
-            Объявления
-          </button>
+<div className="grid grid-cols-2 md:flex gap-3 mb-6">
 
-          <button
-            onClick={() => setTab("users")}
-            className={`px-4 py-2 rounded-xl ${
-              tab === "users" ? "bg-green-600 text-white" : "bg-white"
-            }`}
-          >
-            Пользователи
-          </button>
-          <button
-  onClick={() => setTab("chats")}
-  className={`px-4 py-2 rounded-xl ${
-    tab === "chats"
-      ? "bg-green-600 text-white"
-      : "bg-white"
-  }`}
->
-  Чаты
-</button>
-          <button
-  onClick={() => setTab("settings")}
-  className={`px-4 py-2 rounded-xl ${
-    tab === "settings" ? "bg-green-600 text-white" : "bg-white"
-  }`}
->
-  Настройки
-</button>
-        </div>
+  <button
+    onClick={() => setTab("listings")}
+    className={`px-4 py-3 rounded-xl font-medium transition ${
+      tab === "listings"
+        ? "bg-green-600 text-white"
+        : "bg-white border"
+    }`}
+  >
+    Объявления
+  </button>
+
+  <button
+    onClick={() => setTab("users")}
+    className={`px-4 py-3 rounded-xl font-medium transition ${
+      tab === "users"
+        ? "bg-green-600 text-white"
+        : "bg-white border"
+    }`}
+  >
+    Пользователи
+  </button>
+
+  <button
+    onClick={() => setTab("chats")}
+    className={`px-4 py-3 rounded-xl font-medium transition ${
+      tab === "chats"
+        ? "bg-green-600 text-white"
+        : "bg-white border"
+    }`}
+  >
+    Чаты
+  </button>
+
+  <button
+    onClick={() => setTab("settings")}
+    className={`px-4 py-3 rounded-xl font-medium transition ${
+      tab === "settings"
+        ? "bg-green-600 text-white"
+        : "bg-white border"
+    }`}
+  >
+    Настройки
+  </button>
+
+</div>
 
         {/* LISTINGS SECTION */}
         {tab === "listings" && (
           <>
             {/* STATUS FILTER */}
-            <div className="flex gap-3 mb-6">
+            <div className="grid grid-cols-2 md:flex gap-3 mb-6">
               <button
                 onClick={() => setStatusTab("pending")}
                 className={`px-3 py-1 rounded-xl ${

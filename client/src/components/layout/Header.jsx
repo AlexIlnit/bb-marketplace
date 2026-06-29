@@ -331,10 +331,7 @@ useEffect(() => {
   />
 </Link>
 
-                <LogOut
-                  className="cursor-pointer text-red-500"
-                  onClick={handleLogout}
-                />
+                
               </div>
             )}
 

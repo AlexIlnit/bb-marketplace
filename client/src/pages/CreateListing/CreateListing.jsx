@@ -350,6 +350,7 @@ const availableCities = region
         <input
           type="text"
           value={user?.name || ""}
+          readOnly
           className="w-full p-3 border rounded-xl"
         />
       </div>
@@ -372,7 +373,7 @@ const availableCities = region
   {/* Кнопка */}
   <button
     disabled={loading}
-    className="w-full bg-green-600 hover:bg-green-700 text-white py-4 rounded-2xl font-semibold"
+    className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-2xl font-semibold"
   >
     {loading
       ? "Публикация объявления..."
