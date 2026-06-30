@@ -16,6 +16,7 @@ export default function Listing() {
   const [listing, setListing] = useState(null);
   const [loading, setLoading] = useState(true);
   const [currentImage, setCurrentImage] = useState(0);
+  const [showPhone, setShowPhone] = useState(false);
 
   useEffect(() => {
     loadListing();
@@ -167,7 +168,11 @@ const images = listing.images || [];
   listingId: listing._id,
 });
 
-      navigate(`/chat/${data._id}`);
+      navigate("/messages", {
+  state: {
+    conversationId: data._id,
+  },
+});
     } catch (err) {
       console.error(err);
     }
@@ -176,6 +181,7 @@ const images = listing.images || [];
     mt-8
     w-full
     bg-blue-600
+     hover:bg-blue-700
     text-white
     py-3
     rounded-xl
@@ -185,25 +191,46 @@ const images = listing.images || [];
   Написать продавцу
 </button>
 {listing.user?.phone && (
-  <a
-    href={`tel:${listing.user.phone}`}
-    className="
-      mt-3
-      w-full
-      flex
-      items-center
-      justify-center
-      bg-green-600
-      hover:bg-green-700
-      text-white
-      py-3
-      rounded-xl
-      font-semibold
-      transition
-    "
-  >
-    📞 Позвонить: {listing.user.phone}
-  </a>
+  <>
+    {!showPhone ? (
+      <button
+        onClick={() => setShowPhone(true)}
+        className="
+          mt-3
+          w-full
+          bg-green-600
+          hover:bg-green-700
+          text-white
+          py-3
+          rounded-xl
+          font-semibold
+          transition
+        "
+      >
+        📞 Показать телефон
+      </button>
+    ) : (
+      <a
+        href={`tel:${listing.user.phone}`}
+        className="
+          mt-3
+          w-full
+          flex
+          items-center
+          justify-center
+          bg-green-600
+          hover:bg-green-700
+          text-white
+          py-3
+          rounded-xl
+          font-semibold
+          transition
+        "
+      >
+        📞 {listing.user.phone}
+      </a>
+    )}
+  </>
 )}
 <Link
   to={`/user/${listing.user?._id}`}

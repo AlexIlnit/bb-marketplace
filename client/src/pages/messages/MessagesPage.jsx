@@ -1,10 +1,19 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ConversationsList from "../chat/ConversationsList";
 import ChatRoom from "../chat/ChatRoom";
 import ChatLayout from "../../layouts/ChatLayout";
+import { useLocation } from "react-router-dom";
 
 export default function MessagesPage() {
-  const [selectedChat, setSelectedChat] = useState(null);
+  const location = useLocation();
+
+const [selectedChat, setSelectedChat] = useState(null);
+
+useEffect(() => {
+  if (location.state?.conversationId) {
+    setSelectedChat(location.state.conversationId);
+  }
+}, [location.state]);
 
   return (
     <ChatLayout>

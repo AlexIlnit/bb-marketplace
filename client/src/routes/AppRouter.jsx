@@ -83,8 +83,9 @@ export default function AppRouter() {
           }
         />
 
-        <Route path="/chat" element={<ProtectedRoute><ChatPage /></ProtectedRoute>} />
-        <Route path="/chat/:id" element={<ProtectedRoute><ChatRoom /></ProtectedRoute>} />
+        {/* <Route path="/chat" element={<ProtectedRoute><ChatPage /></ProtectedRoute>} /> */}
+        {/* <Route path="/chat/:id" element={<ProtectedRoute><ChatPage /></ProtectedRoute>} /> */}
+        <Route path="/messages" element={ <ProtectedRoute><MessagesPage /></ProtectedRoute> }/>
 
         <Route
           path="/admin"
