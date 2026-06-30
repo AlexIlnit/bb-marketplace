@@ -184,6 +184,27 @@ const images = listing.images || [];
 >
   Написать продавцу
 </button>
+{listing.user?.phone && (
+  <a
+    href={`tel:${listing.user.phone}`}
+    className="
+      mt-3
+      w-full
+      flex
+      items-center
+      justify-center
+      bg-green-600
+      hover:bg-green-700
+      text-white
+      py-3
+      rounded-xl
+      font-semibold
+      transition
+    "
+  >
+    📞 Позвонить: {listing.user.phone}
+  </a>
+)}
 <Link
   to={`/user/${listing.user?._id}`}
   className="
@@ -198,6 +219,7 @@ const images = listing.images || [];
     transition
   "
 >
+  
 
   <div className="flex items-center gap-4">
 
