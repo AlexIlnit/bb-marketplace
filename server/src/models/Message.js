@@ -7,21 +7,43 @@ const messageSchema = new mongoose.Schema(
       ref: "Conversation",
       required: true,
     },
+
     senderId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
+    
     text: {
       type: String,
-      required: true,
+      default: "",
+      trim: true,
     },
-    read: {
+
+    images: [
+      {
+        type: String,
+      },
+    ],
+
+    isRead: {
+      type: Boolean,
+      default: false,
+    },
+
+    edited: {
+      type: Boolean,
+      default: false,
+    },
+
+    deleted: {
       type: Boolean,
       default: false,
     },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
 
 export default mongoose.model("Message", messageSchema);

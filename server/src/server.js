@@ -12,7 +12,9 @@ import adminRoutes from "./routes/adminRoutes.js";
 import favoriteRoutes from "./routes/favoriteRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
 import chatRoutes from "./routes/chatRoutes.js";
+import { initSocket } from "./socket/index.js";
 
+export const onlineUsers = new Map();
 const PORT = process.env.PORT || 5000;
 
 // ================= DB =================
@@ -29,8 +31,7 @@ const io = new Server(server, {
     origin: "http://localhost:5173",
   },
 });
-
-const onlineUsers = new Map();
+app.set("io", io);
 
 io.on("connection", (socket) => {
   // console.log("USER CONNECTED:", socket.id);
@@ -75,6 +76,9 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/favorites", favoriteRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/chat", chatRoutes);
+
+app.set("onlineUsers", onlineUsers);
+
 
 // ================= START SERVER =================
 server.listen(PORT, () => {

@@ -82,7 +82,7 @@ export default function ChatRoom({ chatId, otherUserId }) {
     const newMsg = {
       _id: Date.now(),
       text: temp,
-      senderId: user,
+      senderId: user._id,
     };
 
     setMessages((prev) => [...prev, newMsg]);

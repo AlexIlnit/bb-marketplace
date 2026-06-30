@@ -7,6 +7,7 @@ export default function ChatPage() {
   const { id } = useParams();
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
+  const user = useAuthStore((s) => s.user);
 
   useEffect(() => {
     loadMessages();
@@ -39,14 +40,14 @@ export default function ChatPage() {
             <div
               key={msg._id}
               className={`flex ${
-                msg.senderId === msg.currentUser
+                msg.senderId === user._id
                   ? "justify-end"
                   : "justify-start"
               }`}
             >
               <div
                 className={`px-4 py-2 rounded-xl max-w-[70%] ${
-                  msg.senderId === msg.currentUser
+                  msg.senderId === user._id
                     ? "bg-green-600 text-white"
                     : "bg-gray-100"
                 }`}

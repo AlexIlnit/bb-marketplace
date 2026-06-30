@@ -24,5 +24,13 @@ export const getConversations = () =>
 export const getMessages = (id) =>
   API.get(`/chat/messages/${id}`);
 
-export const sendMessage = (data) =>
-  API.post("/chat/message", data);
+export const sendMessage = ({
+  conversationId,
+  text,
+  receiverId,
+}) =>
+  API.post("/chat/message", {
+    conversationId,
+    text,
+    receiverId,
+  });

@@ -4,50 +4,61 @@ const userSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: true
+      required: true,
     },
 
     email: {
       type: String,
       required: true,
-      unique: true
+      unique: true,
     },
 
     password: {
       type: String,
-      required: true
+      required: true,
     },
 
     avatar: {
       type: String,
-      default: ""
+      default: "",
     },
 
     phone: {
       type: String,
-      default: "",
       required: true,
       trim: true,
+      default: "",
     },
 
     role: {
       type: String,
       enum: ["user", "admin"],
-      default: "user"
+      default: "user",
     },
 
     isBlocked: {
       type: Boolean,
-      default: false
-    }
-    
+      default: false,
+    },
+
+    online: {
+      type: Boolean,
+      default: false,
+    },
+
+    lastSeen: {
+      type: Date,
+      default: null,
+    },
+
+    socketId: {
+      type: String,
+      default: null,
+    },
   },
   {
-    timestamps: true
+    timestamps: true,
   }
 );
 
-export default mongoose.model(
-  "User",
-  userSchema
-);
+export default mongoose.model("User", userSchema);
