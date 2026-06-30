@@ -22,10 +22,12 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: ""
     },
-    
+
     phone: {
       type: String,
-      default: ""
+      default: "",
+      required: true,
+      trim: true,
     },
 
     role: {

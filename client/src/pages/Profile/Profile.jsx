@@ -31,6 +31,7 @@ export default function Profile() {
   city: "",
   description: "",
     });
+    
 const setUser = useAuthStore((s) => s.setUser);
 
 const [profileModal, setProfileModal] = useState(false);
@@ -170,7 +171,14 @@ const handleUpdateProfile = async () => {
   try {
     const { data } = await updateProfile(profileForm);
 
-    setUser(data, localStorage.getItem("token"));
+    // setUser(data, localStorage.getItem("token"));
+    setUser(
+  {
+    ...user,
+    ...data,
+  },
+  localStorage.getItem("token")
+);
 
     setProfileModal(false);
     setProfileForm({
@@ -233,14 +241,14 @@ const handleUpdateProfile = async () => {
 
       <div className="space-y-1">
         <h1 className="text-2xl md:text-3xl font-bold">
-          {user?.name}
+          Имя: {user?.name}
         </h1>
 
         <p className="text-gray-500 text-sm">
-          {user?.email}
+          Email: {user?.email}
         </p>
         <p className="text-gray-500 text-sm">
-  {user?.phone || "Телефон не указан"}
+  Телефон: {user?.phone || "Телефон не указан"}
 </p>
         <p className="text-gray-500">
                 На сайте с{" "}
@@ -257,16 +265,17 @@ const handleUpdateProfile = async () => {
     </div>
 
     {/* RIGHT: ACTIONS */}
-    <div className="flex flex-col sm:flex-row gap-3">
+    <div className=" flex-col sm:flex-row gap-3">
 
       <button
         onClick={() => setProfileModal(true)}
         className="
           px-4 py-2
           rounded-xl
-          bg-gray-100 hover:bg-gray-200
+          bg-blue-600 hover:bg-blue-700 mb-3
           transition
-          text-sm font-medium
+          text-sm
+          text-white 
         "
       >
         Редактировать профиль
@@ -465,7 +474,7 @@ const handleUpdateProfile = async () => {
       >
         <option value="">Выберите категорию</option>
         {categories.map((cat) => (
-          <option key={cat._id} value={cat.slug}>
+          <option key={cat._id} value={cat._id}>
             {cat.name}
           </option>
         ))}

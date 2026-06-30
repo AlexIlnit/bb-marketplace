@@ -9,6 +9,7 @@ export default function Register() {
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
 
   const [error, setError] = useState("");
@@ -23,17 +24,23 @@ export default function Register() {
       const { data } = await registerUser({
         name,
         email,
+        phone,
         password
       });
 
-      setUser(
-        {
-          id: data._id,
-          name: data.name,
-          email: data.email
-        },
-        data.token
-      );
+     setUser(
+    {
+    id: data._id,
+    name: data.name,
+    email: data.email,
+    phone: data.phone,
+    avatar: data.avatar,
+    role: data.role,
+    isBlocked: data.isBlocked,
+    createdAt: data.createdAt,
+   },
+    data.token
+    );
 
       navigate("/");
     } catch (err) {
@@ -62,20 +69,35 @@ export default function Register() {
 
           <input
             placeholder="Имя"
+            value={name}
             className="w-full p-3 border rounded-xl"
+            required
             onChange={(e) => setName(e.target.value)}
           />
 
           <input
             placeholder="Email"
+            value={email}
             className="w-full p-3 border rounded-xl"
+            required
             onChange={(e) => setEmail(e.target.value)}
+          />
+
+          <input
+            type="tel"
+            placeholder="+375 (29) 123-45-67"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            className="w-full p-3 border rounded-xl"
+            required
           />
 
           <input
             type="password"
             placeholder="Пароль"
+            value={password}
             className="w-full p-3 border rounded-xl"
+            required
             onChange={(e) => setPassword(e.target.value)}
           />
 

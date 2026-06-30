@@ -92,26 +92,6 @@ useEffect(() => {
     });
   };
 
-  // const handleUpload = async () => {
-  //   if (!imageFile) return;
-
-  //   setUploading(true);
-
-  //   try {
-  //     const { data } = await uploadImage(imageFile);
-  //     setImageUrl(data.url);
-  //   } catch (err) {
-  //     alert("Ошибка загрузки фото");
-  //   } finally {
-  //     setUploading(false);
-  //   }
-  // };
-// const formData = new FormData();
-
-// images.forEach((file) => {
-//   formData.append("images", file);
-// });
-
  const submit = async (e) => {
   e.preventDefault();
 
@@ -191,14 +171,14 @@ const availableCities = region
         Выберите категорию
       </option>
 
-      {categories.map((cat) => (
-        <option
-          key={cat._id}
-          value={cat.slug}
-        >
-          {cat.name}
-        </option>
-      ))}
+     {categories.map((cat) => (
+  <option
+    key={cat._id}
+    value={cat._id}
+  >
+    {cat.name}
+  </option>
+))}
     </select>
   </div>
 
@@ -371,7 +351,9 @@ const availableCities = region
     readOnly
     className="w-full p-3 border rounded-xl bg-gray-50"
   />
-
+<p className="text-sm text-gray-500 mt-2">
+  Изменить номер можно в профиле.
+</p>
   {!user?.phone && (
     <p className="text-sm text-red-500 mt-2">
       Добавьте номер телефона в профиле.

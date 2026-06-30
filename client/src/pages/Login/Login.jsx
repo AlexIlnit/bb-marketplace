@@ -14,6 +14,8 @@ export default function Login() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  const [phone, setPhone] = useState("");
   
 
 const submit = async (e) => {
@@ -77,6 +79,15 @@ const submit = async (e) => {
             placeholder="Email"
             className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-green-500"
             onChange={(e) => setEmail(e.target.value)}
+          />
+
+          <input
+            type="tel"
+            placeholder="+375 (29) 123-45-67"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-green-500"
+            required
           />
 
           <input
