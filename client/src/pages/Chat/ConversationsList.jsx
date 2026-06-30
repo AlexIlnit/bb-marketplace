@@ -22,6 +22,34 @@ export default function ConversationsList({
       console.log(err);
     }
   };
+  useEffect(() => {
+  socket.on("userOnline", (userId) => {
+    setConversations((prev) =>
+      prev.map((c) => ({
+        ...c,
+        members: c.members.map((m) =>
+          m._id === userId ? { ...m, online: true } : m
+        ),
+      }))
+    );
+  });
+
+  socket.on("userOffline", (userId) => {
+    setConversations((prev) =>
+      prev.map((c) => ({
+        ...c,
+        members: c.members.map((m) =>
+          m._id === userId ? { ...m, online: false } : m
+        ),
+      }))
+    );
+  });
+
+  return () => {
+    socket.off("userOnline");
+    socket.off("userOffline");
+  };
+}, []);
 
   return (
     <div className="w-full p-10">
@@ -95,6 +123,9 @@ shrink-0
           truncate
         ">
           {otherUser?.name}
+          {otherUser.online && (
+  <span className="w-2 h-2 bg-green-500 rounded-full" />
+)}
         </h3>
 
         <span className="

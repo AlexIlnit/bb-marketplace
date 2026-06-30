@@ -79,6 +79,14 @@ export const getMessages = async (req, res) => {
     .populate("senderId", "name avatar _id")
     .sort({ createdAt: 1 });
 
+     await Message.updateMany(
+      {
+        conversationId: req.params.id,
+        receiverId: req.user._id,
+      },
+      { isRead: true }
+    );
+
     res.json(messages);
   } catch (err) {
     res.status(500).json({ message: err.message });

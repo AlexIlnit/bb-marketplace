@@ -38,12 +38,16 @@ io.on("connection", (socket) => {
 
   socket.on("addUser", (userId) => {
     onlineUsers.set(userId, socket.id);
+     // 🔥 уведомляем всех что юзер онлайн
+  socket.broadcast.emit("userOnline", userId);
   });
+
+  
 
   socket.on("sendMessage", ({ receiverId, senderId, message }) => {
   const receiverSocket = onlineUsers.get(receiverId);
   const senderSocket = onlineUsers.get(senderId);
-
+    
   if (receiverSocket) {
     io.to(receiverSocket).emit("newMessage", message);
   }
@@ -54,17 +58,22 @@ io.on("connection", (socket) => {
 });
 
   socket.on("typing", ({ receiverId, isTyping }) => {
-    const receiverSocket = onlineUsers.get(receiverId);
+  const receiverSocket = onlineUsers.get(String(receiverId));
 
-    if (receiverSocket) {
-      io.to(receiverSocket).emit("typing", isTyping);
-    }
-  });
+  if (receiverSocket) {
+    io.to(receiverSocket).emit("typing", {
+      userId: socket.userId,
+      isTyping,
+    });
+  }
+});
 
   socket.on("disconnect", () => {
     for (const [userId, socketId] of onlineUsers.entries()) {
       if (socketId === socket.id) {
         onlineUsers.delete(userId);
+        // 🔥 уведомляем оффлайн
+      io.emit("userOffline", userId);
         break;
       }
     }

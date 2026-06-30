@@ -91,6 +91,7 @@ export default function ChatRoom({ chatId, otherUserId }) {
       await sendMessage({
         conversationId: chatId,
         text: temp,
+        receiverId: otherUserId,
       });
 
       socket.emit("sendMessage", {
@@ -154,7 +155,18 @@ export default function ChatRoom({ chatId, otherUserId }) {
                     }`}
                   >
                     {m.text}
+                    
                   </div>
+                  {isMe && (
+  <div className="text-xs text-gray-500 text-right mt-1">
+    {m.isRead ? "✓✓ прочитано" : "✓ отправлено"}
+  </div>
+)}
+{!m.isRead && isMe && (
+  <span className="text-[10px] text-gray-400">
+    отправлено
+  </span>
+)}
                 </div>
 
                 {isMe && (
@@ -193,7 +205,7 @@ export default function ChatRoom({ chatId, otherUserId }) {
 
         <button
           onClick={handleSendMessage}
-          className="bg-green-600 text-white px-4 rounded-xl"
+          className="bg-blue-600 text-white px-4 rounded-xl"
         >
           ➤
         </button>
