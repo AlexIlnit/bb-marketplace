@@ -8,4 +8,13 @@ export default defineConfig({
     react(),
     tailwindcss()
   ],
+  server: {
+    host: true,
+    port: 5173,
+    allowedHosts: [
+      "alexbox.pro",
+      "www.alexbox.pro",
+      "api.alexbox.pro",
+    ],
+  },
 })

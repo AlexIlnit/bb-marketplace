@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getConversations } from "../../api/chatApi";
 import { useAuthStore } from "../../store/authStore";
+import { socket } from "../../socket";
 
 export default function ConversationsList({
   selectedChat,

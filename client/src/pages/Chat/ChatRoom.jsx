@@ -39,13 +39,43 @@ export default function ChatRoom({ chatId, otherUserId }) {
     return () => socket.off("newMessage", handler);
   }, []);
 
+useEffect(() => {
+  const handler = ({ conversationId }) => {
+    if (conversationId !== chatId) return;
+
+    setMessages(prev =>
+      prev.map(m => {
+        const sender =
+          typeof m.senderId === "object"
+            ? m.senderId._id
+            : m.senderId;
+
+        const isMe = sender === user._id;
+
+        return {
+          ...m,
+          // только входящие сообщения становятся read
+          isRead: isMe ? m.isRead : true,
+        };
+      })
+    );
+  };
+
+  socket.on("messagesRead", handler);
+  return () => socket.off("messagesRead", handler);
+}, [chatId, user._id]);
+
   // 📡 typing
   useEffect(() => {
-    const handler = (status) => setTyping(status);
+  const handler = ({ senderId, isTyping }) => {
+    if (senderId !== otherUserId) return;
+    setTyping(isTyping);
+  };
 
-    socket.on("typing", handler);
-    return () => socket.off("typing", handler);
-  }, []);
+  socket.on("typing", handler);
+
+  return () => socket.off("typing", handler);
+}, [otherUserId]);
 
   // 📜 stable scroll
   useEffect(() => {
@@ -58,19 +88,23 @@ export default function ChatRoom({ chatId, otherUserId }) {
   }, [messages.length]);
 
   // ✍️ typing emit
-  const handleTyping = () => {
+  const typingTimeout = useRef(null);
+
+const handleTyping = () => {
+  socket.emit("typing", {
+    receiverId: otherUserId,
+    isTyping: true,
+  });
+
+  clearTimeout(typingTimeout.current);
+
+  typingTimeout.current = setTimeout(() => {
     socket.emit("typing", {
       receiverId: otherUserId,
-      isTyping: true,
+      isTyping: false,
     });
-
-    setTimeout(() => {
-      socket.emit("typing", {
-        receiverId: otherUserId,
-        isTyping: false,
-      });
-    }, 800);
-  };
+  }, 500);
+};
 
   // 📤 send message
   const handleSendMessage = async () => {
@@ -79,20 +113,14 @@ export default function ChatRoom({ chatId, otherUserId }) {
     const temp = text;
     setText("");
 
-    const newMsg = {
-      _id: Date.now(),
-      text: temp,
-      senderId: user._id,
-    };
-
-    setMessages((prev) => [...prev, newMsg]);
-
     try {
       await sendMessage({
         conversationId: chatId,
         text: temp,
         receiverId: otherUserId,
       });
+
+    await loadMessages();
 
       socket.emit("sendMessage", {
         receiverId: otherUserId,
@@ -162,11 +190,7 @@ export default function ChatRoom({ chatId, otherUserId }) {
     {m.isRead ? "✓✓ прочитано" : "✓ отправлено"}
   </div>
 )}
-{!m.isRead && isMe && (
-  <span className="text-[10px] text-gray-400">
-    отправлено
-  </span>
-)}
+
                 </div>
 
                 {isMe && (

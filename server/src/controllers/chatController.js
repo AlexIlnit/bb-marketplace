@@ -73,19 +73,42 @@ export const sendMessage = async (req, res) => {
 
 export const getMessages = async (req, res) => {
   try {
-    const messages = await Message.find({
-      conversationId: req.params.id,
-    })
-    .populate("senderId", "name avatar _id")
-    .sort({ createdAt: 1 });
+    const conversationId = req.params.id;
 
-     await Message.updateMany(
+    // 1. обновляем прочитанные сообщения
+    const result = await Message.updateMany(
       {
-        conversationId: req.params.id,
+        conversationId,
         receiverId: req.user._id,
+        isRead: false,
       },
       { isRead: true }
     );
+
+    // 2. если есть изменения → уведомляем отправителя
+    if (result.modifiedCount > 0) {
+      const conversation = await Conversation.findById(conversationId);
+
+      const senderId = conversation.members
+        .map(String)
+        .find((id) => id !== String(req.user._id));
+
+      const onlineUsers = req.app.get("onlineUsers");
+      const io = req.app.get("io");
+
+      const senderSocket = onlineUsers.get(senderId);
+
+      if (senderSocket) {
+        io.to(senderSocket).emit("messagesRead", {
+          conversationId,
+        });
+      }
+    }
+
+    // 3. возвращаем сообщения
+    const messages = await Message.find({ conversationId })
+      .populate("senderId", "name avatar _id")
+      .sort({ createdAt: 1 });
 
     res.json(messages);
   } catch (err) {
