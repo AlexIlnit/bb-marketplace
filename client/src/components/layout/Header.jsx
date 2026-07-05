@@ -215,7 +215,7 @@ useEffect(() => {
     }
   }}
   placeholder="Поиск товаров"
-  className="bg-transparent p-3 w-full outline-none"
+  className="bg-transparent p-2 w-full outline-none"
 />
 
             </div>
@@ -228,22 +228,24 @@ useEffect(() => {
     text-blue-600
   "
 >
-  {city || "Вся Беларусь"}
+  📍{city || "Вся Беларусь"}
 </button>
           </div>
 
           {/* RIGHT */}
-          <div className="hidden md:flex items-center gap-6">
+          <div className="hidden md:flex items-center gap-6 ">
 
-            <Link to="/favorites" aria-label="Избранное">
-              <Heart className="cursor-pointer" />
+            <Link to="/favorites"
+            className="relative flex items-center justify-center w-10 h-10 rounded-full hover:bg-blue-100 transition"
+            aria-label="Избранное">
+              <Heart className="cursor-pointer text-blue-500 " />
             </Link>
 
 <Link
   to="/messages"
-  className="relative flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 transition"
+  className="relative flex items-center justify-center w-10 h-10 rounded-full hover:bg-blue-100 transition"
 >
-  <MessageCircle className="cursor-pointer" />
+  <MessageCircle className="cursor-pointer text-blue-500" />
 
   {/* badge */}
   {/* <span className="absolute -top-1 -right-1 bg-green-600 text-white text-[10px] px-1.5 rounded-full">
@@ -253,7 +255,7 @@ useEffect(() => {
 
             {/* 🔔 NOTIFICATIONS */}
             {user && (
-              <div className="relative" ref={dropdownRef}>
+              <div className="relative flex items-center justify-center w-10 h-10 rounded-full hover:bg-blue-100 transition  " ref={dropdownRef}>
                 <button
                   onClick={() => setOpenNotif(!openNotif)}
                   className="relative"
@@ -338,7 +340,7 @@ useEffect(() => {
             {/* BUTTON */}
             {user && (
               <Link to="/create-listing">
-  <button className="bg-blue-600 text-white rounded-xl flex items-center justify-center transition-all
+  <button className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl flex items-center justify-center transition-all
     {/* Стили по умолчанию (для экранов МЕНЬШЕ 1200px): квадратная кнопка */}
     w-10 h-10 p-0
     {/* Стили для экранов ОТ 1200px (xl и выше): прямоугольная кнопка с текстом */}

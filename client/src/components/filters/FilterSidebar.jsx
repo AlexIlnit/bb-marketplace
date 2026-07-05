@@ -51,17 +51,18 @@ export default function FilterSidebar() {
   const availableCities = region && regions[region] ? regions[region] : [];
 
   const fieldClass = `
-    border border-gray-300 bg-white text-gray-900
-    rounded-xl p-3 w-full
+    border border-blue-100 bg-white text-gray-900
+    rounded-xl p-2 w-full
     focus:outline-none focus:border-blue-500
-    text-sm
+    text-xs
+    
   `;
 
   // 🔥 Выносим контент фильтров в отдельную функцию внутри компонента
   const renderFiltersContent = () => (
     <div className="flex flex-col gap-4">
-      <label className="flex flex-col gap-1">
-        <span>Поиск</span>
+      <label className="flex flex-col  text-black  gap-1">
+        <span>По названию </span>
         <input
           name="search"
           value={localSearch}
@@ -73,7 +74,7 @@ export default function FilterSidebar() {
         />
       </label>
 
-      <label className="flex flex-col gap-1">
+      <label className="flex flex-col gap-1 text-black">
         <span>Область</span>
         <select
           value={region}
@@ -86,15 +87,20 @@ export default function FilterSidebar() {
           className={fieldClass}
         >
           <option value="">Все области</option>
-          {Object.keys(regions).map((regionName) => (
-            <option key={regionName} value={regionName}>
-              {regionName}
-            </option>
-          ))}
+          {Object.keys(regions)
+  .filter(
+    (regionName) =>
+      regionName !== "Все города"
+  )
+  .map((regionName) => (
+    <option key={regionName} value={regionName}>
+      {regionName}
+    </option>
+  ))}
         </select>
       </label>
 
-      <label className="flex flex-col gap-1">
+      <label className="flex flex-col gap-1 text-black">
         <span>Город</span>
         <select
           value={city}
@@ -113,7 +119,7 @@ export default function FilterSidebar() {
         </select>
       </label>
 
-      <label className="flex flex-col gap-1">
+      <label className="flex flex-col gap-1 text-black">
         <span>Категория</span>
         <select
           name="category"
@@ -130,7 +136,7 @@ export default function FilterSidebar() {
         </select>
       </label>
 
-      <label className="flex flex-col gap-1">
+      <label className="flex flex-col gap-1 text-black">
         <span>Цена от</span>
         <input
           name="priceFrom"
@@ -141,7 +147,7 @@ export default function FilterSidebar() {
         />
       </label>
 
-      <label className="flex flex-col gap-1">
+      <label className="flex flex-col gap-1 text-black">
         <span>Цена до</span>
         <input
           name="priceTo"
@@ -152,7 +158,7 @@ export default function FilterSidebar() {
         />
       </label>
 
-      <label className="flex flex-col gap-1">
+      <label className="flex flex-col gap-1 text-black">
         <span>Состояние</span>
         <select
           name="condition"
@@ -166,7 +172,7 @@ export default function FilterSidebar() {
         </select>
       </label>
 
-      <label className="flex flex-col gap-1">
+      <label className="flex flex-col gap-1 text-black">
         <span>Продавец</span>
         <select
           name="sellerType"
@@ -192,7 +198,10 @@ export default function FilterSidebar() {
           setRegion("");
           setCity("");
         }}
-        className="bg-gray-200 py-2 rounded-xl"
+        className=" bg-blue-600
+     hover:bg-blue-700 py-2 rounded-xl text-white
+        
+        "
       >
         Сброс
       </button>

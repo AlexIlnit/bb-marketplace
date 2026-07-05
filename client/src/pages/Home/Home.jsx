@@ -66,7 +66,7 @@ export default function Home() {
 
         <section className="w-full">
 
-          <h3 className="text-3xl font-bold mb-8">
+          <h3 className="text-3xl font-bold mb-8 bg-linear-to-r from-yellow-300 via-yellow-500 to-amber-300 bg-clip-text text-transparent">
             Свежие объявления
           </h3>
 
@@ -75,7 +75,7 @@ export default function Home() {
           </div>
 
           {/* ✔️ ВОТ ТУТ ГЛАВНОЕ ИЗМЕНЕНИЕ */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5">
             {listings.map((listing, index) => (
               <ListingCard
                 key={listing._id}

@@ -15,10 +15,10 @@ function CategoriesBar() {
   }, [fetchCategories]);
 
   return (
-    <div className="mb-10">
-      <h2 className="text-xl font-semibold mb-4">Категории</h2>
+    <div className="mb-5 mt-5 ">
+      {/* <h2 className="text-xl font-semibold mb-4 text-yellow-500 ">Категории</h2> */}
 
-      <div className="w-full overflow-x-auto scrollbar-hide">
+      <div className=" w-full overflow-x-auto scrollbar-hide">
         <div className="flex gap-3 pr-4">
 
           <button

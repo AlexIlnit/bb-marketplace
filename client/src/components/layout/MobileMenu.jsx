@@ -4,6 +4,7 @@ import {
   User,
   LogOut,
   PlusCircle,
+  MessageCircle,
   Shield
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
@@ -53,6 +54,16 @@ export default function MobileMenu({ open, onClose, user }) {
             <Heart size={18} />
             Избранное
           </Link>
+          {/* messages */}
+          <Link
+            to="/messages"
+            onClick={onClose}
+            className="flex items-center gap-2"
+          >
+            <MessageCircle size={18} />
+            Сообщения
+          </Link>
+          
 
           {/* CREATE LISTING (как desktop) */}
           {user && (
