@@ -81,7 +81,7 @@ const images = listing.images || [];
   <img
     src={images[currentImage]}
     alt={listing.title}
-    className="absolute inset-0 w-full h-full object-cover"
+    className="absolute inset-0 w-full h-full object-cover rounded-xl"
   />
 
   {images.length > 1 && (
@@ -130,12 +130,12 @@ const images = listing.images || [];
         {/* Информация */}
         <div>
 
-          <h1 className="text-3xl font-bold mb-4">
+          <h1 className="text-2xl font-bold text-black mb-4">
             {listing.title}
           </h1>
 
-          <p className="text-4xl font-bold text-green-600 mb-6">
-            {listing.price} BYN
+          <p className="text-2xl font-bold text-blue-600 mb-6">
+            {listing.price} р.
           </p>
 
           <div className="space-y-3 text-gray-600">

@@ -80,7 +80,7 @@ sizes="
       <div className="text-blue-600 font-bold text-xl">
         {listing.price} р.
       </div>
-      <p className="font-semibold">{listing.title}</p>
+      <p className="font-semibold text-black">{listing.title}</p>
 
   
 
