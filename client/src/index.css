@@ -63,8 +63,14 @@
 
 body {
   margin: 0;
-  font-family: var(--sans);
-  background: #f5f7fb;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  background: #f9fafb;
+  color: #111827;
+
 }
 
 /* IMPORTANT: REMOVE fixed width (it breaks layout) */

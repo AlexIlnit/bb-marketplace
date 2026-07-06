@@ -19,14 +19,14 @@ useEffect(() => {
     <ChatLayout>
       <div className="flex h-[calc(100vh-80px)] overflow-hidden">
 
-        <div className="w-1/3 border-r bg-white overflow-y-auto">
+        <div className="w-1/2 border-r bg-white overflow-y-auto">
           <ConversationsList
             selectedChat={selectedChat}
             setSelectedChat={setSelectedChat}
           />
         </div>
 
-        <div className="w-2/3 bg-gray-50 flex flex-col overflow-hidden">
+        <div className="w-1/2 bg-gray-50 flex flex-col overflow-hidden">
           {selectedChat ? (
             <ChatRoom chatId={selectedChat} />
           ) : (

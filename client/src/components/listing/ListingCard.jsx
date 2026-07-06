@@ -31,75 +31,80 @@ const imageUrl = listing.images?.[0]
   : "";
 
   return (
-    <div onClick={handleClick}
-      
-      className="relative w-full bg-white rounded-2xl shadow-sm overflow-hidden cursor-pointer"
-    >
+    <div
+  onClick={handleClick}
+  className="relative bg-white rounded-2xl shadow-sm overflow-hidden cursor-pointer flex sm:block"
+>
+  <button
+    aria-label={
+      isFavorite
+        ? "Убрать из избранного"
+        : "Добавить в избранное"
+    }
+    onClick={(e) => {
+      e.stopPropagation();
+      toggleFavorite(listing._id);
+    }}
+    className="absolute top-3 right-3 bg-white p-2 rounded-full shadow z-10"
+  >
+    <Heart
+      size={18}
+      fill={isFavorite ? "red" : "none"}
+      color={isFavorite ? "red" : "black"}
+    />
+  </button>
 
-      <button
-        aria-label={
-        isFavorite
-          ? "Убрать из избранного"
-          : "Добавить в избранное"
-        }
-        onClick={(e) => {
-          e.stopPropagation(); // ❗ важно
-          toggleFavorite(listing._id);
-        }}
-        className="absolute top-3 right-3 bg-white p-2 rounded-full shadow z-10"
-      >
-        <Heart
-          size={18}
-          fill={isFavorite ? "red" : "none"}
-          color={isFavorite ? "red" : "black"}
-        />
-      </button>
-<div className="aspect-3/2 relative overflow-hidden">
-<img
-  src={imageUrl}
-srcSet={`
-  ${listing.images[0].replace("/upload/", "/upload/f_auto,q_auto:eco,w_180/")} 180w,
-  ${listing.images[0].replace("/upload/", "/upload/f_auto,q_auto:eco,w_250/")} 250w,
-  ${listing.images[0].replace("/upload/", "/upload/f_auto,q_auto:eco,w_350/")} 350w
-`}
-sizes="
-(max-width: 640px) 100vw,
-(max-width: 768px) 50vw,
-(max-width: 1280px) 33vw,
-25vw
-"
-  alt={listing.title}
-  loading={priority ? "eager" : "lazy"}
-  fetchPriority={priority ? "high" : undefined}
-  decoding="async"
-  className="absolute inset-0 w-full h-full object-cover"
-/>
-</div>
+  {/* Фото */}
+  <div className="relative w-32 h-32 shrink-0 sm:w-full sm:h-auto sm:aspect-3/2 overflow-hidden">
+    <img
+      src={imageUrl}
+      srcSet={`
+        ${listing.images[0].replace("/upload/", "/upload/f_auto,q_auto:eco,w_180/")} 180w,
+        ${listing.images[0].replace("/upload/", "/upload/f_auto,q_auto:eco,w_250/")} 250w,
+        ${listing.images[0].replace("/upload/", "/upload/f_auto,q_auto:eco,w_350/")} 350w
+      `}
+      sizes="
+      (max-width:640px) 128px,
+      (max-width:768px) 50vw,
+      (max-width:1280px) 33vw,
+      25vw
+      "
+      alt={listing.title}
+      loading={priority ? "eager" : "lazy"}
+      fetchPriority={priority ? "high" : undefined}
+      decoding="async"
+      className="absolute inset-0 w-full h-full object-cover"
+    />
+  </div>
 
-      <div className="p-4">
+  {/* Информация */}
+  <div className="flex-1 p-3 flex flex-col justify-between">
+    <div>
       <div className="text-blue-600 font-bold text-xl">
         {listing.price} р.
       </div>
-      <p className="font-semibold text-black">{listing.title}</p>
 
-  
+      <p className="font-semibold text-black line-clamp-2">
+        {listing.title}
+      </p>
 
       <div className="text-xs pt-1 text-gray-500">
         {listing.city}
         {listing.region &&
           `, ${listing.region.replace("область", "обл.")}`}
       </div>
+    </div>
 
-  <div className="text-xs text-gray-400 mt-2">
-    {new Date(listing.createdAt).toLocaleString("ru-RU", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    })}
+    <div className="text-xs text-gray-400 mt-2">
+      {new Date(listing.createdAt).toLocaleString("ru-RU", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      })}
+    </div>
   </div>
-</div>
 </div>
   );
 }

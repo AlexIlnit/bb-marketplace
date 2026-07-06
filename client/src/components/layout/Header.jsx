@@ -271,7 +271,16 @@ useEffect(() => {
 
                 {/* DROPDOWN */}
                 {openNotif && (
-                  <div className="absolute right-0 mt-3 w-80 bg-white border shadow-xl rounded-xl z-50">
+                  <div className="fixed
+      top-20
+      right-6
+      w-80
+      bg-white
+      rounded-2xl
+      shadow-2xl
+      border
+      z-9999
+      overflow-hidden">
                     <div className="p-3 border-b font-semibold">
                       Уведомления
                     </div>
