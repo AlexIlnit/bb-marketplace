@@ -5,7 +5,8 @@ import {
   Search,
   LogOut,
   MessageCircle,
-  X
+  X,
+  MapPin
 } from "lucide-react";
 
 import { useRef, useState, useEffect } from "react";
@@ -219,16 +220,25 @@ useEffect(() => {
 />
 
             </div>
-            <button
+<button
   onClick={() => setCityModal(true)}
   className="
     flex items-center gap-2
     px-2 py-1
     rounded-xl
     text-blue-600
+    hover:text-blue-700
+    transition-colors
   "
 >
-  📍{city || "Вся Беларусь"}
+  <MapPin
+    size={22}
+    className="text-blue-500 shrink-0"
+  />
+
+  <span className="font-semibold">
+    {city || "Вся Беларусь"}
+  </span>
 </button>
           </div>
 
@@ -349,19 +359,59 @@ useEffect(() => {
             {/* BUTTON */}
             {user && (
               <Link to="/create-listing">
-  <button className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl flex items-center justify-center transition-all
-    {/* Стили по умолчанию (для экранов МЕНЬШЕ 1200px): квадратная кнопка */}
-    w-10 h-10 p-0
-    {/* Стили для экранов ОТ 1200px (xl и выше): прямоугольная кнопка с текстом */}
-    xl:w-auto xl:h-auto xl:px-4 xl:py-2"
+  <button
+    className="
+      group
+      flex items-center justify-center
+      h-11 w-11
+      xl:w-auto xl:px-5
+      rounded-2xl
+
+      bg-linear-to-b
+      from-blue-500
+      to-blue-700
+
+      shadow-lg
+      shadow-blue-500/30
+
+      hover:from-blue-400
+      hover:to-blue-600
+      hover:shadow-xl
+      hover:shadow-blue-500/40
+
+      active:translate-y-0.5
+      active:shadow-md
+
+      transition-all
+      duration-200
+
+      text-white
+      font-semibold
+      select-none
+    "
   >
-    {/* Иконка плюса: видна ВСЕГДА */}
-    <span className="text-2xl font-bold flex items-center justify-center leading-none select-none">
-  +
-</span>
-    
-    {/* Текст: скрыт на мобильных/планшетах, появляется только от 1200px */}
-    <span className="hidden xl:inline xl:ml-2">
+    <span
+      className="
+        text-2xl
+        font-bold
+        leading-none
+        group-hover:rotate-90
+        transition-transform
+        duration-300
+      "
+    >
+      +
+    </span>
+
+    <span
+      className="
+        hidden xl:block
+        ml-3
+        whitespace-nowrap
+        text-sm
+        font-semibold
+      "
+    >
       Подать объявление
     </span>
   </button>
