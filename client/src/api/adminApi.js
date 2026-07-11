@@ -25,3 +25,6 @@ export const getAdminChatMessages = (id) =>
 
 export const deleteChat = (id) =>
   api.delete(`/admin/chats/${id}`);
+
+export const toggleAdmin = (id) =>
+  api.patch(`/admin/users/${id}/admin`);

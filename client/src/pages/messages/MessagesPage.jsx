@@ -6,7 +6,6 @@ import { useLocation } from "react-router-dom";
 
 export default function MessagesPage() {
   const location = useLocation();
-
 const [selectedChat, setSelectedChat] = useState(null);
 
 useEffect(() => {

@@ -5,6 +5,8 @@ import MainLayout from "../../layouts/MainLayout";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import api from "../../api/axios";
+import { Heart } from "lucide-react";
+import { useFavoriteStore } from "../../store/favoriteStore";
 
 import SEO from "../../components/seo/Seo";
 
@@ -17,6 +19,17 @@ export default function Listing() {
   const [loading, setLoading] = useState(true);
   const [currentImage, setCurrentImage] = useState(0);
   const [showPhone, setShowPhone] = useState(false);
+
+  const isFavorite = useFavoriteStore(
+  (state) =>
+    state.favorites.some(
+      (fav) => fav.listing?._id === listing._id
+    )
+  );
+
+const toggleFavorite = useFavoriteStore(
+  (state) => state.toggleFavorite
+);
 
   useEffect(() => {
     loadListing();
@@ -62,6 +75,7 @@ const url = window.location.href;
 const images = listing.images || [];
   const image = listing.images?.[0];
 
+
   return (
     <MainLayout>
       
@@ -78,6 +92,35 @@ const images = listing.images || [];
 
         {/* Фото */}
        <div className="aspect-3/2 relative overflow-hidden">
+       
+  <button
+    aria-label={
+      isFavorite
+        ? "Убрать из избранного"
+        : "Добавить в избранное"
+    }
+    onClick={(e) => {
+      e.stopPropagation();
+      toggleFavorite(listing._id);
+    }}
+    className="
+      absolute
+      top-4
+      right-4
+      bg-white
+      p-2
+      rounded-full
+      shadow-lg
+      z-20
+    "
+  >
+    <Heart
+      size={22}
+      fill={isFavorite ? "red" : "none"}
+      color={isFavorite ? "red" : "#374151"}
+    />
+  </button>
+
   <img
     src={images[currentImage]}
     alt={listing.title}

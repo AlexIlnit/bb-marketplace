@@ -1,6 +1,7 @@
 import { deleteUser } from "../../api/adminApi";
 import { toggleUserBlock } from "../../api/adminApi";
 import { useState } from "react";
+import { toggleAdmin } from "../../api/adminApi";
 
 export default function UsersTable({ users, reload, setUsers}) {
   const [search, setSearch] = useState("");
@@ -29,6 +30,20 @@ const handleToggleBlock = async (id) => {
       u._id === id ? res.data : u
     )
   );
+};
+
+const handleToggleAdmin = async (id) => {
+  const res = await toggleAdmin(id);
+
+  setUsers((prev) =>
+    prev.map((u) =>
+      u._id === id ? res.data : u
+    )
+  );
+
+  if (selectedUser?._id === id) {
+    setSelectedUser(res.data);
+  }
 };
 
   return (
@@ -245,6 +260,21 @@ const handleToggleBlock = async (id) => {
   "
 >
   Удалить
+</button>
+<button
+  onClick={(e) => {
+    e.stopPropagation();
+    handleToggleAdmin(u._id);
+  }}
+  className={`w-full py-2 rounded-xl text-white ${
+    u.role === "admin"
+      ? "bg-orange-500 hover:bg-orange-600"
+      : "bg-indigo-600 hover:bg-indigo-700"
+  }`}
+>
+  {u.role === "admin"
+    ? "Снять admin"
+    : "Назначить admin"}
 </button>
 </div>
           </div>

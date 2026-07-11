@@ -6,10 +6,10 @@ export default function ChatLayout({ children }) {
   return (
     <>
     <Header />
-    <div className="h-screen flex flex-col overflow-hidden">
+    <div className=" flex flex-col overflow-hidden">
       {children}
     </div>
-    
     </>
+    
   );
 }

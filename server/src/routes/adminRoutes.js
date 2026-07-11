@@ -4,7 +4,7 @@ import Listing from "../models/Listing.js";
 import { adminOnly } from "../middleware/adminMiddleware.js";
 import { createNotification } from "../utils/createNotification.js";
 import { authMiddleware } from "../middleware/auth.js";
-import { changeAdminPassword } from "../controllers/adminController.js";
+import { changeAdminPassword, toggleAdmin } from "../controllers/adminController.js";
 import bcrypt from "bcryptjs";
 
 const router = express.Router();
@@ -49,6 +49,8 @@ router.delete("/users/:id", authMiddleware, adminOnly, async (req, res) => {
   await User.findByIdAndDelete(req.params.id);
   res.json({ success: true });
 });
+
+router.patch("/users/:id/admin", authMiddleware, adminOnly, toggleAdmin);
 
 router.patch("/users/:id/block", authMiddleware, adminOnly, async (req, res) => {
   try {

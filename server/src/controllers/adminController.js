@@ -32,7 +32,7 @@ export const approveListing = async (req, res) => {
     const listing = await Listing.findByIdAndUpdate(
       req.params.id,
       { status: "approved" },
-      { new: true }
+      { returnDocument: "after" }
     );
 
     res.json(listing);
@@ -47,7 +47,7 @@ export const rejectListing = async (req, res) => {
     const listing = await Listing.findByIdAndUpdate(
       req.params.id,
       { status: "rejected" },
-      { new: true }
+      { returnDocument: "after" }
     );
 
     res.json(listing);
@@ -107,5 +107,30 @@ export const changeAdminPassword = async (req, res) => {
 
   } catch (err) {
     res.status(500).json({ message: err.message });
+  }
+};
+
+// controller
+export const toggleAdmin = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+
+    if (!user)
+      return res.status(404).json({
+        message: "Пользователь не найден",
+      });
+
+    user.role =
+      user.role === "admin"
+        ? "user"
+        : "admin";
+
+    await user.save();
+
+    res.json(user);
+  } catch (err) {
+    res.status(500).json({
+      message: err.message,
+    });
   }
 };

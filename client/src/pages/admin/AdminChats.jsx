@@ -20,9 +20,9 @@ export default function AdminChats() {
   }, []);
 
   // авто-scroll вниз при открытии/новых сообщениях
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  // useEffect(() => {
+  //   messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  // }, [messages]);
 
   const loadChats = async () => {
     const { data } = await getAdminChats();
