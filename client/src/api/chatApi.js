@@ -34,3 +34,6 @@ export const sendMessage = ({
     text,
     receiverId,
   });
+
+  export const deleteConversation = (id) =>
+  API.delete(`/chat/conversation/${id}`);

@@ -23,6 +23,17 @@ const userSchema = new mongoose.Schema(
       default: "",
     },
 
+    rating: {
+     average: {
+     type: Number,
+     default: 0,
+    },
+    count: {
+    type: Number,
+    default: 0,
+     },
+    },
+
     phone: {
       type: String,
       required: true,

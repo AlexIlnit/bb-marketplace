@@ -9,6 +9,8 @@ import favoriteRoutes from "./routes/favoriteRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
 import adminChatRoutes from "./routes/adminChatRoutes.js";
+import ratingRoutes from "./routes/ratingRoutes.js";
+import dealRoutes from "./routes/dealRoutes.js";
 
 const app = express();
 
@@ -33,6 +35,10 @@ app.use("/api/categories", categoryRoutes);
 app.use("/api/notifications", notificationRoutes);
 
 app.use("/api/admin", adminChatRoutes);
+
+app.use("/api/ratings", ratingRoutes);
+
+app.use("/api/deal", dealRoutes);
 
 app.get("/", (req, res) => {
   res.json({

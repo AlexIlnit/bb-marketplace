@@ -312,9 +312,46 @@ const images = listing.images || [];
 
     <div>
 
-      <div className="font-semibold text-lg">
-        {listing.user?.name}
-      </div>
+      <div className="flex items-center gap-2">
+  <div className="font-semibold text-lg">
+    {listing.user?.name}
+  </div>
+
+  {/* {listing.user?.rating?.count > 0 && (
+    <div className="flex items-center gap-1">
+      <span className="text-yellow-500">
+        ★
+      </span>
+
+      <span className="text-sm font-medium">
+        {listing.user.rating.average}
+      </span>
+
+      <span className="text-xs text-gray-500">
+        ({listing.user.rating.count})
+      </span>
+    </div>
+  )} */}
+<div className="flex items-center gap-2">
+  {listing.user?.rating?.count > 0 ? (
+    <>
+      <span className="text-yellow-500">★</span>
+
+      <span className="text-sm font-medium">
+        {listing.user.rating.average.toFixed(1)}
+      </span>
+
+      <span className="text-xs text-gray-500">
+        ({listing.user.rating.count})
+      </span>
+    </>
+  ) : (
+    <span className="text-sm text-gray-500">
+      Нет отзывов
+    </span>
+  )}
+</div>
+</div>
 
       <div className="text-gray-500 text-sm">
         Объявлений:

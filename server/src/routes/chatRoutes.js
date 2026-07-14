@@ -8,6 +8,7 @@ import {
   sendMessage,
   getMessages,
   getConversations,
+  deleteConversation
  } from "../controllers/chatController.js";
 
 const router = express.Router();
@@ -24,4 +25,5 @@ router.get("/messages/:id", authMiddleware, getMessages);
 // 📌 список всех диалогов пользователя
 router.get("/conversations", authMiddleware, getConversations);
 
+router.delete("/conversation/:id", authMiddleware, deleteConversation);
 export default router;

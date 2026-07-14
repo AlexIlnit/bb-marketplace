@@ -1,11 +1,13 @@
 import Conversation from "../models/Conversation.js";
 import Message from "../models/Message.js";
+import Deal from "../models/Deal.js";
 
 
 
 
 export const getConversations = async (req, res) => {
   try {
+
     const conversations = await Conversation.find({
       members: req.user._id,
     })
@@ -13,14 +15,40 @@ export const getConversations = async (req, res) => {
       .populate("listing", "title images")
       .sort({ updatedAt: -1 });
 
-    res.json(conversations);
+
+    const result = await Promise.all(
+      conversations.map(async (conversation) => {
+
+        const deal = await Deal.findOne({
+          conversation: conversation._id,
+        });
+
+
+        return {
+          ...conversation.toObject(),
+          deal,
+        };
+
+      })
+    );
+
+
+    res.json(result);
+
+
   } catch (err) {
+
+    console.error(
+      "GET CONVERSATIONS ERROR:",
+      err
+    );
+
     res.status(500).json({
       message: err.message,
     });
+
   }
 };
-
 export const sendMessage = async (req, res) => {
   const onlineUsers = req.app.get("onlineUsers");
   const io = req.app.get("io");
@@ -130,10 +158,69 @@ export const getOrCreateConversation = async (req, res) => {
         members: [req.user._id, userId],
         listing: listingId,
       });
+
+      await Deal.create({
+        listing: listingId,
+        buyer: req.user._id,
+        seller: userId,
+        conversation: conversation._id,
+      });
     }
 
-    res.json(conversation); // 👈 ВАЖНО: без обёрток
+    res.json(conversation);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({
+      message: err.message,
+    });
   }
+};
+
+export const deleteConversation = async(req,res)=>{
+ try{
+
+ const conversation =
+ await Conversation.findById(
+  req.params.id
+ );
+
+
+ if(!conversation){
+  return res.status(404).json({
+   message:"Диалог не найден"
+  });
+ }
+
+
+ if(
+ !conversation.members.includes(
+  req.user._id
+ )
+ ){
+ return res.status(403).json({
+  message:"Нет доступа"
+ });
+ }
+
+
+ await Message.deleteMany({
+  conversationId:req.params.id
+ });
+
+
+ await conversation.deleteOne();
+
+
+ res.json({
+  message:"Диалог удален"
+ });
+
+
+ }catch(err){
+
+ res.status(500).json({
+  message:err.message
+ });
+
+ }
+
 };

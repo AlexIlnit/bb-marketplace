@@ -145,7 +145,7 @@ export const getListings = async (req, res) => {
 export const getListingById = async (req, res) => {
   try {
     const listing = await Listing.findById(req.params.id)
-      .populate("user", "name email avatar phone")
+      .populate("user", "name email avatar phone rating")
       .populate("category")
 
     if (!listing) {
