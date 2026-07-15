@@ -1,5 +1,15 @@
 {
+   "name": "bb",
+  "private": true,
+
+  "scripts": {
+    "dev": "concurrently \"npm run dev --prefix server\" \"npm run dev --prefix client\""
+  },
+
   "dependencies": {
     "react-helmet-async": "^3.0.0"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.3"
   }
 }
