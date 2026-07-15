@@ -112,22 +112,32 @@ export const createRating = async (req, res) => {
 
 
     await User.findByIdAndUpdate(
-      seller,
-      {
-        rating:{
-          average:
-          Number(
-            average.toFixed(1)
-          ),
-          count,
-        }
-      }
-    );
+  seller,
+  {
+    rating: {
+      average: Number(
+        average.toFixed(1)
+      ),
+      count,
+    },
+  }
+);
 
+// отмечаем, что пользователь уже оставил отзыв
+if (deal.buyer.toString() === userId) {
+  deal.buyerRated = true;
+}
 
-    res.json({
-      message:"Отзыв добавлен",
-    });
+if (deal.seller.toString() === userId) {
+  deal.sellerRated = true;
+}
+
+await deal.save();
+
+res.json({
+  message: "Отзыв добавлен",
+  deal,
+});
 
 
   } catch(err){

@@ -34,6 +34,10 @@ export default function ChatRoom({ chatId, otherUserId }) {
   const isSeller = sellerId === user._id;
   const isBuyer = buyerId === user._id;
 
+  const alreadyRated =
+  (isBuyer && deal?.buyerRated) ||
+  (isSeller && deal?.sellerRated);
+
   const chatRef = useRef(null);
 
   // 📥 load messages
@@ -197,9 +201,10 @@ export default function ChatRoom({ chatId, otherUserId }) {
     try {
       // Обновляем статус сделки локально, чтобы кнопка "Оставить отзыв" исчезла
       setDeal((prev) => ({
-        ...prev,
-        buyerRated: true,
-      }));
+  ...prev,
+  buyerRated: isBuyer ? true : prev.buyerRated,
+  sellerRated: isSeller ? true : prev.sellerRated,
+}));
 
       // ЗАКРЫВАЕМ МОДАЛКУ (удаление чата убрано, чтобы он остался в списке диалогов)
       setShowRating(false); 
@@ -259,7 +264,7 @@ export default function ChatRoom({ chatId, otherUserId }) {
             </button>
           )}
 
-          {deal.status === "completed" && (
+          {deal.status === "completed"  && (
             <div className="mt-3 rounded-xl bg-green-50 border border-green-200 p-3">
               <div className="text-green-700 font-medium">
                 🎉 Сделка успешно завершена
@@ -271,14 +276,14 @@ export default function ChatRoom({ chatId, otherUserId }) {
             </div>
           )}
           
-          {deal.status === "completed" && !deal.buyerRated && (
-            <button
-              onClick={() => setShowRating(true)}
-              className="mt-3 bg-yellow-500 text-white px-4 py-2 rounded-xl"
-            >
-              ⭐ Оставить отзыв
-            </button>
-          )}
+          {deal.status === "completed" && !alreadyRated && (
+  <button
+    onClick={() => setShowRating(true)}
+    className="mt-3 bg-yellow-500 text-white px-4 py-2 rounded-xl"
+  >
+    ⭐ Оставить отзыв
+  </button>
+)}
         </div>
       )}
 
