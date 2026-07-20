@@ -21,6 +21,11 @@ export default function ChatRoom({ chatId, otherUserId }) {
   const [deal, setDeal] = useState(null);
   const [dealLoading, setDealLoading] = useState(true);
   const [showRating, setShowRating] = useState(false);
+  const [showCancelModal,setShowCancelModal] = useState(false);
+
+  const [cancelReason,setCancelReason] = useState("");
+
+  const [cancelComment,setCancelComment] = useState("");
 
   const sellerId =
     typeof deal?.seller === "object"
@@ -149,19 +154,34 @@ export default function ChatRoom({ chatId, otherUserId }) {
     }, 500);
   };
 
-  const handleCancelDeal = async () => {
-  if (!window.confirm("Отменить сделку?")) return;
+const handleCancelDeal = async () => {
+
+  if(!cancelReason){
+    alert("Выберите причину отмены");
+    return;
+  }
+
 
   try {
-    const { data } = await cancelDeal(chatId);
 
-    socket.emit("dealCancelled", {
-    conversationId: chatId,
-});
+    const {data}=await cancelDeal(
+      chatId,
+      {
+        reason: cancelReason,
+        comment: cancelComment,
+      }
+    );
+
 
     setDeal(data);
-  } catch (err) {
+
+    setShowCancelModal(false);
+
+
+  } catch(err){
+
     console.error(err);
+
   }
 };
 
@@ -263,13 +283,13 @@ export default function ChatRoom({ chatId, otherUserId }) {
               Завершить сделку
             </button>
           )}
-          {deal.status === "active" && (
-  <button
-    onClick={handleCancelDeal}
-    className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl"
-  >
-    ❌ Отменить сделку
-  </button>
+          {deal.status==="active" && (
+<button
+ onClick={()=>setShowCancelModal(true)}
+ className="bg-red-600 text-white px-4 py-2 rounded-xl"
+>
+❌ Отменить сделку
+</button>
 )}
   </div>
 
@@ -305,15 +325,41 @@ export default function ChatRoom({ chatId, otherUserId }) {
               </div>
             </div>
           )}
-          {deal.status === "cancelled" && (
+         {deal.status === "cancelled" && (
   <div className="mt-3 rounded-xl bg-red-50 border border-red-200 p-3">
+
     <div className="text-red-700 font-medium">
       ❌ Сделка отменена
     </div>
 
-    <div className="text-sm text-gray-600 mt-1">
-      Сделка была отменена одной из сторон.
+    <div className="text-sm text-gray-600 mt-2">
+      Причина:
     </div>
+
+    <div className="text-sm font-medium text-gray-800 mt-1">
+      {
+        {
+          changed_mind: "🤷 Передумал(а)",
+          sold_elsewhere: "📦 Товар уже продан",
+          could_not_agree: "💬 Не удалось договориться",
+          buyer_not_responding: "⏳ Покупатель не отвечает",
+          seller_not_responding: "⏳ Продавец не отвечает",
+          no_longer_needed: "🚫 Сделка больше не актуальна",
+          other: "✍️ Другое",
+        }[deal.cancelReason] || "Причина не указана"
+      }
+    </div>
+
+
+    {deal.cancelReason === "other" && deal.cancelComment && (
+      <div className="mt-2 text-sm text-gray-600">
+        Комментарий:
+        <div className="mt-1 italic">
+          {deal.cancelComment}
+        </div>
+      </div>
+    )}
+
   </div>
 )}
           
@@ -404,6 +450,129 @@ export default function ChatRoom({ chatId, otherUserId }) {
     onClose={() => setShowRating(false)}
     onSuccess={handleRatingSubmit}
   />
+)}
+{showCancelModal && (
+
+<div className="
+fixed inset-0
+bg-black/40
+flex
+items-center
+justify-center
+z-50
+">
+
+<div className="
+bg-white
+rounded-2xl
+p-6
+w-100
+">
+
+<h2 className="text-lg font-semibold mb-4">
+Отмена сделки
+</h2>
+
+
+<select
+value={cancelReason}
+onChange={(e)=>setCancelReason(e.target.value)}
+className="
+w-full
+border
+rounded-xl
+p-3
+mb-3
+"
+>
+
+<option value="">
+Выберите причину
+</option>
+
+<option value="changed_mind">
+🤷 Передумал(а)
+</option>
+
+<option value="sold_elsewhere">
+📦 Товар уже продан
+</option>
+
+<option value="could_not_agree">
+💬 Не удалось договориться
+</option>
+
+<option value="buyer_not_responding">
+⏳ Покупатель не отвечает
+</option>
+
+<option value="seller_not_responding">
+⏳ Продавец не отвечает
+</option>
+
+<option value="no_longer_needed">
+🚫 Сделка больше не актуальна
+</option>
+
+<option value="other">
+✍️ Другое
+</option>
+
+</select>
+
+
+{cancelReason==="other" && (
+
+<textarea
+value={cancelComment}
+onChange={(e)=>setCancelComment(e.target.value)}
+placeholder="Опишите причину..."
+className="
+w-full
+border
+rounded-xl
+p-3
+"
+/>
+
+)}
+
+
+<div className="flex gap-3 mt-5">
+
+<button
+onClick={()=>setShowCancelModal(false)}
+className="
+flex-1
+bg-gray-200
+rounded-xl
+py-2
+"
+>
+Отмена
+</button>
+
+
+<button
+onClick={handleCancelDeal}
+className="
+flex-1
+bg-red-600
+text-white
+rounded-xl
+py-2
+"
+>
+Подтвердить
+</button>
+
+</div>
+
+
+</div>
+
+</div>
+
 )}
     </div>
   );

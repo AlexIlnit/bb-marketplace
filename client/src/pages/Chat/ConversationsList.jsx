@@ -269,10 +269,29 @@ export default function ConversationsList({
         )}
 
         {conv.deal?.status === "cancelled" && (
-          <span className="text-red-600">
-            ❌ Сделка отменена
-          </span>
-        )}
+  <div className="text-red-600">
+    <div>
+      ❌ Сделка отменена
+    </div>
+
+    {conv.deal.cancelReason && (
+      <div className="text-xs text-gray-500 mt-1">
+        {
+          {
+            changed_mind: "🤷 Передумал(а)",
+            sold_elsewhere: "📦 Товар уже продан",
+            could_not_agree: "💬 Не удалось договориться",
+            buyer_not_responding: "⏳ Покупатель не отвечает",
+            seller_not_responding: "⏳ Продавец не отвечает",
+            no_longer_needed: "🚫 Сделка больше не актуальна",
+            other: "✍️ Другое",
+          }[conv.deal.cancelReason]
+        }
+      </div>
+    )}
+
+  </div>
+)}
       </div>
 
     </div>

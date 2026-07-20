@@ -57,6 +57,25 @@ const dealSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+
+    cancelReason: {
+      type: String,
+      enum: [
+    "changed_mind",
+    "sold_elsewhere",
+    "could_not_agree",
+    "buyer_not_responding",
+    "seller_not_responding",
+    "no_longer_needed",
+    "other",
+    ],
+     default: null,
+    },
+
+    cancelComment: {
+      type: String,
+      default: "",
+    },
   },
   {
     timestamps: true,

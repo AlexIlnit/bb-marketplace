@@ -13,5 +13,8 @@ export const confirmDeal = (conversationId) =>
     conversationId,
   });
 
-export const cancelDeal = (conversationId) =>
-  api.patch(`/deal/${conversationId}/cancel`);
+export const cancelDeal = (
+  conversationId,
+  data
+) =>
+  api.patch(`/deal/${conversationId}/cancel`, data);
