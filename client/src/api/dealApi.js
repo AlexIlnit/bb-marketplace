@@ -12,3 +12,6 @@ export const confirmDeal = (conversationId) =>
   api.post("/deal/confirm", {
     conversationId,
   });
+
+export const cancelDeal = (conversationId) =>
+  api.patch(`/deal/${conversationId}/cancel`);

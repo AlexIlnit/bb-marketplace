@@ -7,6 +7,7 @@ import {
   getDeal,
   requestCompletion,
   confirmDeal,
+  cancelDeal,
 } from "../../api/dealApi";
 import { deleteConversation } from "../../api/chatApi";
 
@@ -148,6 +149,22 @@ export default function ChatRoom({ chatId, otherUserId }) {
     }, 500);
   };
 
+  const handleCancelDeal = async () => {
+  if (!window.confirm("Отменить сделку?")) return;
+
+  try {
+    const { data } = await cancelDeal(chatId);
+
+    socket.emit("dealCancelled", {
+    conversationId: chatId,
+});
+
+    setDeal(data);
+  } catch (err) {
+    console.error(err);
+  }
+};
+
   // 📤 send message
   const handleSendMessage = async () => {
     if (!text.trim()) return;
@@ -229,12 +246,16 @@ export default function ChatRoom({ chatId, otherUserId }) {
           <div className="font-semibold text-lg">Сделка</div>
 
           <div className="text-sm text-gray-500 mt-1">
-            {deal.status === "completed"
-              ? "✅ Сделка завершена"
-              : "🟡 Сделка в процессе"}
-          </div>
+  {deal.status === "completed" && "✅ Сделка завершена"}
 
+  {deal.status === "active" && "🟡 Сделка в процессе"}
+
+  {deal.status === "cancelled" && "❌ Сделка отменена"}
+</div>
+
+          <div className="flex gap-3 mt-3">
           {deal.status === "active" && isSeller && !deal.completionRequested && (
+            
             <button
               onClick={handleRequestCompletion}
               className="mt-3 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl"
@@ -242,6 +263,15 @@ export default function ChatRoom({ chatId, otherUserId }) {
               Завершить сделку
             </button>
           )}
+          {deal.status === "active" && (
+  <button
+    onClick={handleCancelDeal}
+    className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl"
+  >
+    ❌ Отменить сделку
+  </button>
+)}
+  </div>
 
           {deal.status === "active" && isSeller && deal.completionRequested && (
             <div className="mt-3 text-yellow-600 text-sm">
@@ -275,6 +305,17 @@ export default function ChatRoom({ chatId, otherUserId }) {
               </div>
             </div>
           )}
+          {deal.status === "cancelled" && (
+  <div className="mt-3 rounded-xl bg-red-50 border border-red-200 p-3">
+    <div className="text-red-700 font-medium">
+      ❌ Сделка отменена
+    </div>
+
+    <div className="text-sm text-gray-600 mt-1">
+      Сделка была отменена одной из сторон.
+    </div>
+  </div>
+)}
           
           {deal.status === "completed" && !alreadyRated && (
   <button

@@ -124,3 +124,30 @@ export const confirmDeal = async (req, res) => {
     });
   }
 };
+
+export const cancelDeal = async (req, res) => {
+  const { conversationId } = req.params;
+
+  const deal = await Deal.findOne({
+    conversation: conversationId,
+  });
+
+  if (!deal) {
+    return res.status(404).json({
+      message: "Сделка не найдена",
+    });
+  }
+
+  if (deal.status !== "active") {
+    return res.status(400).json({
+      message: "Сделку уже нельзя отменить",
+    });
+  }
+
+  deal.status = "cancelled";
+  deal.completionRequested = false;
+
+  await deal.save();
+
+  res.json(deal);
+};

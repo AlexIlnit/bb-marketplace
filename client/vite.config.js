@@ -23,19 +23,23 @@ import { defineConfig } from "vite";
     // ],
 //   },
 // })
+
 export default defineConfig({
   plugins: [
     react(),
-    tailwindcss()
+    tailwindcss(),
   ],
 
   server: {
-    host: true,
+    host: "localhost",
     port: 5173,
 
     watch: {
       usePolling: true,
-      interval: 300,
+      interval: 100,
+      ignored:[
+        "**/node_modules/**"
+      ]
     },
 
     hmr: {

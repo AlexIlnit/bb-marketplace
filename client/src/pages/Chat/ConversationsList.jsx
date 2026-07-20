@@ -36,6 +36,16 @@ export default function ConversationsList({
   if (activeTab === "cancelled")
     return c.deal?.status === "cancelled";
 
+  useEffect(() => {
+    const handler = () => {
+        loadConversations();
+    };
+
+    socket.on("dealCancelled", handler);
+
+    return () => socket.off("dealCancelled", handler);
+}, []);
+
   return true;
 });
     const counts = {
