@@ -286,7 +286,7 @@ const handleCancelDeal = async () => {
           {deal.status==="active" && (
 <button
  onClick={()=>setShowCancelModal(true)}
- className="bg-red-600 text-white px-4 py-2 rounded-xl"
+ className="mt-3 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl"
 >
 ❌ Отменить сделку
 </button>
@@ -314,17 +314,22 @@ const handleCancelDeal = async () => {
             </button>
           )}
 
-          {deal.status === "completed"  && (
-            <div className="mt-3 rounded-xl bg-green-50 border border-green-200 p-3">
-              <div className="text-green-700 font-medium">
-                🎉 Сделка успешно завершена
-              </div>
+          {deal.status === "completed" && (
+  <div className="mt-3 rounded-xl bg-green-50 border border-green-200 p-3">
 
-              <div className="text-sm text-gray-600 mt-1">
-                Теперь обе стороны могут оставить отзыв.
-              </div>
-            </div>
-          )}
+    <div className="text-green-700 font-medium">
+      🎉 Сделка успешно завершена
+    </div>
+
+    <div className="text-sm text-gray-600 mt-1">
+      {alreadyRated
+        ? "⭐ Спасибо за ваш отзыв!"
+        : "Теперь вы можете оставить отзыв о сделке."
+      }
+    </div>
+
+  </div>
+)}
          {deal.status === "cancelled" && (
   <div className="mt-3 rounded-xl bg-red-50 border border-red-200 p-3">
 
