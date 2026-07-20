@@ -5,7 +5,14 @@ import { generateToken } from "../utils/jwt.js";
 // REGISTER
 export const register = async (req, res) => {
   try {
-    const { name, email, phone, password } = req.body;
+    const {
+  name,
+  email,
+  phone,
+  password,
+  acceptedTerms,
+  acceptedTermsVersion
+} = req.body;
 
     const exists = await User.findOne({ email });
 
@@ -14,6 +21,14 @@ export const register = async (req, res) => {
         message: "User already exists"
       });
     }
+    if (acceptedTerms !== true) {
+
+ return res.status(400).json({
+   message:
+   "Необходимо принять пользовательское соглашение"
+ });
+
+}
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -21,7 +36,10 @@ export const register = async (req, res) => {
       name,
       email,
       phone,
-      password: hashedPassword
+      password: hashedPassword,
+      acceptedTerms: true,
+      acceptedTermsVersion: "1.0",
+      acceptedTermsDate: new Date()
     });
 
     res.json({
@@ -31,7 +49,10 @@ export const register = async (req, res) => {
       phone: user.phone,
       token: generateToken(user._id),
       role: user.role,
-      isBlocked: user.isBlocked
+      isBlocked: user.isBlocked,
+      acceptedTerms: user.acceptedTerms,
+      acceptedTermsVersion: user.acceptedTermsVersion,
+      acceptedTermsDate: user.acceptedTermsDate
     });
   } catch (err) {
     res.status(500).json({ message: err.message });

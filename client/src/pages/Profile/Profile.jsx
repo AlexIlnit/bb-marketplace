@@ -301,6 +301,181 @@ const handleUpdateProfile = async () => {
 
   </div>
 
+  {/* DOCUMENTS */}
+
+{user?.acceptedTerms && (
+
+<div className="
+  mt-6
+  bg-linear-to-r
+  from-green-50
+  to-white
+  border
+  border-green-100
+  rounded-2xl
+  p-5
+">
+
+
+<div className="
+  flex
+  items-center
+  justify-between
+  mb-4
+">
+
+<h3 className="
+  text-lg
+  font-semibold
+  text-gray-900
+">
+  Документы и соглашения
+</h3>
+
+
+<div className="
+  bg-green-100
+  text-green-700
+  text-xs
+  px-3
+  py-1
+  rounded-full
+">
+  Принято
+</div>
+
+
+</div>
+
+
+
+<div className="
+  space-y-3
+  text-sm
+">
+
+
+<div className="
+  flex
+  items-center
+  gap-2
+  text-gray-700
+">
+
+<span className="
+  w-6
+  h-6
+  rounded-full
+  bg-green-600
+  text-white
+  flex
+  items-center
+  justify-center
+  text-xs
+">
+✓
+</span>
+
+
+Пользовательское соглашение
+
+</div>
+
+
+
+
+<div className="
+  flex
+  justify-between
+  bg-white
+  rounded-xl
+  p-3
+">
+
+<span className="text-gray-500">
+Версия документа
+</span>
+
+<span className="font-medium">
+{user.acceptedTermsVersion}
+</span>
+
+</div>
+
+
+
+<div className="
+  flex
+  justify-between
+  bg-white
+  rounded-xl
+  p-3
+">
+
+<span className="text-gray-500">
+Дата принятия
+</span>
+
+<span className="font-medium">
+
+{
+ user.acceptedTermsDate
+ ?
+ new Date(
+   user.acceptedTermsDate
+ )
+ .toLocaleDateString("ru-RU")
+ :
+ "-"
+}
+
+</span>
+
+</div>
+
+
+
+<div className="
+ flex
+ gap-4
+ pt-2
+">
+
+
+<Link
+to="/terms"
+className="
+text-green-600
+text-sm
+hover:underline
+"
+>
+Пользовательское соглашение
+</Link>
+
+
+<Link
+to="/privacy"
+className="
+text-green-600
+text-sm
+hover:underline
+"
+>
+Политика данных
+</Link>
+
+
+</div>
+
+
+
+</div>
+
+</div>
+
+)}
+
   {/* BLOCKED MESSAGE */}
   {user?.isBlocked && (
     <div className="mt-6 bg-red-50 border border-red-200 text-red-700 rounded-xl p-4">

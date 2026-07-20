@@ -18,6 +18,20 @@ const userSchema = new mongoose.Schema(
       required: true,
     },
 
+    acceptedTerms: {
+      type: Boolean,
+      default: false,
+    },
+
+    acceptedTermsVersion: {
+      type: String,
+      default: "1.0",
+    },
+
+    acceptedTermsDate: {
+      type: Date,
+    },
+
     avatar: {
       type: String,
       default: "",

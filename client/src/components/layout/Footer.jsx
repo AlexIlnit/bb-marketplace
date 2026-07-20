@@ -53,18 +53,60 @@ export default function Footer() {
             </ul>
           </div>
 
-          <div>
-            <h4 className="text-white font-semibold mb-4">
-              Помощь
-            </h4>
+<div>
+  <h4 className="text-white font-semibold mb-4">
+    Документы
+  </h4>
 
-            <ul className="space-y-2 text-sm">
-              <li>Правила сервиса</li>
-              <li>Безопасность</li>
-              <li>Поддержка</li>
-              <li>Частые вопросы</li>
-            </ul>
-          </div>
+  <ul className="space-y-2 text-sm">
+
+    <li>
+      <Link 
+        to="/privacy"
+        className="hover:text-white transition"
+      >
+        Политика обработки данных
+      </Link>
+    </li>
+
+    <li>
+      <Link 
+        to="/personal-data"
+        className="hover:text-white transition"
+      >
+        Согласие на обработку данных
+      </Link>
+    </li>
+
+    <li>
+      <Link 
+        to="/terms"
+        className="hover:text-white transition"
+      >
+        Пользовательское соглашение
+      </Link>
+    </li>
+
+    <li>
+      <Link 
+        to="/offer"
+        className="hover:text-white transition"
+      >
+        Публичная оферта
+      </Link>
+    </li>
+
+    <li>
+      <Link 
+        to="/rules"
+        className="hover:text-white transition"
+      >
+        Правила размещения объявлений
+      </Link>
+    </li>
+
+  </ul>
+</div>
 
           <div>
             <h4 className="text-white font-semibold mb-4">
