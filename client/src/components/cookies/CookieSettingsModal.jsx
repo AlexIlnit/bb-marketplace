@@ -31,7 +31,7 @@ export default function CookieSettingsModal() {
     disabled = false,
     onToggle,
   }) => (
-    <div className="flex justify-between items-center py-5 border-b last:border-b-0">
+    <div className="flex justify-between items-center py-4 border-b last:border-b-0">
       <div className="pr-5">
         <h3 className="font-semibold text-lg">
           {title}
@@ -85,31 +85,34 @@ export default function CookieSettingsModal() {
 
   return (
     <div
-      className="
-        fixed
-        inset-0
-        bg-black/50
-        backdrop-blur-sm
-        flex
-        items-center
-        justify-center
-        z-1000
-        p-4
-      "
-    >
+  className="
+    fixed
+    inset-0
+    bg-black/50
+    backdrop-blur-sm
+    flex
+    items-center
+    justify-center
+    z-1000
+    px-4
+    py-8
+    overflow-y-auto
+  "
+>
       <div
-        className="
-          bg-white
-          rounded-3xl
-          shadow-2xl
-          w-full
-          max-w-2xl
-          overflow-hidden
-        "
-      >
+  className="
+    bg-white
+    rounded-3xl
+    shadow-2xl
+    w-full
+    max-w-xl
+    max-h-[calc(100vh-4rem)]
+    overflow-y-auto
+  "
+>
         {/* Header */}
 
-        <div className="p-7 border-b">
+        <div className="p-6 border-b">
 
           <h2 className="text-3xl font-bold">
             🍪 Настройки cookies
@@ -124,7 +127,7 @@ export default function CookieSettingsModal() {
 
         {/* Content */}
 
-        <div className="px-7">
+        <div className="px-6">
 
           <CookieItem
             title="Обязательные"
@@ -160,13 +163,13 @@ export default function CookieSettingsModal() {
 
         <div
           className="
-            bg-gray-50
-            p-6
-            flex
-            flex-wrap
-            justify-end
-            gap-3
-          "
+  bg-gray-50
+  p-5
+  flex
+  flex-wrap
+  justify-end
+  gap-3
+"
         >
           <button
             onClick={closeModal}
