@@ -22,8 +22,11 @@ const ChatRoom = lazy(() => import("../pages/Chat/ChatRoom"));
 const ChatPage = lazy(() => import("../pages/Chat/ChatPage"));
 const MessagesPage = lazy(() => import("../pages/messages/MessagesPage"));
 
+const PersonalData = lazy(() => import("../pages/PersonalData"));
 const Privacy = lazy(() => import("../pages/Privacy"));
 const Terms = lazy(() => import("../pages/Terms"));
+const Offer = lazy(() => import("../pages/Offer"));
+const Rules = lazy(() => import("../pages/Rules"));
 
 // Админка (lazy — идеальное решение для тяжелых панелей управления)
 const AdminDashboard = lazy(() => import("../pages/admin/AdminDashboard"));
@@ -91,6 +94,9 @@ export default function AppRouter() {
         <Route path="/messages" element={ <ProtectedRoute><MessagesPage /></ProtectedRoute> }/>
         <Route path="/privacy"  element={<Privacy />}/>
         <Route path="/terms"  element={<Terms />} />
+        <Route path="/personal-data" element={<PersonalData />}/>
+        <Route path="/offer" element={<Offer />}/>
+        <Route path="/rules" element={<Rules />}/>
 
         <Route
           path="/admin"
