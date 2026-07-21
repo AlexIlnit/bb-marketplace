@@ -1,7 +1,8 @@
 import express from "express";
 import {
   register,
-  login
+  login,
+  verifyEmail
 } from "../controllers/authController.js";
 import { authMiddleware } from "../middleware/auth.js";
 import User from "../models/User.js";
@@ -15,6 +16,7 @@ router.get("/me", authMiddleware, async (req, res) => {
 });
 
 router.post("/register", register);
+router.get("/verify-email/:token", verifyEmail);
 router.post("/login", login);
 router.put("/profile", authMiddleware, async (req, res) => {
   try {

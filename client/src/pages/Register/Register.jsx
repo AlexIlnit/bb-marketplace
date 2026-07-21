@@ -19,6 +19,47 @@ export default function Register() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const formatPhone = (value) => {
+
+  let digits = value.replace(/\D/g,"");
+
+
+  // убираем 375 если пользователь вставил полностью
+  if(digits.startsWith("375")){
+    digits = digits.slice(3);
+  }
+
+
+  digits = digits.slice(0,9);
+
+
+  let result = "+375 ";
+
+
+  if(digits.length > 0){
+    result += "(" + digits.slice(0,2);
+  }
+
+  if(digits.length >= 2){
+    result += ") ";
+  }
+
+  if(digits.length > 2){
+    result += digits.slice(2,5);
+  }
+
+  if(digits.length > 5){
+    result += "-" + digits.slice(5,7);
+  }
+
+  if(digits.length > 7){
+    result += "-" + digits.slice(7,9);
+  }
+
+
+  return result;
+
+};
 
   const submit = async (e) => {
 
@@ -28,6 +69,30 @@ export default function Register() {
       setError("Необходимо принять условия соглашения");
       return;
     }
+
+    const phoneDigits =
+phone.replace(/\D/g,"");
+
+
+if(phoneDigits.length !== 12){
+  setError(
+    "Введите полный номер телефона"
+  );
+  return;
+}
+
+
+
+const emailRegex =
+/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+
+if(!emailRegex.test(email)){
+  setError(
+    "Введите корректный email"
+  );
+  return;
+}
 
     setError("");
     setLoading(true);
@@ -189,21 +254,26 @@ export default function Register() {
 
 
           <input
-            type="tel"
-            placeholder="+375 (29) 123-45-67"
-            value={phone}
-            required
-            onChange={(e)=>setPhone(e.target.value)}
-            className="
-              w-full
-              p-3.5
-              border
-              rounded-xl
-              outline-none
-              focus:ring-2
-              focus:ring-green-500
-            "
-          />
+type="tel"
+placeholder="+375 (29) 123-45-67"
+value={phone}
+required
+maxLength={17}
+onChange={(e)=>
+ setPhone(
+  formatPhone(e.target.value)
+ )
+}
+className="
+w-full
+p-3.5
+border
+rounded-xl
+outline-none
+focus:ring-2
+focus:ring-green-500
+"
+/>
 
 
 
