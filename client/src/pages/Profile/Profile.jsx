@@ -890,6 +890,111 @@ hover:underline
         placeholder="Новый пароль"
       />
 
+      {/* PERSONAL DATA AGREEMENT */}
+
+<div className="
+  mt-4
+  p-4
+  bg-gray-50
+  border
+  rounded-xl
+">
+
+  <h3 className="
+    font-semibold
+    text-gray-900
+    mb-3
+  ">
+    Согласия пользователя
+  </h3>
+
+
+  <div className="
+    flex
+    items-start
+    gap-3
+  ">
+
+
+    <input
+      type="checkbox"
+      checked={user?.acceptedTerms || false}
+      disabled
+      className="
+        mt-1
+        w-4
+        h-4
+      "
+    />
+
+
+    <div className="text-sm">
+
+      <p className="text-gray-700">
+
+        Я согласен на обработку персональных данных
+
+      </p>
+
+
+      <div className="
+        flex
+        gap-3
+        mt-2
+      ">
+
+        <Link
+          to="/personal-data"
+          target="_blank"
+          className="
+            text-blue-600
+            hover:underline
+          "
+        >
+          Посмотреть согласие
+        </Link>
+
+
+        <Link
+          to="/privacy"
+          target="_blank"
+          className="
+            text-blue-600
+            hover:underline
+          "
+        >
+          Политика данных
+        </Link>
+
+      </div>
+
+
+      <p className="
+        text-xs
+        text-gray-500
+        mt-2
+      ">
+        Принято:
+        {" "}
+        {
+          user?.acceptedTermsDate
+          ?
+          new Date(
+            user.acceptedTermsDate
+          ).toLocaleDateString("ru-RU")
+          :
+          "-"
+        }
+      </p>
+
+
+    </div>
+
+
+  </div>
+
+</div>
+
       <div className="flex gap-2 mt-4">
         <button
           onClick={() => setProfileModal(false)}

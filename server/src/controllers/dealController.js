@@ -6,15 +6,26 @@ export const getDeal = async (req, res) => {
 
     let deal = await Deal.findOne({
       conversation: req.params.conversationId,
-    });
+    })
+    .populate("seller", "name avatar")
+    .populate("buyer", "name avatar");
+
 
     // если сделки нет - создаем
     if (!deal) {
 
       const conversation =
-  await Conversation.findById(
-    req.params.conversationId
-  ).populate("listing");
+        await Conversation.findById(
+          req.params.conversationId
+        )
+        .populate({
+          path: "listing",
+          populate: {
+            path: "user",
+            select: "_id name avatar"
+          }
+        });
+
 
       if (!conversation) {
         return res.status(404).json({
@@ -23,25 +34,58 @@ export const getDeal = async (req, res) => {
       }
 
 
-      const seller = conversation.listing.user;
+      if (!conversation.listing) {
+        return res.status(400).json({
+          message: "Listing not found",
+        });
+      }
 
-const buyer = conversation.members.find(
-  id => id.toString() !== seller.toString()
-);
+
+      const seller = conversation.listing.user._id;
+
+
+      const buyer = conversation.members.find(
+        id => id.toString() !== seller.toString()
+      );
+
+
+      if (!buyer) {
+        return res.status(400).json({
+          message: "Buyer not found",
+        });
+      }
 
 
       deal = await Deal.create({
-  conversation: conversation._id,
-  listing: conversation.listing._id,
 
-  buyer,
-  seller,
-});
+        conversation: conversation._id,
+
+        listing: conversation.listing._id,
+
+        seller,
+
+        buyer,
+
+        status: "active",
+
+        completionRequested: false,
+
+        buyerConfirmed:false,
+
+        sellerConfirmed:false
+
+      });
+
+
+      deal = await deal
+        .populate("seller", "name avatar")
+        .populate("buyer", "name avatar");
 
     }
 
 
     res.json(deal);
+
 
   } catch (err) {
 
@@ -50,116 +94,46 @@ const buyer = conversation.members.find(
     res.status(500).json({
       message: err.message,
     });
+
   }
 };
+
+
+
+
 
 export const requestCompletion = async (req, res) => {
+
   try {
+
     const { conversationId } = req.body;
+
 
     const deal = await Deal.findOne({
       conversation: conversationId,
     });
 
+
     if (!deal) {
       return res.status(404).json({
-        message: "Deal not found",
+        message:"Deal not found"
       });
     }
 
-    if (deal.seller.toString() !== req.user._id.toString()) {
+
+    if (
+      deal.seller.toString() !== 
+      req.user._id.toString()
+    ) {
+
       return res.status(403).json({
-        message: "Только продавец может завершить сделку",
+        message:"Только продавец может завершить сделку"
       });
+
     }
+
 
     deal.completionRequested = true;
-
-    await deal.save();
-
-    res.json(deal);
-  } catch (err) {
-    res.status(500).json({
-      message: err.message,
-    });
-  }
-};
-
-export const confirmDeal = async (req, res) => {
-  try {
-    const { conversationId } = req.body;
-
-    const deal = await Deal.findOne({
-      conversation: conversationId,
-    });
-
-    if (!deal) {
-      return res.status(404).json({
-        message: "Deal not found",
-      });
-    }
-
-    if (deal.buyer.toString() !== req.user._id.toString()) {
-      return res.status(403).json({
-        message: "Только покупатель может подтвердить сделку",
-      });
-    }
-
-    if (!deal.completionRequested) {
-      return res.status(400).json({
-        message: "Продавец еще не запросил завершение",
-      });
-    }
-
-    deal.status = "completed";
-    deal.buyerConfirmed = true;
-    deal.sellerConfirmed = true;
-
-    await deal.save();
-
-    res.json(deal);
-  } catch (err) {
-    res.status(500).json({
-      message: err.message,
-    });
-  }
-};
-
-export const cancelDeal = async (req,res)=>{
-  try {
-
-    const { conversationId } = req.params;
-
-    const {
-      reason,
-      comment
-    } = req.body;
-
-
-    const deal = await Deal.findOne({
-      conversation: conversationId
-    });
-
-
-    if(!deal){
-      return res.status(404).json({
-        message:"Сделка не найдена"
-      });
-    }
-
-
-    if(deal.status !== "active"){
-      return res.status(400).json({
-        message:"Сделку нельзя отменить"
-      });
-    }
-
-
-    deal.status = "cancelled";
-
-    deal.cancelReason = reason;
-
-    deal.cancelComment = comment || "";
 
 
     await deal.save();
@@ -170,11 +144,161 @@ export const cancelDeal = async (req,res)=>{
 
   } catch(err){
 
-    console.error(err);
-
     res.status(500).json({
-      message:"Ошибка отмены сделки"
+      message:err.message
     });
 
   }
+
+};
+
+
+
+
+
+export const confirmDeal = async (req,res)=>{
+
+try {
+
+
+const {conversationId}=req.body;
+
+
+const deal = await Deal.findOne({
+ conversation:conversationId
+});
+
+
+if(!deal){
+
+return res.status(404).json({
+message:"Deal not found"
+});
+
+}
+
+
+
+if(
+ deal.buyer.toString() !==
+ req.user._id.toString()
+){
+
+return res.status(403).json({
+message:"Только покупатель может подтвердить сделку"
+});
+
+}
+
+
+
+if(!deal.completionRequested){
+
+return res.status(400).json({
+message:"Продавец еще не запросил завершение"
+});
+
+}
+
+
+
+deal.status="completed";
+
+deal.buyerConfirmed=true;
+
+deal.sellerConfirmed=true;
+
+
+await deal.save();
+
+
+res.json(deal);
+
+
+
+}catch(err){
+
+res.status(500).json({
+message:err.message
+});
+
+}
+
+
+};
+
+
+
+
+
+export const cancelDeal = async(req,res)=>{
+
+try{
+
+
+const {conversationId}=req.params;
+
+
+const {
+reason,
+comment
+}=req.body;
+
+
+
+const deal = await Deal.findOne({
+conversation:conversationId
+});
+
+
+
+if(!deal){
+
+return res.status(404).json({
+message:"Сделка не найдена"
+});
+
+}
+
+
+
+if(deal.status !== "active"){
+
+return res.status(400).json({
+message:"Сделку нельзя отменить"
+});
+
+}
+
+
+
+deal.status="cancelled";
+
+deal.cancelReason=reason;
+
+deal.cancelComment=comment || "";
+
+
+
+await deal.save();
+
+
+
+res.json(deal);
+
+
+
+}catch(err){
+
+
+console.error("CANCEL DEAL ERROR:",err);
+
+
+res.status(500).json({
+message:"Ошибка отмены сделки"
+});
+
+
+}
+
 };

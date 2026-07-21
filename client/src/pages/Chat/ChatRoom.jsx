@@ -27,18 +27,19 @@ export default function ChatRoom({ chatId, otherUserId }) {
 
   const [cancelComment,setCancelComment] = useState("");
 
-  const sellerId =
-    typeof deal?.seller === "object"
-      ? deal?.seller?._id
-      : deal?.seller;
+ const sellerId =
+  deal?.seller?._id?.toString() ||
+  deal?.seller?.toString();
 
-  const buyerId =
-    typeof deal?.buyer === "object"
-      ? deal?.buyer?._id
-      : deal?.buyer;
+const buyerId =
+  deal?.buyer?._id?.toString() ||
+  deal?.buyer?.toString();
 
-  const isSeller = sellerId === user._id;
-  const isBuyer = buyerId === user._id;
+const userId = user?._id?.toString();
+
+const isSeller = sellerId === userId;
+
+const isBuyer = buyerId === userId;
 
   const alreadyRated =
   (isBuyer && deal?.buyerRated) ||
