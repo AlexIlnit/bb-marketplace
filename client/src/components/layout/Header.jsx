@@ -6,7 +6,8 @@ import {
   LogOut,
   MessageCircle,
   X,
-  MapPin
+  MapPin,
+  Bell
 } from "lucide-react";
 
 import { useRef, useState, useEffect } from "react";
@@ -189,18 +190,104 @@ useEffect(() => {
 
   return (
     <>
-      <header className="w-full bg-white border-b sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+      <header 
+className="
+w-full 
+bg-white/90 
+backdrop-blur-md
+border-b
+shadow-sm
+sticky 
+top-0 
+z-50
+">
+
+<div 
+className="
+max-w-7xl 
+mx-auto 
+px-4
+h-18
+flex
+items-center
+justify-between
+gap-4
+">
 
           {/* LEFT */}
           <div className="flex items-center gap-8">
-            <Link to="/">
-              <h1 className="text-blue-600 font-bold text-2xl">
-                BB
-              </h1>
-            </Link>
+            <Link 
+to="/"
+className="
+flex
+items-center
+gap-2
+group
+"
+>
 
-            <div className="hidden md:flex items-center bg-gray-100 px-4 rounded-xl w-80">
+<div
+className="
+w-11
+h-11
+rounded-2xl
+bg-linear-to-br
+from-blue-500
+to-blue-700
+flex
+items-center
+justify-center
+shadow-lg
+shadow-blue-500/30
+group-hover:scale-105
+transition
+"
+>
+<span
+className="
+text-white
+font-black
+text-xl
+"
+>
+BB
+</span>
+
+</div>
+
+<div className="hidden sm:block">
+
+<p className="
+font-bold
+text-xl
+leading-none
+text-gray-900
+">
+BB
+</p>
+
+
+</div>
+
+</Link>
+
+            <div
+className="
+hidden
+md:flex
+items-center
+bg-gray-100
+border
+border-gray-200
+px-4
+rounded-2xl
+w-90
+h-12
+focus-within:ring-2
+focus-within:ring-blue-500/30
+transition
+"
+>
               <Search
   size={18}
   className="cursor-pointer"
@@ -216,29 +303,59 @@ useEffect(() => {
     }
   }}
   placeholder="Поиск товаров"
-  className="bg-transparent p-2 w-full outline-none"
+  className="
+bg-transparent
+p-2
+w-full
+outline-none
+text-sm
+"
 />
 
             </div>
 <button
-  onClick={() => setCityModal(true)}
-  className="
-    flex items-center gap-2
-    px-2 py-1
-    rounded-xl
-    text-blue-600
-    hover:text-blue-700
-    transition-colors
-  "
+onClick={() => setCityModal(true)}
+className="
+group
+flex
+items-center
+gap-3
+px-4
+h-11
+rounded-2xl
+bg-linear-to-r
+from-blue-50
+to-indigo-50
+border
+border-blue-100
+text-blue-700
+hover:border-blue-300
+hover:shadow-md
+transition-all
+duration-200
+"
 >
-  <MapPin
-    size={22}
-    className="text-blue-500 shrink-0"
-  />
+<MapPin
+size={20}
+className="
+text-blue-600
+group-hover:scale-110
+transition
+"
+/>
 
-  <span className="font-semibold">
-    {city || "Вся Беларусь"}
-  </span>
+<div className="flex flex-col items-start leading-none">
+
+{/* <span className="text-[11px] text-gray-400">
+Местоположение
+</span> */}
+
+<span className="font-semibold text-sm">
+{city || "Вся Беларусь"}
+</span>
+
+</div>
+
 </button>
           </div>
 
@@ -246,14 +363,34 @@ useEffect(() => {
           <div className="hidden md:flex items-center gap-6 ">
 
             <Link to="/favorites"
-            className="relative flex items-center justify-center w-10 h-10 rounded-full hover:bg-blue-100 transition"
+            className="
+relative
+flex
+items-center
+justify-center
+w-11
+h-11
+rounded-2xl
+hover:bg-blue-50
+transition
+"
             aria-label="Избранное">
               <Heart className="cursor-pointer text-blue-500 " />
             </Link>
 
 <Link
   to="/messages"
-  className="relative flex items-center justify-center w-10 h-10 rounded-full hover:bg-blue-100 transition"
+  className="
+relative
+flex
+items-center
+justify-center
+w-11
+h-11
+rounded-2xl
+hover:bg-blue-50
+transition
+"
 >
   <MessageCircle className="cursor-pointer text-blue-500" />
 
@@ -265,19 +402,58 @@ useEffect(() => {
 
             {/* 🔔 NOTIFICATIONS */}
             {user && (
-              <div className="relative flex items-center justify-center w-10 h-10 rounded-full hover:bg-blue-100 transition  " ref={dropdownRef}>
+              <div className="
+relative
+flex
+items-center
+justify-center
+w-11
+h-11
+rounded-2xl
+hover:bg-blue-50
+transition
+" ref={dropdownRef}>
                 <button
-                  onClick={() => setOpenNotif(!openNotif)}
-                  className="relative"
-                >
-                  🔔
+onClick={() => setOpenNotif(!openNotif)}
+className="
+w-11
+h-11
+rounded-2xl
+hover:bg-blue-50
+transition
+relative
+"
+>
 
-                  {unreadCount > 0 && (
-                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-2 rounded-full">
-                      {unreadCount}
-                    </span>
-                  )}
-                </button>
+<Bell 
+size={22}
+className="text-blue-600"
+/>
+
+{unreadCount > 0 && (
+<span
+className="
+absolute
+-top-1
+-right-1
+bg-red-500
+text-white
+text-[11px]
+font-bold
+min-w-5
+h-5
+rounded-full
+flex
+items-center
+justify-center
+px-1
+"
+>
+{unreadCount}
+</span>
+)}
+
+</button>
 
                 {/* DROPDOWN */}
                 {openNotif && (
@@ -348,7 +524,17 @@ useEffect(() => {
       )}&background=2563eb&color=fff&size=128`
     }
     alt={user?.name}
-    className="w-10 h-10 rounded-full object-cover border"
+    className="
+w-11
+h-11
+rounded-2xl
+object-cover
+border-2
+border-white
+shadow
+hover:scale-105
+transition
+"
   />
 </Link>
 
@@ -361,47 +547,36 @@ useEffect(() => {
               <Link to="/create-listing">
   <button
     className="
-      group
-      flex items-center justify-center
-      h-11 w-11
-      xl:w-auto xl:px-5
-      rounded-2xl
-
-      bg-linear-to-b
-      from-blue-500
-      to-blue-700
-
-      shadow-lg
-      shadow-blue-500/30
-
-      hover:from-blue-400
-      hover:to-blue-600
-      hover:shadow-xl
-      hover:shadow-blue-500/40
-
-      active:translate-y-0.5
-      active:shadow-md
-
-      transition-all
-      duration-200
-
-      text-white
-      font-semibold
-      select-none
-    "
+group
+flex
+items-center
+justify-center
+gap-2
+h-12
+px-5
+rounded-2xl
+bg-linear-to-r
+from-blue-600
+to-blue-700
+text-white
+font-semibold
+shadow-lg
+shadow-blue-500/30
+hover:shadow-xl
+hover:scale-[1.03]
+transition
+"
   >
     <span
-      className="
-        text-2xl
-        font-bold
-        leading-none
-        group-hover:rotate-90
-        transition-transform
-        duration-300
-      "
-    >
-      +
-    </span>
+className="
+text-2xl
+font-bold
+group-hover:rotate-90
+transition
+"
+>
++
+</span>
 
     <span
       className="
