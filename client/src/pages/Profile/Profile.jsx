@@ -42,21 +42,25 @@ const [profileMessage, setProfileMessage] = useState("");
 });
 
 const formatPhone = (value) => {
-
   let digits = value.replace(/\D/g, "");
 
-  // если пользователь начал с +375
-  if(digits.startsWith("375")){
- digits = digits.slice(3);
-}
+  // если удалили всё
+  if (!digits) {
+    return "";
+  }
 
-if(digits.startsWith("7")){
- digits = digits.slice(1);
-}
+  // если пользователь удаляет код внутри скобок
+  if (value.startsWith("+375") && digits.startsWith("375")) {
+    digits = digits.slice(3);
+  }
 
+
+  // максимум 9 цифр после +375
   digits = digits.slice(0, 9);
 
+
   let result = "+375";
+
 
   if (digits.length > 0) {
     result += " (" + digits.slice(0, 2);
@@ -66,17 +70,21 @@ if(digits.startsWith("7")){
     result += ")";
   }
 
+
   if (digits.length > 2) {
     result += " " + digits.slice(2, 5);
   }
+
 
   if (digits.length > 5) {
     result += "-" + digits.slice(5, 7);
   }
 
+
   if (digits.length > 7) {
     result += "-" + digits.slice(7, 9);
   }
+
 
   return result;
 };
@@ -141,7 +149,7 @@ useEffect(() => {
     setProfileForm((prev) => ({
       ...prev,
       name: user.name || "",
-      phone: user.phone || "",
+      phone: formatPhone(user.phone || ""),
     }));
   }
 }, [user]);
@@ -266,9 +274,10 @@ const handleAvatarUpload = async () => {
 const handleUpdateProfile = async () => {
 
   setProfileError("");
+  setProfileMessage("");
+  setSavingProfile(true);
 
   try {
-
 
     const payload = {
       name: profileForm.name,
@@ -295,12 +304,21 @@ const handleUpdateProfile = async () => {
       localStorage.getItem("token")
     );
 
-     setProfileMessage(
-      "Профиль изменён"
-    );
+
+    setProfileMessage("Профиль изменён");
+
+    setTimeout(() => {
+  setProfileMessage("");
+}, 3000);
+
+setProfileModal(false);
 
 
-    setProfileModal(false);
+    setProfileForm(prev => ({
+      ...prev,
+      oldPassword:"",
+      newPassword:""
+    }));
 
 
   } catch(err){
@@ -309,6 +327,10 @@ const handleUpdateProfile = async () => {
       err.response?.data?.message ||
       "Ошибка обновления"
     );
+
+  } finally {
+
+    setSavingProfile(false);
 
   }
 
@@ -383,7 +405,22 @@ const handleUpdateProfile = async () => {
       </div>
 
     </div>
-
+{profileMessage && (
+<div
+className="
+mb-4
+bg-green-50
+border
+border-green-200
+text-green-700
+p-3
+rounded-xl
+text-sm
+"
+>
+{profileMessage}
+</div>
+)}
     {/* RIGHT: ACTIONS */}
     <div className=" flex-col sm:flex-row gap-3">
 
@@ -1008,28 +1045,102 @@ mb-3
 
       {/* NAME */}
       <input
-        className="w-full border p-2 mb-3 rounded"
-        value={profileForm.name}
-        onChange={(e) =>
-          setProfileForm({
-            ...profileForm,
-            name: e.target.value,
-          })
-        }
-        placeholder="Имя"
-      />
+className="w-full border p-2 mb-3 rounded"
+value={profileForm.name}
+onChange={(e)=>
+ setProfileForm({
+   ...profileForm,
+   name:e.target.value
+ })
+}
+placeholder="Имя"
+/>
 
        {/* PHONE */}
 <input
+  type="tel"
   className="w-full border p-2 mb-3 rounded"
   value={profileForm.phone}
-  onChange={(e) =>
-    setProfileForm({
-      ...profileForm,
-      phone: formatPhone(e.target.value)
-    })
-  }
-  placeholder="Номер телефона"
+  onChange={(e)=>{
+
+ let value = e.target.value;
+
+
+ // если пользователь всё стер
+ if(value === ""){
+   setProfileForm({
+     ...profileForm,
+     phone:""
+   });
+   return;
+ }
+
+
+ let cursor = e.target.selectionStart;
+
+
+ let digits = value.replace(/\D/g,"");
+
+
+ // убираем 375
+ if(digits.startsWith("375")){
+   digits = digits.substring(3);
+ }
+
+
+ digits = digits.substring(0,9);
+
+
+ let result="";
+if (
+ e.nativeEvent.inputType === "deleteContentBackward" &&
+ value.length < profileForm.phone.length
+){
+ setProfileForm({
+   ...profileForm,
+   phone:value
+ });
+ return;
+}
+
+ if(digits.length > 0){
+   result="+375 (";
+ }
+
+
+ if(digits.length > 0){
+   result += digits.substring(0,2);
+ }
+
+
+ if(digits.length >=2){
+   result+=")";
+ }
+
+
+ if(digits.length >2){
+   result+=" "+digits.substring(2,5);
+ }
+
+
+ if(digits.length >5){
+   result+="-"+digits.substring(5,7);
+ }
+
+
+ if(digits.length >7){
+   result+="-"+digits.substring(7,9);
+ }
+
+
+ setProfileForm({
+   ...profileForm,
+   phone:result
+ });
+
+
+}}
+  placeholder="+375 (29) 123-45-67"
 />
 
 
