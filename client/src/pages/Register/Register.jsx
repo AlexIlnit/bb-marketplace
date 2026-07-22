@@ -11,6 +11,10 @@ export default function Register() {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
+  const [passwordStrength, setPasswordStrength] = useState({
+  score: 0,
+  text: "",
+});
 
   const [agree, setAgree] = useState(false);
 
@@ -62,6 +66,64 @@ export default function Register() {
   return result;
 };
 
+const checkPasswordStrength = (password) => {
+
+  let score = 0;
+
+
+  if(password.length >= 8){
+    score++;
+  }
+
+  if(/[a-z]/.test(password)){
+    score++;
+  }
+
+  if(/[A-Z]/.test(password)){
+    score++;
+  }
+
+  if(/\d/.test(password)){
+    score++;
+  }
+
+  if(/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password)){
+    score++;
+  }
+
+
+
+  let text = "";
+
+
+  if(score <= 2){
+    text = "Слабый пароль";
+  }
+  else if(score <= 4){
+    text = "Средний пароль";
+  }
+  else{
+    text = "Надёжный пароль";
+  }
+
+
+  return {
+    score,
+    text
+  };
+
+};
+
+const validatePassword = (password) => {
+
+  const passwordRegex =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/;
+
+
+  return passwordRegex.test(password);
+
+};
+
   const submit = async (e) => {
 
     e.preventDefault();
@@ -93,6 +155,15 @@ if(!emailRegex.test(email)){
     "Введите корректный email"
   );
   return;
+}
+if(!validatePassword(password)){
+
+  setError(
+    "Пароль должен содержать минимум 8 символов, цифру, заглавную и строчную букву, а также специальный символ"
+  );
+
+  return;
+
 }
 
     setError("");
@@ -286,23 +357,185 @@ focus:ring-green-500
 
 
 
-          <input
-            type="password"
-            placeholder="Пароль"
-            value={password}
-            required
-            onChange={(e)=>setPassword(e.target.value)}
-            className="
-              w-full
-              p-3.5
-              border
-              rounded-xl
-              outline-none
-              focus:ring-2
-              focus:ring-green-500
-            "
-          />
+          <div>
 
+<input
+  type="password"
+  placeholder="Пароль"
+  value={password}
+  required
+  onChange={(e)=>{
+
+    const value = e.target.value;
+
+    setPassword(value);
+
+    setPasswordStrength(
+      checkPasswordStrength(value)
+    );
+
+  }}
+
+  className="
+    w-full
+    p-3.5
+    border
+    rounded-xl
+    outline-none
+    focus:ring-2
+    focus:ring-green-500
+  "
+/>
+
+
+
+{password && (
+
+<div className="mt-3">
+
+
+<div className="
+ flex
+ gap-1
+ h-2
+ mb-2
+">
+
+
+{[1,2,3,4,5].map((item)=>(
+
+<div
+
+key={item}
+
+className={`
+ flex-1
+ rounded-full
+
+ ${
+ item <= passwordStrength.score
+ ?
+ passwordStrength.score <=2
+ ?
+ "bg-red-500"
+ :
+ passwordStrength.score <=4
+ ?
+ "bg-yellow-400"
+ :
+ "bg-green-500"
+
+ :
+ "bg-gray-200"
+ }
+
+`}
+
+/>
+
+))}
+
+
+</div>
+
+
+
+<p
+className={`
+text-sm
+font-medium
+
+${
+passwordStrength.score <=2
+?
+"text-red-500"
+:
+passwordStrength.score <=4
+?
+"text-yellow-600"
+:
+"text-green-600"
+
+}
+
+`}
+>
+
+{passwordStrength.text}
+
+</p>
+
+
+<div className="
+text-xs
+text-gray-500
+mt-2
+space-y-1
+">
+
+<p className={
+password.length>=8
+?
+"text-green-600"
+:
+""
+}>
+✓ Минимум 8 символов
+</p>
+
+
+<p className={
+/[A-Z]/.test(password)
+?
+"text-green-600"
+:
+""
+}>
+✓ Заглавная буква
+</p>
+
+
+<p className={
+/[a-z]/.test(password)
+?
+"text-green-600"
+:
+""
+}>
+✓ Строчная буква
+</p>
+
+
+<p className={
+/\d/.test(password)
+?
+"text-green-600"
+:
+""
+}>
+✓ Цифра
+</p>
+
+
+<p className={
+/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password)
+?
+"text-green-600"
+:
+""
+}>
+✓ Специальный символ
+</p>
+
+
+</div>
+
+
+</div>
+
+)}
+
+</div>
 
 
 

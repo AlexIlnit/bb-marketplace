@@ -33,6 +33,101 @@ export default function Profile() {
     });
     
 const setUser = useAuthStore((s) => s.setUser);
+const [savingProfile, setSavingProfile] = useState(false);
+const [profileError, setProfileError] = useState("");
+const [profileMessage, setProfileMessage] = useState("");
+  const [passwordStrength, setPasswordStrength] = useState({
+  score: 0,
+  text: "",
+});
+
+const formatPhone = (value) => {
+
+  let digits = value.replace(/\D/g, "");
+
+  // если пользователь начал с +375
+  if(digits.startsWith("375")){
+ digits = digits.slice(3);
+}
+
+if(digits.startsWith("7")){
+ digits = digits.slice(1);
+}
+
+  digits = digits.slice(0, 9);
+
+  let result = "+375";
+
+  if (digits.length > 0) {
+    result += " (" + digits.slice(0, 2);
+  }
+
+  if (digits.length >= 2) {
+    result += ")";
+  }
+
+  if (digits.length > 2) {
+    result += " " + digits.slice(2, 5);
+  }
+
+  if (digits.length > 5) {
+    result += "-" + digits.slice(5, 7);
+  }
+
+  if (digits.length > 7) {
+    result += "-" + digits.slice(7, 9);
+  }
+
+  return result;
+};
+
+const checkPasswordStrength = (password) => {
+
+  let score = 0;
+
+
+  if(password.length >= 8){
+    score++;
+  }
+
+  if(/[a-z]/.test(password)){
+    score++;
+  }
+
+  if(/[A-Z]/.test(password)){
+    score++;
+  }
+
+  if(/\d/.test(password)){
+    score++;
+  }
+
+  if(/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password)){
+    score++;
+  }
+
+
+
+  let text = "";
+
+
+  if(score <= 2){
+    text = "Слабый пароль";
+  }
+  else if(score <= 4){
+    text = "Средний пароль";
+  }
+  else{
+    text = "Надёжный пароль";
+  }
+
+
+  return {
+    score,
+    text
+  };
+
+};
 
 const [profileModal, setProfileModal] = useState(false);
 const [profileForm, setProfileForm] = useState({
@@ -167,31 +262,56 @@ const handleAvatarUpload = async () => {
   setImageFile(null);
   setImagePreview("");
 };
-const handleUpdateProfile = async () => {
-  try {
-    const { data } = await updateProfile(profileForm);
 
-    // setUser(data, localStorage.getItem("token"));
+const handleUpdateProfile = async () => {
+
+  setProfileError("");
+
+  try {
+
+
+    const payload = {
+      name: profileForm.name,
+      phone: profileForm.phone,
+    };
+
+
+    if(profileForm.newPassword){
+
+      payload.oldPassword = profileForm.oldPassword;
+      payload.newPassword = profileForm.newPassword;
+
+    }
+
+
+    const {data} = await updateProfile(payload);
+
+
     setUser(
-  {
-    ...user,
-    ...data,
-  },
-  localStorage.getItem("token")
-);
+      {
+        ...user,
+        ...data
+      },
+      localStorage.getItem("token")
+    );
+
+     setProfileMessage(
+      "Профиль изменён"
+    );
+
 
     setProfileModal(false);
-    setProfileForm({
-      name: data.name,
-      phone: data.phone || "",
-      oldPassword: "",
-      newPassword: "",
-    });
 
-    alert("Профиль обновлён");
-  } catch (err) {
-    alert(err.response?.data?.message || "Ошибка");
+
+  } catch(err){
+
+    setProfileError(
+      err.response?.data?.message ||
+      "Ошибка обновления"
+    );
+
   }
+
 };
 
   if (loading) {
@@ -828,12 +948,63 @@ hover:underline
   </div>
 )}
 {profileModal && (
-  <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-    <div className="bg-white p-6 rounded-xl w-full max-w-md">
+  <div 
+  className="
+    fixed 
+    inset-0 
+    bg-black/50 
+    z-50 
+    flex 
+    items-center 
+    justify-center
+    p-4
+    overflow-y-auto
+  "
+>
+  <div 
+    className="
+      bg-white
+      p-6
+      rounded-xl
+      w-full
+      max-w-md
+      max-h-[90vh]
+      overflow-y-auto
+    "
+  >
 
       <h2 className="text-xl font-bold mb-4">
         Редактировать профиль
       </h2>
+
+      {profileError && (
+  <div className="
+    mb-4
+    bg-red-50
+    border
+    border-red-200
+    text-red-600
+    p-3
+    rounded-xl
+    text-sm
+  ">
+    {profileError}
+  </div>
+)}
+{profileMessage && (
+<div className="
+bg-green-50
+border
+border-green-200
+text-green-700
+p-3
+rounded-xl
+text-sm
+mb-3
+">
+{profileMessage}
+</div>
+)}
 
       {/* NAME */}
       <input
@@ -849,17 +1020,17 @@ hover:underline
       />
 
        {/* PHONE */}
-      <input
-        className="w-full border p-2 mb-3 rounded"
-        value={profileForm.phone}
-        onChange={(e) =>
-          setProfileForm({
-            ...profileForm,
-            phone: e.target.value,
-          })
-        }
-        placeholder="Номер телефона"
-      />
+<input
+  className="w-full border p-2 mb-3 rounded"
+  value={profileForm.phone}
+  onChange={(e) =>
+    setProfileForm({
+      ...profileForm,
+      phone: formatPhone(e.target.value)
+    })
+  }
+  placeholder="Номер телефона"
+/>
 
 
       {/* OLD PASSWORD */}
@@ -877,18 +1048,188 @@ hover:underline
       />
 
       {/* NEW PASSWORD */}
-      <input
-        type="password"
-        className="w-full border p-2 mb-3 rounded"
-        value={profileForm.newPassword}
-        onChange={(e) =>
-          setProfileForm({
-            ...profileForm,
-            newPassword: e.target.value,
-          })
-        }
-        placeholder="Новый пароль"
-      />
+                <div>
+
+<input
+  type="password"
+  placeholder="Пароль"
+  value={profileForm.newPassword}
+  required
+  onChange={(e)=>{
+
+    const value = e.target.value;
+
+    setProfileForm({
+  ...profileForm,
+  newPassword:value
+});
+
+setPasswordStrength(
+  checkPasswordStrength(value)
+);
+
+  }}
+
+  className="
+    w-full
+    p-3.5
+    border
+    rounded-xl
+    outline-none
+    focus:ring-2
+    focus:ring-green-500
+  "
+/>
+
+
+
+{profileForm.newPassword && (
+
+<div className="mt-3">
+
+
+<div className="
+ flex
+ gap-1
+ h-2
+ mb-2
+">
+
+
+{[1,2,3,4,5].map((item)=>(
+
+<div
+
+key={item}
+
+className={`
+ flex-1
+ rounded-full
+
+ ${
+ item <= passwordStrength.score
+ ?
+ passwordStrength.score <=2
+ ?
+ "bg-red-500"
+ :
+ passwordStrength.score <=4
+ ?
+ "bg-yellow-400"
+ :
+ "bg-green-500"
+
+ :
+ "bg-gray-200"
+ }
+
+`}
+
+/>
+
+))}
+
+
+</div>
+
+
+
+<p
+className={`
+text-sm
+font-medium
+
+${
+passwordStrength.score <=2
+?
+"text-red-500"
+:
+passwordStrength.score <=4
+?
+"text-yellow-600"
+:
+"text-green-600"
+
+}
+
+`}
+>
+
+{passwordStrength.text}
+
+</p>
+
+
+<div className="
+text-xs
+text-gray-500
+mt-2
+space-y-1
+">
+
+<p className={
+profileForm.newPassword?.length>=8
+?
+"text-green-600"
+:
+""
+}>
+✓ Минимум 8 символов
+</p>
+
+
+<p className={
+/[A-Z]/.test(profileForm.newPassword || "")
+?
+"text-green-600"
+:
+""
+}>
+✓ Заглавная буква
+</p>
+
+
+<p className={
+/[a-z]/.test(profileForm.newPassword || "")
+?
+"text-green-600"
+:
+""
+}>
+✓ Строчная буква
+</p>
+
+
+<p className={
+/\d/.test(profileForm.newPassword || "")
+?
+"text-green-600"
+:
+""
+}>
+✓ Цифра
+</p>
+
+
+<p className={
+/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(profileForm.newPassword || "")
+?
+"text-green-600"
+:
+""
+}>
+✓ Специальный символ
+</p>
+
+
+</div>
+
+
+</div>
+
+)}
+
+</div>
 
       {/* PERSONAL DATA AGREEMENT */}
 
@@ -1004,11 +1345,23 @@ hover:underline
         </button>
 
         <button
-          onClick={handleUpdateProfile}
-          className="flex-1 bg-blue-600 text-white py-2 rounded-xl"
-        >
-          Сохранить
-        </button>
+ onClick={handleUpdateProfile}
+ disabled={savingProfile}
+ className="
+ flex-1
+ bg-blue-600
+ text-white
+ py-2
+ rounded-xl
+ disabled:bg-gray-400
+ "
+>
+ {
+ savingProfile
+ ? "Сохранение..."
+ : "Сохранить"
+ }
+</button>
       </div>
 
     </div>
