@@ -1,12 +1,10 @@
 import { useState } from "react";
 import { registerUser } from "../../api/authApi";
-import { useAuthStore } from "../../store/authStore";
 import { useNavigate, Link } from "react-router-dom";
 
 
 export default function Register() {
 
-  const setUser = useAuthStore((s) => s.setUser);
   const navigate = useNavigate();
 
   const [name, setName] = useState("");
@@ -18,13 +16,13 @@ export default function Register() {
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState("");
 
   const formatPhone = (value) => {
 
   let digits = value.replace(/\D/g,"");
 
 
-  // убираем 375 если пользователь вставил полностью
   if(digits.startsWith("375")){
     digits = digits.slice(3);
   }
@@ -40,17 +38,21 @@ export default function Register() {
     result += "(" + digits.slice(0,2);
   }
 
+
   if(digits.length >= 2){
-    result += ") ";
+    result += ")";
   }
 
+
   if(digits.length > 2){
-    result += digits.slice(2,5);
+    result += " " + digits.slice(2,5);
   }
+
 
   if(digits.length > 5){
     result += "-" + digits.slice(5,7);
   }
+
 
   if(digits.length > 7){
     result += "-" + digits.slice(7,9);
@@ -58,7 +60,6 @@ export default function Register() {
 
 
   return result;
-
 };
 
   const submit = async (e) => {
@@ -100,38 +101,30 @@ if(!emailRegex.test(email)){
 
     try {
 
-      const { data } = await registerUser({
-        name,
-        email,
-        phone,
-        password,
-        acceptedTerms:agree,
-        acceptedTermsVersion: "1.0"
-      });
+  await registerUser({
+    name,
+    email,
+    phone,
+    password,
+    acceptedTerms: agree,
+    acceptedTermsVersion: "1.0"
+  });
 
 
-      setUser(
-        {
-          id:data._id,
-          name:data.name,
-          email:data.email,
-          phone:data.phone,
-          avatar:data.avatar,
-          role:data.role,
-          isBlocked:data.isBlocked,
-          createdAt:data.createdAt,
-          acceptedTerms: data.acceptedTerms,
-          acceptedTermsVersion: data.acceptedTermsVersion,
-          acceptedTermsDate: data.acceptedTermsDate
-        },
-        data.token
-      );
+  setSuccess(
+    "Регистрация успешна. Проверьте вашу почту и подтвердите email."
+  );
 
 
-      navigate("/");
+  setTimeout(() => {
+    navigate("/login?verify=email");
+  }, 2500);
 
 
-    } catch(err){
+}
+
+
+     catch(err){
 
       setError(
         err.response?.data?.message ||
@@ -207,6 +200,22 @@ if(!emailRegex.test(email)){
           </div>
 
         )}
+        {success && (
+
+<div className="
+  bg-green-50
+  border
+  border-green-200
+  text-green-700
+  text-sm
+  p-3
+  rounded-xl
+  mb-5
+">
+  {success}
+</div>
+
+)}
 
 
 
@@ -258,7 +267,7 @@ type="tel"
 placeholder="+375 (29) 123-45-67"
 value={phone}
 required
-maxLength={17}
+maxLength={19}
 onChange={(e)=>
  setPhone(
   formatPhone(e.target.value)

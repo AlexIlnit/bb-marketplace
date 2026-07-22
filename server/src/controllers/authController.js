@@ -2,6 +2,7 @@ import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import { generateToken } from "../utils/jwt.js";
+import { sendVerifyEmail } from "../utils/sendVerifyEmail.js";
 
 
 // REGISTER
@@ -84,20 +85,15 @@ export const register = async (req, res) => {
 
     });
 
-
+await sendVerifyEmail(
+  user.email,
+  emailToken
+);
 
     // здесь позже подключим Nodemailer
 
     const verifyUrl =
-      `http://localhost:5173/verify-email/${emailToken}`;
-
-
-    console.log(
-      "VERIFY URL:",
-      verifyUrl
-    );
-
-
+`http://localhost:5000/api/auth/verify/${emailToken}`;
 
     res.json({
 
@@ -225,21 +221,15 @@ message:err.message
 
 // VERIFY EMAIL
 
-export const verifyEmail =
-async(req,res)=>{
+export const verifyEmail = async(req,res)=>{
 
-try{
+try {
 
+const user = await User.findOne({
 
-const user =
-await User.findOne({
-
-emailVerifyToken:
-req.params.token
+emailVerifyToken:req.params.token
 
 });
-
-
 
 if(!user){
 
@@ -248,7 +238,6 @@ return res.status(400).send(
 );
 
 }
-
 
 
 
@@ -264,15 +253,19 @@ return res.status(400).send(
 
 
 
-user.emailVerified=true;
+user.emailVerified = true;
 
-user.emailVerifyToken=null;
+user.emailVerifyToken = null;
 
-user.emailVerifyExpires=null;
-
+user.emailVerifyExpires = null;
 
 
 await user.save();
+
+
+console.log(
+"EMAIL VERIFIED SUCCESS"
+);
 
 
 
@@ -283,6 +276,12 @@ res.redirect(
 
 
 }catch(err){
+
+console.error(
+"VERIFY ERROR:",
+err
+);
+
 
 res.status(500).send(
 "Ошибка подтверждения email"

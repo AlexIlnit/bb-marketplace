@@ -16,6 +16,50 @@ export default function Login() {
   const navigate = useNavigate();
 
   const [phone, setPhone] = useState("");
+
+  const formatPhone = (value) => {
+
+  let digits = value.replace(/\D/g,"");
+
+
+  if(digits.startsWith("375")){
+    digits = digits.slice(3);
+  }
+
+
+  digits = digits.slice(0,9);
+
+
+  let result = "+375 ";
+
+
+  if(digits.length > 0){
+    result += "(" + digits.slice(0,2);
+  }
+
+
+  if(digits.length >= 2){
+    result += ")";
+  }
+
+
+  if(digits.length > 2){
+    result += " " + digits.slice(2,5);
+  }
+
+
+  if(digits.length > 5){
+    result += "-" + digits.slice(5,7);
+  }
+
+
+  if(digits.length > 7){
+    result += "-" + digits.slice(7,9);
+  }
+
+
+  return result;
+};
   
 
 const submit = async (e) => {
@@ -85,7 +129,7 @@ const submit = async (e) => {
             type="tel"
             placeholder="+375 (29) 123-45-67"
             value={phone}
-            onChange={(e) => setPhone(e.target.value)}
+            onChange={(e)=> setPhone(formatPhone(e.target.value))}
             className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-green-500"
             required
           />

@@ -16,7 +16,7 @@ router.get("/me", authMiddleware, async (req, res) => {
 });
 
 router.post("/register", register);
-router.get("/verify-email/:token", verifyEmail);
+router.get("/verify/:token", verifyEmail);
 router.post("/login", login);
 router.put("/profile", authMiddleware, async (req, res) => {
   try {
