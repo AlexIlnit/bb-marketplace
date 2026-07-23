@@ -183,7 +183,7 @@ export default function UserProfile() {
 
         )}
 
-        <div className="mt-3 text-xs text-gray-400">
+        <div className="mt-3 text-xs text-gray-600">
 
           {new Date(
             rating.createdAt

@@ -29,7 +29,7 @@ useEffect(() => {
           {selectedChat ? (
             <ChatRoom chatId={selectedChat} />
           ) : (
-            <div className="flex-1 flex items-center justify-center text-gray-400">
+            <div className="flex-1 flex items-center justify-center text-gray-600">
               Выберите диалог
             </div>
           )}

@@ -15,7 +15,7 @@ export default function Footer() {
               BB Market
             </h3>
 
-            <p className="text-white text-sm">
+            <p className="text-sm text-gray-300">
               Площадка для покупки и продажи товаров,
               автомобилей, недвижимости и услуг.
             </p>
@@ -28,25 +28,33 @@ export default function Footer() {
 
             <ul className="space-y-2 text-sm">
               <li>
-                <Link to="/">
+                <Link 
+                className="text-gray-300 hover:text-white"
+                to="/">
                   Главная
                 </Link>
               </li>
 
               <li>
-                <Link to="/favorites">
+                <Link
+                className="text-gray-300 hover:text-white" 
+                to="/favorites">
                   Избранное
                 </Link>
               </li>
 
               <li>
-                <Link to="/profile">
+                <Link 
+                className="text-gray-300 hover:text-white"
+                to="/profile">
                   Профиль
                 </Link>
               </li>
 
               <li>
-                <Link to="/create-listing">
+                <Link 
+                className="text-gray-300 hover:text-white"
+                to="/create-listing">
                   Подать объявление
                 </Link>
               </li>
@@ -63,7 +71,7 @@ export default function Footer() {
     <li>
       <Link 
         to="/privacy"
-        className="hover:text-white transition"
+        className="text-gray-300 hover:text-white transition"
       >
         Политика обработки данных
       </Link>
@@ -72,7 +80,7 @@ export default function Footer() {
     <li>
       <Link 
         to="/personal-data"
-        className="hover:text-white transition"
+        className="text-gray-300 hover:text-white transition"
       >
         Согласие на обработку данных
       </Link>
@@ -81,7 +89,7 @@ export default function Footer() {
     <li>
       <Link 
         to="/terms"
-        className="hover:text-white transition"
+        className="text-gray-300 hover:text-white transition"
       >
         Пользовательское соглашение
       </Link>
@@ -90,7 +98,7 @@ export default function Footer() {
     <li>
       <Link 
         to="/offer"
-        className="hover:text-white transition"
+        className="text-gray-300 hover:text-white transition"
       >
         Публичная оферта
       </Link>
@@ -99,7 +107,7 @@ export default function Footer() {
     <li>
       <Link 
         to="/rules"
-        className="hover:text-white transition"
+        className="text-gray-300 hover:text-white transition"
       >
         Правила размещения объявлений
       </Link>
@@ -113,8 +121,8 @@ export default function Footer() {
               Контакты
             </h4>
 
-            <ul className="space-y-2 text-sm">
-              <li>support@bbmarket.by</li>
+            <ul className="space-y-2 text-sm text-gray-300">
+              <li className="text-gray-300">support@bbmarket.by</li>
               <li>+375 (29) 123-45-67</li>
               <li>Минск, Беларусь</li>
             </ul>
@@ -122,7 +130,7 @@ export default function Footer() {
 
         </div>
 
-        <div className="border-t border-gray-800 mt-8 pt-6 text-center text-sm">
+        <div className="border-t border-gray-800 mt-8 pt-6 text-center text-sm text-gray-400">
           © {new Date().getFullYear()} BB Market. Все права защищены.
         </div>
 

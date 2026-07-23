@@ -63,7 +63,8 @@ return (
   relative
   overflow-hidden
   rounded-3xl
-  mb-5
+  mt-3
+  mb-3
   bg-linear-to-br
   from-slate-900
   via-blue-900
@@ -246,14 +247,15 @@ return (
         <section className="w-full">
 
 
-          <h3 className="
+          <h2 className="
             text-3xl
             font-bold
             mb-8
+            mt-5
             text-slate-800
           ">
             🔥 Свежие объявления
-          </h3>
+          </h2>
 
 
 

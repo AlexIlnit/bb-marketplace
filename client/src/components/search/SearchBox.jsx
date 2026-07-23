@@ -257,7 +257,7 @@ last:border-none
 
 <div className="
 text-xs
-text-gray-400
+text-gray-600
 ">
 
 {item.city}

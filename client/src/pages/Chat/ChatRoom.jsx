@@ -254,7 +254,7 @@ const handleCancelDeal = async () => {
 
   if (!chatId) {
     return (
-      <div className="h-full flex items-center justify-center text-gray-400">
+      <div className="h-full flex items-center justify-center text-gray-600">
         Выберите диалог
       </div>
     );
@@ -383,7 +383,7 @@ const handleCancelDeal = async () => {
       {/* CHAT */}
       <div ref={chatRef} className="flex-1 overflow-y-auto p-4 space-y-3">
         {loading ? (
-          <div className="text-center text-gray-400">Загрузка...</div>
+          <div className="text-center text-gray-600">Загрузка...</div>
         ) : (
           messages.map((m) => {
             const isObject = typeof m.senderId === "object";
@@ -424,7 +424,7 @@ const handleCancelDeal = async () => {
             );
           })
         )}
-        {typing && <div className="text-xs text-gray-400">Печатает...</div>}
+        {typing && <div className="text-xs text-gray-600">Печатает...</div>}
       </div>
 
       {/* INPUT FORM */}

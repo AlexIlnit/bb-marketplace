@@ -74,7 +74,7 @@ export default function AdminChats() {
             </div>
 
             {/* DATE */}
-            <div className="text-[10px] text-gray-400 mt-1">
+            <div className="text-[10px] text-gray-600 mt-1">
               📅{" "}
               {new Date(chat.updatedAt || chat.createdAt).toLocaleString(
                 "ru-RU",

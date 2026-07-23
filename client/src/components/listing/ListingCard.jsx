@@ -95,7 +95,7 @@ const imageUrl = listing.images?.[0]
       </div>
     </div>
 
-    <div className="text-xs text-gray-400 mt-2">
+    <div className="text-xs text-gray-600 mt-2">
       {new Date(listing.createdAt).toLocaleString("ru-RU", {
         day: "2-digit",
         month: "2-digit",

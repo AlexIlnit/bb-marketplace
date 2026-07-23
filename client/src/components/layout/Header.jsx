@@ -218,6 +218,7 @@ gap-4
           <div className="flex items-center gap-8">
             <Link 
 to="/"
+aria-label="Главная страница BB"
 className="
 flex
 items-center
@@ -257,14 +258,14 @@ BB
 
 <div className="hidden sm:block">
 
-<p className="
+{/* <p className="
 font-bold
 text-xl
 leading-none
 text-gray-900
 ">
 BB
-</p>
+</p> */}
 
 
 </div>
@@ -289,6 +290,7 @@ transition
 "
 >
               <Search
+  aria-hidden="true"
   size={18}
   className="cursor-pointer"
   onClick={() => navigate("/")}
@@ -315,6 +317,8 @@ text-sm
             </div>
 <button
 onClick={() => setCityModal(true)}
+aria-label="Выбрать город"
+title="Выбрать город"
 className="
 group
 flex
@@ -337,6 +341,7 @@ duration-200
 >
 <MapPin
 size={20}
+aria-hidden="true"
 className="
 text-blue-600
 group-hover:scale-110
@@ -363,6 +368,8 @@ transition
           <div className="hidden md:flex items-center gap-6 ">
 
             <Link to="/favorites"
+            aria-label="Избранное"
+            title="Избранное"
             className="
 relative
 flex
@@ -375,11 +382,16 @@ hover:bg-blue-50
 transition
 "
             aria-label="Избранное">
-              <Heart className="cursor-pointer text-blue-500 " />
+              <Heart 
+              size={22}
+              aria-hidden="true"
+              className="cursor-pointer text-blue-500 " />
             </Link>
 
 <Link
   to="/messages"
+  aria-label="Сообщения"
+  title="Сообщения"
   className="
 relative
 flex
@@ -392,7 +404,10 @@ hover:bg-blue-50
 transition
 "
 >
-  <MessageCircle className="cursor-pointer text-blue-500" />
+  <MessageCircle 
+  size={22}
+  aria-hidden="true"
+  className="cursor-pointer text-blue-500" />
 
   {/* badge */}
   {/* <span className="absolute -top-1 -right-1 bg-green-600 text-white text-[10px] px-1.5 rounded-full">
@@ -415,7 +430,13 @@ transition
 " ref={dropdownRef}>
                 <button
 onClick={() => setOpenNotif(!openNotif)}
+  aria-label="Уведомления"
+  aria-expanded={openNotif}
+  aria-haspopup="menu"
 className="
+flex
+items-center
+justify-center
 w-11
 h-11
 rounded-2xl
@@ -427,6 +448,7 @@ relative
 
 <Bell 
 size={22}
+aria-hidden="true"
 className="text-blue-600"
 />
 
@@ -489,7 +511,7 @@ px-1
 >
   <p className="text-sm">{n.message}</p>
 
-  <span className="text-xs text-gray-400">
+  <span className="text-xs text-gray-600">
     {new Date(n.createdAt).toLocaleString()}
   </span>
 </div>
@@ -523,7 +545,8 @@ px-1
         user?.name || "User"
       )}&background=2563eb&color=fff&size=128`
     }
-    alt={user?.name}
+    alt={`Аватар пользователя ${user?.name}`}
+    loading="lazy"
     className="
 w-11
 h-11
@@ -602,18 +625,47 @@ transition
             <Menu />
           </button>
         </div>
+        </header>
 {cityModal && (
   <div
-    className="fixed inset-0 z-100 bg-black/50 flex items-center justify-center p-4"
+    className="
+fixed
+inset-0
+z-100
+bg-black/60
+flex
+items-center
+justify-center
+p-4
+overflow-y-auto
+"
     onClick={() => setCityModal(false)}
+    aria-label="Закрыть окно"
   >
     <div
       onClick={(e) => e.stopPropagation()}
-      className="bg-white rounded-2xl w-full max-w-3xl h-[95vh] flex flex-col overflow-hidden shadow-2xl"
+      className="relative
+bg-white
+rounded-3xl
+w-full
+max-w-4xl
+max-h-[90vh]
+flex
+flex-col
+overflow-hidden
+shadow-2xl
+my-8"
     >
 
   {/* HEADER */}
-<div className="sticky top-0 z-20 bg-white border-b p-6">
+<div className="sticky
+top-0
+z-20
+bg-white
+border-b
+px-8
+py-6
+shadow-sm">
 
   <div className="flex items-start justify-between mb-4">
 
@@ -632,6 +684,7 @@ transition
 
     <button
       onClick={() => setCityModal(false)}
+      aria-label="Закрыть окно"
       className="
         p-2
         rounded-lg
@@ -639,7 +692,7 @@ transition
         transition
       "
     >
-      <X size={22} />
+      <X size={22} aria-hidden="true" />
     </button>
 
   </div>
@@ -673,7 +726,10 @@ transition
 </div>
 
   {/* BODY */}
- <div className="flex-1 overflow-y-auto p-6">
+ <div className="flex-1
+overflow-y-auto
+px-8
+py-6">
   <div className="grid grid-cols-2 md:grid-cols-3 gap-x-8 gap-y-2">
 
     {filteredCities.map((city) => (
@@ -714,7 +770,15 @@ transition
 </div>
 
   {/* FOOTER */}
-  <div className="sticky bottom-0 z-20 bg-white border-t p-6 flex gap-3">
+  <div className="sticky
+bottom-0
+bg-white
+border-t
+px-8
+py-5
+flex
+gap-4
+shadow-[0_-5px_20px_rgba(0,0,0,.04)]">
 
     <button
       onClick={() => {
@@ -748,11 +812,12 @@ transition
 )}
 
 
-      </header>
+      
 
       <MobileMenu
         open={mobileOpen}
         onClose={() => setMobileOpen(false)}
+        aria-label="Открыть меню"
         user={user}
       />
     </>

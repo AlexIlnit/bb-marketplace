@@ -68,7 +68,7 @@ export default function RatingModal({
               className={
                 i <= stars
                   ? "text-yellow-400"
-                  : "text-gray-300"
+                  : "text-gray-500"
               }
             >
               ★

@@ -296,7 +296,7 @@ export default function ConversationsList({
 
     </div>
 
-    <span className="text-xs text-gray-400">
+    <span className="text-xs text-gray-600">
       {new Date(conv.updatedAt).toLocaleTimeString([], {
         hour: "2-digit",
         minute: "2-digit",
