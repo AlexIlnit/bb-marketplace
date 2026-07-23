@@ -74,30 +74,33 @@ return (
   lg:px-10
   lg:py-10
   text-white
+  animate-fade-up
 ">
 
 
   <div className="
     absolute
-    -top-24
-    -right-24
-    w-80
-    h-80
-    bg-blue-400/20
-    rounded-full
-    blur-3xl
+-top-24
+-right-24
+w-80
+h-80
+bg-blue-400/20
+rounded-full
+blur-3xl
+animate-float-slow
   "/>
 
 
   <div className="
-    absolute
-    -bottom-20
-    left-20
-    w-64
-    h-64
-    bg-yellow-400/20
-    rounded-full
-    blur-3xl
+   absolute
+-bottom-20
+left-20
+w-64
+h-64
+bg-yellow-400/20
+rounded-full
+blur-3xl
+animate-float-reverse
   "/>
 
 
@@ -113,7 +116,7 @@ return (
   ">
 
 
-    <div className="max-w-2xl">
+    <div className="max-w-2xl animate-slide-left">
 
 
       <h1 className="
@@ -156,11 +159,12 @@ return (
 
         <div className="
           bg-white/10
-          backdrop-blur
-          rounded-xl
-          px-4
-          py-2
-          text-sm
+backdrop-blur
+rounded-xl
+px-4
+py-2
+text-sm
+animate-chip
         ">
           ⚡ Быстрые покупки
         </div>
@@ -173,6 +177,7 @@ return (
           px-4
           py-2
           text-sm
+          animate-chip-delay
         ">
           🔒 Надёжные сделки
         </div>
@@ -185,6 +190,7 @@ return (
           px-4
           py-2
           text-sm
+          animate-chip-delay2
         ">
           📍 Ваш город
         </div>
@@ -201,15 +207,19 @@ return (
 
     <div className="
       hidden
-      lg:flex
-      w-64
-      h-40
-      rounded-3xl
-      bg-white/10
-      backdrop-blur
-      items-center
-      justify-center
-      text-7xl
+lg:flex
+w-64
+h-40
+rounded-3xl
+bg-white/10
+backdrop-blur
+items-center
+justify-center
+text-7xl
+animate-bounce-soft
+hover:scale-110
+transition
+duration-500
     ">
       🛒
     </div>
