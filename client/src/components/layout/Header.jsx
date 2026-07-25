@@ -204,14 +204,13 @@ z-50
 
 <div 
 className="
-max-w-7xl 
-mx-auto 
-px-4
-h-18
+max-w-7xl
+mx-auto
+px-3
+h-16
 flex
 items-center
 justify-between
-gap-4
 ">
 
           {/* LEFT */}
@@ -275,7 +274,7 @@ BB
             <div
 className="
 hidden
-md:flex
+lg:flex
 items-center
 bg-gray-100
 border
@@ -365,7 +364,7 @@ transition
           </div>
 
           {/* RIGHT */}
-          <div className="hidden md:flex items-center gap-6 ">
+          <div className="hidden lg:flex items-center gap-5">
 
             <Link to="/favorites"
             aria-label="Избранное"
@@ -617,6 +616,8 @@ transition
             )}
           </div>
 
+
+
           {/* MOBILE */}
           <button
             onClick={() => setMobileOpen(true)}
@@ -626,6 +627,40 @@ transition
           </button>
         </div>
         </header>
+        <div className="lg:hidden bg-white border-b px-3 py-3">
+
+    <div className="
+    flex
+    items-center
+    bg-gray-100
+    rounded-xl
+    px-3
+    h-11">
+
+        <Search
+            size={18}
+            className="text-gray-500"
+        />
+
+        <input
+            value={search}
+            onChange={(e)=>setSearch(e.target.value)}
+            onKeyDown={(e)=>{
+                if(e.key==="Enter"){
+                    navigate("/");
+                }
+            }}
+            placeholder="Поиск товаров"
+            className="
+            flex-1
+            bg-transparent
+            px-2
+            outline-none"
+        />
+
+    </div>
+
+</div>
 {cityModal && (
   <div
     className="

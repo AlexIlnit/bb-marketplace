@@ -241,8 +241,8 @@ duration-500
     <div className="
       bg-slate-50
       rounded-3xl
-      p-5
-      lg:p-8
+      p-3
+      lg:p-2
     ">
 
 
