@@ -69,20 +69,14 @@ const submit = async (e) => {
   setLoading(true);
 
   try {
+
     const { data } = await loginUser({
       email,
       password
     });
 
-    setUser(
-      {
-        id: data._id,
-        name: data.name,
-        email: data.email,
-        role: data.role
-      },
-      data.token
-    );
+    // Сохраняем весь объект пользователя
+    setUser(data, data.token);
 
     if (data.role === "admin") {
       navigate("/admin");
@@ -91,12 +85,16 @@ const submit = async (e) => {
     }
 
   } catch (err) {
+
     setError(
       err.response?.data?.message ||
       "Ошибка входа"
     );
+
   } finally {
+
     setLoading(false);
+
   }
 };
   return (

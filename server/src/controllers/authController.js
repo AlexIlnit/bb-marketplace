@@ -181,8 +181,6 @@ message:
 }
 
 
-
-
 res.json({
 
 _id:user._id,
@@ -192,6 +190,8 @@ name:user.name,
 email:user.email,
 
 phone:user.phone,
+
+avatar:user.avatar,
 
 token:
 generateToken(user._id),

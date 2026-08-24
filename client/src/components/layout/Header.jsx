@@ -436,50 +436,105 @@ transition
           {/* RIGHT */}
           <div className="hidden lg:flex items-center gap-5">
 
-            <Link to="/favorites"
-            aria-label="Избранное"
-            title="Избранное"
-            className="
-relative
-flex
-items-center
-justify-center
-w-11
-h-11
-rounded-2xl
-hover:bg-blue-50
-transition">
-              <Heart 
-              size={22}
-              aria-hidden="true"
-              className="cursor-pointer text-blue-500 " />
-            </Link>
+           <Link
+  to="/favorites"
+  aria-label="Избранное"
+  title="Избранное"
+  className="
+    group
+    relative
+    flex
+    items-center
+    justify-center
+    w-11
+    h-11
+    rounded-2xl
+    hover:bg-blue-50
+    transition-all
+    duration-300
+  "
+>
+  <Heart
+    size={22}
+    aria-hidden="true"
+    className="
+      text-red-500
+      transition-all
+      duration-300
+      ease-[cubic-bezier(.34,1.56,.64,1)]
+      group-hover:scale-125
+      group-hover:fill-red-500
+      group-hover:text-red-600
+      group-hover:-translate-y-0.5
+    "
+  />
+
+  {/* лёгкое свечение */}
+  <span
+    className="
+      absolute
+      inset-0
+      rounded-2xl
+      bg-blue-400/10
+      scale-0
+      opacity-0
+      transition-all
+      duration-300
+      group-hover:scale-100
+      group-hover:opacity-100
+      -z-10
+    "
+  />
+</Link>
 
 <Link
   to="/messages"
   aria-label="Сообщения"
   title="Сообщения"
   className="
-relative
-flex
-items-center
-justify-center
-w-11
-h-11
-rounded-2xl
-hover:bg-blue-50
-transition
-"
+    group
+    relative
+    flex
+    items-center
+    justify-center
+    w-11
+    h-11
+    rounded-2xl
+    hover:bg-blue-50
+    transition-all
+    duration-300
+  "
 >
-  <MessageCircle 
-  size={22}
-  aria-hidden="true"
-  className="cursor-pointer text-blue-500" />
+  <MessageCircle
+    size={22}
+    aria-hidden="true"
+    className="
+      text-gray-400
+      transition-all
+      duration-300
+      ease-[cubic-bezier(.34,1.56,.64,1)]
+      group-hover:scale-125
+      group-hover:text-gray-600
+      group-hover:-translate-y-1
+    "
+  />
 
-  {/* badge */}
-  {/* <span className="absolute -top-1 -right-1 bg-green-600 text-white text-[10px] px-1.5 rounded-full">
-    3
-  </span> */}
+  {/* мягкое свечение */}
+  <span
+    className="
+      absolute
+      inset-0
+      rounded-2xl
+      bg-blue-400/10
+      scale-0
+      opacity-0
+      transition-all
+      duration-300
+      group-hover:scale-100
+      group-hover:opacity-100
+      -z-10
+    "
+  />
 </Link>
 
             {/* 🔔 NOTIFICATIONS */}
@@ -496,52 +551,82 @@ hover:bg-blue-50
 transition
 " ref={dropdownRef}>
                 <button
-onClick={() => setOpenNotif(!openNotif)}
+  onClick={() => setOpenNotif(!openNotif)}
   aria-label="Уведомления"
   aria-expanded={openNotif}
   aria-haspopup="menu"
-className="
-flex
-items-center
-justify-center
-w-11
-h-11
-rounded-2xl
-hover:bg-blue-50
-transition
-relative
-"
+  className="
+    group
+    flex
+    items-center
+    justify-center
+    w-11
+    h-11
+    rounded-2xl
+    hover:bg-blue-50
+    transition-all
+    duration-300
+    relative
+  "
 >
+  <Bell
+    size={22}
+    aria-hidden="true"
+    className="
+      text-yellow-400
+      transition-all
+      duration-300
+      ease-[cubic-bezier(.34,1.56,.64,1)]
+      group-hover:scale-125
+      group-hover:text-yellow-400
+      group-hover:-translate-y-1
+      group-hover:rotate-6
+    "
+  />
 
-<Bell 
-size={22}
-aria-hidden="true"
-className="text-blue-600"
-/>
+  {/* Количество уведомлений */}
+  {unreadCount > 0 && (
+    <span
+      className="
+        absolute
+        -top-1
+        -right-1
+        min-w-5
+        h-5
+        px-1
+        rounded-full
+        bg-red-500
+        border-2
+        border-white
+        text-white
+        text-[10px]
+        font-bold
+        flex
+        items-center
+        justify-center
+        animate-pulse
+      "
+    >
+      {unreadCount > 99 ? "99+" : unreadCount}
+    </span>
+  )}
 
-{unreadCount > 0 && (
-<span
-className="
-absolute
--top-1
--right-1
-bg-red-500
-text-white
-text-[11px]
-font-bold
-min-w-5
-h-5
-rounded-full
-flex
-items-center
-justify-center
-px-1
-"
->
-{unreadCount}
-</span>
-)}
-
+  {/* Мягкое свечение */}
+  <span
+    className="
+      absolute
+      inset-0
+      rounded-2xl
+      bg-blue-400/10
+      scale-0
+      opacity-0
+      transition-all
+      duration-300
+      group-hover:scale-100
+      group-hover:opacity-100
+      -z-10
+    "
+  />
 </button>
 
                 {/* DROPDOWN */}

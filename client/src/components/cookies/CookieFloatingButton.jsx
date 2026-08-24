@@ -18,8 +18,8 @@ export default function CookieFloatingButton() {
         items-center
         gap-2
 
-        px-4
-        py-3
+        px-2
+        py-2
 
         bg-white
         border
@@ -32,10 +32,10 @@ export default function CookieFloatingButton() {
         duration-200
       "
     >
-      <Settings size={18} />
+      {/* <Settings size={18} /> */}
 
       <span className="text-sm font-medium">
-        Cookies
+        🍪
       </span>
 
       {!accepted && (
