@@ -27,6 +27,9 @@ export default function Header() {
   const search = useListingStore((s) => s.search);
   const setSearch = useListingStore((s) => s.setSearch);
 
+  const [showHeader, setShowHeader] = useState(true);
+  const lastScrollY = useRef(0);
+
 
 const [citySearch, setCitySearch] = useState("");
 
@@ -188,19 +191,86 @@ useEffect(() => {
   loadCount();
 }, [selectedCity, selectedRegion]);
 
+useEffect(() => {
+
+  const handleScroll = () => {
+
+    const currentScrollY = window.scrollY;
+
+    // В самом верху всегда показываем header
+    if (currentScrollY <= 10) {
+
+      setShowHeader(true);
+      lastScrollY.current = currentScrollY;
+
+      return;
+    }
+
+    // Игнорируем мелкие движения
+    if (
+      Math.abs(currentScrollY - lastScrollY.current) < 5
+    ) {
+      return;
+    }
+
+    // Скролл вниз
+    if (currentScrollY > lastScrollY.current) {
+
+      setShowHeader(false);
+
+    }
+
+    // Скролл вверх
+    else {
+
+      setShowHeader(true);
+
+    }
+
+    lastScrollY.current = currentScrollY;
+  };
+
+
+  window.addEventListener(
+    "scroll",
+    handleScroll,
+    { passive: true }
+  );
+
+
+  return () => {
+
+    window.removeEventListener(
+      "scroll",
+      handleScroll
+    );
+
+  };
+
+}, []);
+
   return (
     <>
-      <header 
-className="
-w-full 
-bg-white/90 
-backdrop-blur-md
-border-b
-shadow-sm
-sticky 
-top-0 
-z-50
-">
+      <header
+  className={`
+    w-full
+    bg-white/90
+    backdrop-blur-md
+    border-b
+    shadow-sm
+    sticky
+    top-0
+    z-50
+    transition-transform
+    duration-300
+    ease-out
+    ${
+      showHeader
+        ? "translate-y-0"
+        : "-translate-y-full"
+    }
+  `}
+>
 
 <div 
 className="
