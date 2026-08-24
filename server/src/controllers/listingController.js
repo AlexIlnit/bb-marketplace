@@ -34,22 +34,46 @@ if (req.files?.length) {
 }
 
     const listing = await Listing.create({
-      title,
-      description,
-      price,
-      region,
-      city,
-      category,
-      images: imageUrls, 
-      condition: condition || "used",
-      sellerType: sellerType || "private",
-      user: req.user._id,
-      status: "pending"
-    });
+  title,
+  description,
+  price,
+  region,
+  city,
+  category,
+  images: imageUrls,
+  condition: condition || "used",
+  sellerType: sellerType || "private",
+  user: req.user._id,
+  status: "pending",
+});
+
+// =====================================
+// Уведомление продавцу
+// =====================================
+
 await createNotification(
   req.user._id,
   "Ваше объявление отправлено на модерацию ⏳",
   "info"
+);
+
+// =====================================
+// Уведомление администраторам
+// =====================================
+
+const admins = await User.find({
+  role: "admin",
+  isBlocked: { $ne: true },
+}).select("_id");
+
+await Promise.all(
+  admins.map((admin) =>
+    createNotification(
+      admin._id,
+      `Новое объявление "${listing.title}" ожидает модерации 📝`,
+      "info"
+    )
+  )
 );
     res.status(201).json(listing);
   } catch (error) {
