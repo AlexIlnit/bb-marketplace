@@ -6,6 +6,7 @@ import { useCategoryStore } from "../../store/categoryStore";
 import MainLayout from "../../layouts/MainLayout";
 import { useAuthStore } from "../../store/authStore";
 import { regions } from "../../data/regions";
+import { Link } from "react-router-dom";
 
 
 export default function CreateListing() {
@@ -1161,8 +1162,14 @@ const availableCities = region
 </div>
 
 <p className="text-center text-xs text-gray-400 pb-4">
-  Публикуя объявление, вы соглашаетесь с условиями
-  Пользовательского соглашения.
+  Публикуя объявление, вы соглашаетесь с условиями 
+  <Link 
+        to="/terms"
+        className=" hover:text-gray-300 transition ml-2"
+      >
+        Пользовательского соглашения.
+      </Link>
+  
 </p>
 
         </form>
