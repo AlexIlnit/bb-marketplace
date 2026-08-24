@@ -34,7 +34,13 @@ router.put("/profile", authMiddleware, async (req, res) => {
     const user = await User.findById(req.user._id);
 
 
-    // если меняем пароль - проверяем старый
+    if(!user){
+      return res.status(404).json({
+        message:"Пользователь не найден"
+      });
+    }
+
+
     if(newPassword){
 
       if(!oldPassword){
@@ -51,11 +57,16 @@ router.put("/profile", authMiddleware, async (req, res) => {
 
 
       if(!isMatch){
-
         return res.status(400).json({
           message:"Старый пароль указан неверно"
         });
+      }
 
+
+      if(newPassword.length < 6){
+        return res.status(400).json({
+          message:"Новый пароль минимум 6 символов"
+        });
       }
 
 
@@ -67,14 +78,12 @@ router.put("/profile", authMiddleware, async (req, res) => {
     }
 
 
-    // только после проверки меняем данные
-
-    if(name){
+    if(name !== undefined){
       user.name = name;
     }
 
 
-    if(phone){
+    if(phone !== undefined){
       user.phone = phone;
     }
 
@@ -83,8 +92,14 @@ router.put("/profile", authMiddleware, async (req, res) => {
 
 
     res.json({
-      name:user.name,
-      phone:user.phone
+      message:"Профиль обновлен",
+      user:{
+        name:user.name,
+        phone:user.phone,
+        acceptedTerms:user.acceptedTerms,
+        acceptedTermsVersion:user.acceptedTermsVersion,
+        acceptedTermsDate:user.acceptedTermsDate
+      }
     });
 
 

@@ -378,9 +378,7 @@ w-11
 h-11
 rounded-2xl
 hover:bg-blue-50
-transition
-"
-            aria-label="Избранное">
+transition">
               <Heart 
               size={22}
               aria-hidden="true"
