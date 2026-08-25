@@ -5,6 +5,7 @@ import UsersTable from "../../components/admin/UsersTable";
 import MainLayout from "../../layouts/MainLayout";
 import AdminSettings from "./AdminSettings";
 import AdminChats from "./AdminChats";
+import AdminCategories from "./AdminCategories";
 
 export default function AdminDashboard() {
   const [tab, setTab] = useState("listings");
@@ -68,6 +69,17 @@ export default function AdminDashboard() {
     }`}
   >
     Чаты
+  </button>
+
+  <button
+    onClick={() => setTab("categories")}
+    className={`px-4 py-3 rounded-xl font-medium transition ${
+      tab === "categories"
+        ? "bg-blue-600 text-white"
+        : "bg-white border"
+    }`}
+  >
+    Категории
   </button>
 
   <button
@@ -147,6 +159,9 @@ export default function AdminDashboard() {
 )}
 {tab === "chats" && (
   <AdminChats />
+)}
+{tab === "categories" && (
+  <AdminCategories />
 )}
       </div>
     </MainLayout>
