@@ -50,6 +50,11 @@ function ListingCard({ listing, priority }) {
       )
     : "";
 
+    const isTop =
+  listing.isTop === true &&
+  listing.topUntil &&
+  new Date(listing.topUntil) > new Date();
+
   return (
     <div
       onClick={handleClick}
@@ -64,7 +69,26 @@ function ListingCard({ listing, priority }) {
         sm:block
       "
     >
-
+{isTop && (
+  <div
+    className="
+      absolute
+      top-3
+      left-3
+      z-10
+      px-2.5
+      py-1
+      rounded-lg
+      bg-yellow-400
+      text-yellow-950
+      text-xs
+      font-bold
+      shadow-md
+    "
+  >
+    ТОП
+  </div>
+)}
       {/* Избранное */}
       <button
         aria-label={

@@ -29,15 +29,53 @@ export const getAdminListings = async (req, res) => {
 /* APPROVE */
 export const approveListing = async (req, res) => {
   try {
-    const listing = await Listing.findByIdAndUpdate(
-      req.params.id,
-      { status: "approved" },
-      { returnDocument: "after" }
-    );
+    const listing = await Listing.findOne({
+      _id: req.params.id,
+      status: "pending",
+    });
 
-    res.json(listing);
+    if (!listing) {
+      return res.status(404).json({
+        message: "Объявление не найдено или уже обработано",
+      });
+    }
+
+    // Одобряем объявление
+    listing.status = "approved";
+
+    await listing.save();
+
+    // Начисляем 1 балл владельцу
+    const user = await User.findByIdAndUpdate(
+      listing.user,
+      {
+        $inc: {
+          points: 1,
+        },
+      },
+      {
+        new: true,
+      }
+    ).select("name email points");
+
+    if (!user) {
+      return res.status(404).json({
+        message: "Владелец объявления не найден",
+      });
+    }
+
+    res.json({
+      listing,
+      user,
+      pointsAdded: 1,
+    });
+
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error("APPROVE LISTING ERROR:", err);
+
+    res.status(500).json({
+      message: err.message,
+    });
   }
 };
 

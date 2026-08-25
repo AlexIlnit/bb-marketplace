@@ -44,3 +44,6 @@ export const updateListing = (
   api.get("/listings/count", {
     params,
   });
+
+  export const promoteListing = (id) =>
+  api.patch(`/listings/${id}/promote`);

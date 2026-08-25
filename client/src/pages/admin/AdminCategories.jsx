@@ -275,6 +275,8 @@ export default function AdminCategories() {
           {/* Название */}
 
           <input
+            id="category-name"
+            name="categoryName"
             type="text"
             value={name}
             onChange={(e) =>
@@ -312,6 +314,7 @@ export default function AdminCategories() {
             </label>
 
             <input
+              name="categoryImage"
               id="category-image-input"
               type="file"
               accept="image/*"

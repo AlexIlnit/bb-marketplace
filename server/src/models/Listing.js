@@ -40,6 +40,19 @@ const listingSchema = new mongoose.Schema(
       enum: ["pending", "approved", "rejected"],
       default: "pending"
     },
+    isTop: {
+    type: Boolean,
+    default: false,
+    },
+
+    topUntil: {
+    type: Date,
+    default: null,
+    },
+    pointsAwarded: {
+    type: Boolean,
+    default: false,
+    },
     condition: {
       type: String,
       enum: ["new", "used"],

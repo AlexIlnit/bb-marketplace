@@ -12,6 +12,7 @@ import api from "../../api/axios";
 import { Helmet } from "react-helmet-async";
 import { LogOut } from "lucide-react";
 import { updateProfile } from "../../api/userApi";
+import { promoteListing } from "../../api/listingApi";
 
 export default function Profile() {
   const user = useAuthStore((s) => s.user);
@@ -210,6 +211,40 @@ const handleUpload = async () => {
       setLoading(false);
     }
   };
+const handlePromote = async (listingId) => {
+  try {
+    const { data } = await promoteListing(listingId);
+
+    alert(
+      `⭐ Объявление поднято в ТОП!\nОсталось баллов: ${data.points}`
+    );
+
+    // Обновляем конкретное объявление без перезагрузки страницы
+    setListings((prev) =>
+      prev.map((item) =>
+        item._id === listingId
+          ? data.listing
+          : item
+      )
+    );
+
+    // Обновляем количество баллов пользователя
+    setUser(
+      {
+        ...user,
+        points: data.points,
+      },
+      localStorage.getItem("token")
+    );
+
+  } catch (error) {
+    alert(
+      error?.response?.data?.message ||
+      "Не удалось поднять объявление в ТОП"
+    );
+  }
+};
+
 const handleDelete = async (id) => {
   setDeleteItem(null); // закрыли сразу
 
@@ -403,6 +438,46 @@ setProfileModal(false);
                 Объявлений: {listings.length}
               </p>
       </div>
+      <div className="
+  bg-white
+  border
+  border-gray-200
+  rounded-2xl
+  p-5
+  shadow-sm
+">
+  <div className="text-sm text-gray-500">
+    Баллы
+  </div>
+
+  <div className="
+    mt-1
+    text-3xl
+    font-bold
+    text-gray-900
+  ">
+    {user?.points || 0}
+  </div>
+
+  <div className="text-sm text-gray-500 mt-1">
+    1 балл за каждое опубликованное объявление
+  </div>
+</div>
+<div className="
+  bg-yellow-50
+  border
+  border-yellow-200
+  rounded-2xl
+  p-5
+">
+  <div className="font-semibold text-yellow-900">
+    ⭐ Продвижение
+  </div>
+
+  <div className="text-sm text-yellow-800 mt-1">
+    Поднять объявление в ТОП — 10 баллов
+  </div>
+</div>
 
     </div>
 {profileMessage && (
@@ -715,6 +790,47 @@ hover:underline
   >
     Удалить
   </button>
+  
+  )}
+  {!user?.isBlocked &&
+  listing.status === "approved" && (
+    <>
+      {listing.isTop &&
+      listing.topUntil &&
+      new Date(listing.topUntil) > new Date() ? (
+        <button
+          disabled
+          className="
+            bg-yellow-100
+            text-yellow-700
+            px-2
+            py-1
+            text-xs
+            rounded
+            cursor-not-allowed
+          "
+        >
+          ⭐ В ТОП
+        </button>
+      ) : (
+        <button
+          onClick={() => handlePromote(listing._id)}
+          className="
+            bg-yellow-400
+            hover:bg-yellow-500
+            text-yellow-950
+            px-2
+            py-1
+            text-xs
+            font-medium
+            rounded
+            transition
+          "
+        >
+          ⭐ В ТОП — 10 баллов
+        </button>
+      )}
+    </>
   )}
 
   {!user?.isBlocked ? (

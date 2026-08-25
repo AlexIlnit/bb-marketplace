@@ -4,7 +4,7 @@ import Listing from "../models/Listing.js";
 import { adminOnly } from "../middleware/adminMiddleware.js";
 import { createNotification } from "../utils/createNotification.js";
 import { authMiddleware } from "../middleware/auth.js";
-import { changeAdminPassword, toggleAdmin } from "../controllers/adminController.js";
+import { changeAdminPassword, toggleAdmin, approveListing } from "../controllers/adminController.js";
 import bcrypt from "bcryptjs";
 
 const router = express.Router();
@@ -86,31 +86,7 @@ router.get("/listings", authMiddleware, adminOnly, async (req, res) => {
   res.json(listings);
 });
 
-router.patch("/listings/:id/approve", authMiddleware, adminOnly, async (req, res) => {
-  try {
-    const listing = await Listing.findById(req.params.id);
-
-    if (!listing) {
-      return res.status(404).json({ message: "Listing не найден" });
-    }
-
-    listing.status = "approved";
-    await listing.save();
-    const userId = listing.user._id || listing.user;
-
-await createNotification(
-  userId,
-  "Ваше объявление опубликовано ✅",
-  "success"
-);
-
-    res.json(listing);
-
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: err.message });
-  }
-});
+router.patch("/listings/:id/approve", authMiddleware, adminOnly, approveListing);
 
 router.patch("/listings/:id/reject", authMiddleware, adminOnly, async (req, res) => {
   try {

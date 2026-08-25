@@ -5,6 +5,7 @@ import {
   createListing,
   deleteListing,
   updateListing,
+  promoteListing,
   getListingsCount
 } from "../controllers/listingController.js";
 
@@ -13,6 +14,9 @@ import { upload } from "../middleware/upload.js";
 import { uploadImage } from "../controllers/uploadController.js";
 
 const router = express.Router();
+
+router.patch("/:id/promote", authMiddleware, promoteListing);
+
 router.get("/count", getListingsCount);
 router.get("/", getListings);
 router.get("/:id", getListingById);

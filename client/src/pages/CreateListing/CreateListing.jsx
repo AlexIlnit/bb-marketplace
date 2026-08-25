@@ -15,7 +15,7 @@ export default function CreateListing() {
   const user = useAuthStore((s) => s.user);
   useEffect(() => {
   if (user?.isBlocked) {
-    navigate("/profile"); // или "/"
+    navigate("/profile"); 
   }
 }, [user]);
 

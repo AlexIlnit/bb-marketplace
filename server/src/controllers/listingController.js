@@ -149,14 +149,33 @@ export const getListings = async (req, res) => {
 
     // console.log("FINAL FILTER 👉", filter);
 
-    const listings = await Listing.find(filter)
-      .populate("category", "name slug")
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit);
+  const now = new Date();
 
-    const total = await Listing.countDocuments(filter);
+const topFilter = {
+  $or: [
+    { isTop: { $ne: true } },
+    {
+      isTop: true,
+      topUntil: { $gt: now },
+    },
+  ],
+};
 
+const finalFilter = {
+  ...filter,
+  ...topFilter,
+};
+
+const listings = await Listing.find(finalFilter)
+  .populate("category", "name slug")
+  .sort({
+    isTop: -1,
+    createdAt: -1,
+  })
+  .skip(skip)
+  .limit(limit);
+
+const total = await Listing.countDocuments(finalFilter);
     res.json({
       listings,
       totalPages: Math.ceil(total / limit)
@@ -257,6 +276,9 @@ if (user?.isBlocked) {
 
     listing.status = "pending";
 
+    listing.isTop = false;
+    listing.topUntil = null;
+
     await listing.save();
 
     await createNotification(
@@ -300,6 +322,94 @@ export const getListingsCount = async (req, res) => {
 
     res.json({ total });
   } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+export const promoteListing = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+      return res.status(404).json({
+        message: "Пользователь не найден",
+      });
+    }
+
+    if (user.isBlocked) {
+      return res.status(403).json({
+        message: "Ваш аккаунт заблокирован.",
+      });
+    }
+
+    const listing = await Listing.findById(req.params.id);
+
+    if (!listing) {
+      return res.status(404).json({
+        message: "Объявление не найдено",
+      });
+    }
+
+    // Только владелец может продвигать своё объявление
+    if (
+      listing.user.toString() !==
+      req.user._id.toString()
+    ) {
+      return res.status(403).json({
+        message: "Нет доступа",
+      });
+    }
+
+    if (listing.status !== "approved") {
+      return res.status(400).json({
+        message: "Продвигать можно только опубликованное объявление",
+      });
+    }
+
+    // Если уже активно
+    if (
+      listing.isTop &&
+      listing.topUntil &&
+      new Date(listing.topUntil) > new Date()
+    ) {
+      return res.status(400).json({
+        message: "Объявление уже находится в ТОП",
+      });
+    }
+
+    const COST = 10;
+
+    if ((user.points || 0) < COST) {
+      return res.status(400).json({
+        message: "Недостаточно баллов",
+        required: COST,
+        points: user.points || 0,
+      });
+    }
+
+    // Списываем 10 баллов
+    user.points -= COST;
+
+    // ТОП на 7 дней
+    const topUntil = new Date();
+    topUntil.setDate(topUntil.getDate() + 7);
+
+    listing.isTop = true;
+    listing.topUntil = topUntil;
+
+    await user.save();
+    await listing.save();
+
+    res.json({
+      message: "Объявление поднято в ТОП",
+      listing,
+      points: user.points,
+    });
+
+  } catch (error) {
+    console.error("PROMOTE LISTING ERROR:", error);
+
     res.status(500).json({
       message: error.message,
     });
