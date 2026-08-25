@@ -573,27 +573,106 @@ export default function AdminCategories() {
                     ) : (
 
                       <>
-                        <div className="
-                          font-semibold
-                          text-gray-900
-                          text-lg
-                        ">
-                          {category.name}
-                        </div>
+  <div className="
+    font-semibold
+    text-gray-900
+    text-lg
+  ">
+    {category.name}
+  </div>
 
-                        <div className="
-                          text-xs
-                          text-gray-400
-                          mt-1
-                        ">
-                          ID: {category._id}
-                        </div>
-                      </>
+  <div className="
+    text-xs
+    text-gray-400
+    mt-1
+  ">
+    ID: {category._id}
+  </div>
+
+  {/* Статистика объявлений */}
+
+  <div className="
+    flex
+    flex-wrap
+    items-center
+    gap-2
+    mt-3
+  ">
+
+    {/* Всего */}
+
+    <div className="
+      px-3
+      py-1.5
+      rounded-lg
+      bg-gray-100
+      text-gray-700
+      text-xs
+      font-medium
+    ">
+      Всего:{" "}
+      <span className="font-bold">
+        {category.listingsCount ?? 0}
+      </span>
+    </div>
+
+    {/* На модерации */}
+
+    <div className="
+      px-3
+      py-1.5
+      rounded-lg
+      bg-yellow-50
+      text-yellow-700
+      text-xs
+      font-medium
+    ">
+      На модерации:{" "}
+      <span className="font-bold">
+        {category.pendingCount ?? 0}
+      </span>
+    </div>
+
+    {/* Одобрено */}
+
+    <div className="
+      px-3
+      py-1.5
+      rounded-lg
+      bg-green-50
+      text-green-700
+      text-xs
+      font-medium
+    ">
+      Одобрено:{" "}
+      <span className="font-bold">
+        {category.approvedCount ?? 0}
+      </span>
+    </div>
+
+    {/* Отклонено */}
+
+    <div className="
+      px-3
+      py-1.5
+      rounded-lg
+      bg-red-50
+      text-red-700
+      text-xs
+      font-medium
+    ">
+      Отклонено:{" "}
+      <span className="font-bold">
+        {category.rejectedCount ?? 0}
+      </span>
+    </div>
+
+  </div>
+</>
 
                     )}
 
                   </div>
-
                 </div>
 
                 {/* ========================= */}

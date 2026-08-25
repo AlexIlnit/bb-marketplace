@@ -7,10 +7,81 @@ import Listing from "../models/Listing.js";
 // =========================
 export const getCategories = async (req, res) => {
   try {
-    const categories = await Category.find().sort({ name: 1 });
+    const categories = await Category.aggregate([
+      {
+        $lookup: {
+          from: "listings",
+          localField: "_id",
+          foreignField: "category",
+          as: "listings",
+        },
+      },
+
+      {
+        $addFields: {
+          listingsCount: {
+            $size: "$listings",
+          },
+
+          pendingCount: {
+            $size: {
+              $filter: {
+                input: "$listings",
+                as: "listing",
+                cond: {
+                  $eq: ["$$listing.status", "pending"],
+                },
+              },
+            },
+          },
+
+          approvedCount: {
+            $size: {
+              $filter: {
+                input: "$listings",
+                as: "listing",
+                cond: {
+                  $eq: ["$$listing.status", "approved"],
+                },
+              },
+            },
+          },
+
+          rejectedCount: {
+            $size: {
+              $filter: {
+                input: "$listings",
+                as: "listing",
+                cond: {
+                  $eq: ["$$listing.status", "rejected"],
+                },
+              },
+            },
+          },
+        },
+      },
+
+      {
+        $project: {
+          listings: 0,
+        },
+      },
+
+      {
+        $sort: {
+          name: 1,
+        },
+      },
+    ]);
 
     res.json(categories);
+
   } catch (error) {
+    console.error(
+      "Ошибка получения категорий:",
+      error
+    );
+
     res.status(500).json({
       message: error.message,
     });
