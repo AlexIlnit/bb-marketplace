@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import api from "../../api/axios";
 import { Heart } from "lucide-react";
 import { useFavoriteStore } from "../../store/favoriteStore";
+import { ImageOff } from "lucide-react";
 
 import SEO from "../../components/seo/Seo";
 
@@ -91,8 +92,9 @@ const images = listing.images || [];
       <div className="grid md:grid-cols-2 gap-8">
 
         {/* Фото */}
-       <div className="aspect-3/2 relative overflow-hidden">
-       
+<div className="aspect-3/2 relative overflow-hidden rounded-xl bg-gray-100">
+
+  {/* Избранное */}
   <button
     aria-label={
       isFavorite
@@ -112,6 +114,8 @@ const images = listing.images || [];
       rounded-full
       shadow-lg
       z-20
+      hover:scale-105
+      transition
     "
   >
     <Heart
@@ -121,53 +125,163 @@ const images = listing.images || [];
     />
   </button>
 
-  <img
-    src={images[currentImage]}
-    alt={listing.title}
-    className="absolute inset-0 w-full h-full object-cover rounded-xl"
-  />
-
-  {images.length > 1 && (
+  {/* Если есть фотографии */}
+  {images.length > 0 ? (
     <>
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          setCurrentImage((prev) =>
-            prev === 0 ? images.length - 1 : prev - 1
-          );
-        }}
-        className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 rounded-full px-2 py-1"
-      >
-        ‹
-      </button>
-
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          setCurrentImage((prev) =>
-            prev === images.length - 1 ? 0 : prev + 1
-          );
-        }}
-        className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 rounded-full px-2 py-1"
-      >
-        ›
-      </button>
-    </>
-  )}
-  {images.length > 1 && (
-  <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
-    {images.map((_, index) => (
-      <div
-        key={index}
-        className={`w-2 h-2 rounded-full ${
-          currentImage === index
-            ? "bg-white"
-            : "bg-white/50"
-        }`}
+      <img
+        src={images[currentImage]}
+        alt={listing.title}
+        className="
+          absolute
+          inset-0
+          w-full
+          h-full
+          object-cover
+          rounded-xl
+        "
       />
-    ))}
-  </div>
-)}
+
+      {/* Переключатели */}
+      {images.length > 1 && (
+        <>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setCurrentImage((prev) =>
+                prev === 0 ? images.length - 1 : prev - 1
+              );
+            }}
+            className="
+              absolute
+              left-3
+              top-1/2
+              -translate-y-1/2
+              w-10
+              h-10
+              rounded-full
+              bg-white/90
+              shadow-md
+              flex
+              items-center
+              justify-center
+              text-2xl
+              text-gray-700
+              hover:bg-white
+              transition
+              z-10
+            "
+          >
+            ‹
+          </button>
+
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setCurrentImage((prev) =>
+                prev === images.length - 1 ? 0 : prev + 1
+              );
+            }}
+            className="
+              absolute
+              right-3
+              top-1/2
+              -translate-y-1/2
+              w-10
+              h-10
+              rounded-full
+              bg-white/90
+              shadow-md
+              flex
+              items-center
+              justify-center
+              text-2xl
+              text-gray-700
+              hover:bg-white
+              transition
+              z-10
+            "
+          >
+            ›
+          </button>
+        </>
+      )}
+
+      {/* Точки */}
+      {images.length > 1 && (
+        <div className="
+          absolute
+          bottom-3
+          left-1/2
+          -translate-x-1/2
+          flex
+          gap-1.5
+          z-10
+        ">
+          {images.map((_, index) => (
+            <div
+              key={index}
+              className={`
+                w-2
+                h-2
+                rounded-full
+                transition
+                ${
+                  currentImage === index
+                    ? "bg-white scale-110"
+                    : "bg-white/50"
+                }
+              `}
+            />
+          ))}
+        </div>
+      )}
+    </>
+  ) : (
+
+    /* Заглушка без фотографии */
+    <div className="
+      absolute
+      inset-0
+      flex
+      flex-col
+      items-center
+      justify-center
+      bg-linear-to-br
+      from-gray-100
+      via-gray-50
+      to-gray-200
+      text-gray-400
+    ">
+      <div className="
+        w-20
+        h-20
+        rounded-3xl
+        bg-white
+        shadow-sm
+        flex
+        items-center
+        justify-center
+        mb-4
+      ">
+        <ImageOff
+          size={38}
+          strokeWidth={1.5}
+          className="text-gray-300"
+        />
+      </div>
+
+      <span className="text-sm font-medium text-gray-400">
+        Фото отсутствует
+      </span>
+
+      <span className="text-xs text-gray-300 mt-1">
+        Продавец не добавил фотографию
+      </span>
+    </div>
+  )}
+
 </div>
 
         {/* Информация */}

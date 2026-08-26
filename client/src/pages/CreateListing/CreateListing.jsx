@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { createListing } from "../../api/listingApi";
 // import { uploadImage } from "../../api/uploadApi";
 import { useNavigate } from "react-router-dom";
@@ -42,6 +42,13 @@ export default function CreateListing() {
   const [images, setImages] = useState([]);
   const [previews, setPreviews] = useState([]);
 
+  const [noPhotos, setNoPhotos] = useState(false);
+
+  const [activeStep, setActiveStep] = useState(1);
+  
+
+  const stepRefs = Array.from({ length: 8 }, () => useRef(null)); 
+
   const [loadingImage, setLoadingImage] = useState(null);
 
  const handleImageSelect = (e, index) => {
@@ -49,6 +56,7 @@ export default function CreateListing() {
   if (!file) return;
 
   setLoadingImage(index);
+  setNoPhotos(false);
 
   const newImages = [...images];
   newImages[index] = file;
@@ -65,12 +73,25 @@ export default function CreateListing() {
 };
 
 const removeImage = (index) => {
-  setImages((prev) => prev.filter((_, i) => i !== index));
+  setImages((prev) => {
+    const updated = prev.filter((_, i) => i !== index);
+
+    if (updated.length === 0) {
+      setNoPhotos(false);
+    }
+
+    return updated;
+  });
 
   setPreviews((prev) => {
     const updated = [...prev];
-    URL.revokeObjectURL(updated[index].url);
+
+    if (updated[index]?.url) {
+      URL.revokeObjectURL(updated[index].url);
+    }
+
     updated.splice(index, 1);
+
     return updated;
   });
 };
@@ -169,9 +190,81 @@ useEffect(() => {
 };
 const MAX_IMAGES = 5;
 
-const availableCities = region
-  ? regions[region] || []
-  : [];
+const availableCities =
+  region === "Все города"
+    ? Object.values(regions).flat()
+    : region
+      ? regions[region] || []
+      : [];
+
+  const steps = [
+  "Название объявления",
+  "Категория",
+  "Состояние и продавец",
+  "Описание",
+  "Фотографии",
+  "Цена",
+  "Местоположение",
+  "Информация о продавце",
+];
+
+const isStepCompleted = (step) => {
+  switch (step) {
+    case 1:
+      return form.title.trim().length > 0;
+
+    case 2:
+      return !!form.category;
+
+    case 3:
+      return !!form.condition && !!form.sellerType;
+
+    case 4:
+      return form.description.trim().length > 0;
+
+    case 5:
+      return images.length > 0 || noPhotos;
+
+    case 6:
+      return form.price !== "" && Number(form.price) >= 0;
+
+    case 7:
+      return !!region && !!city;
+
+    case 8:
+      return !!user?.name && !!user?.phone;
+
+    default:
+      return false;
+  }
+};
+useEffect(() => {
+  const observers = [];
+
+  stepRefs.forEach((ref, index) => {
+    if (!ref.current) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setActiveStep(index + 1);
+        }
+      },
+      {
+        root: null,
+        rootMargin: "-20% 0px -60% 0px",
+        threshold: 0,
+      }
+    );
+
+    observer.observe(ref.current);
+    observers.push(observer);
+  });
+
+  return () => {
+    observers.forEach((observer) => observer.disconnect());
+  };
+}, []);
 
   return (
   <MainLayout>
@@ -180,6 +273,8 @@ const availableCities = region
       {/* Верхняя часть */}
       <div className="bg-white border-b">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+          
+  
 
           <div className="flex items-center gap-3 text-sm text-gray-500 mb-4">
             <button
@@ -204,7 +299,7 @@ const availableCities = region
               </h1>
 
               <p className="mt-2 text-gray-500">
-                Заполните информацию о товаре — это займёт всего несколько минут
+                Заполните информацию о товаре или услуге — это займёт всего несколько минут
               </p>
             </div>
 
@@ -216,16 +311,22 @@ const availableCities = region
         </div>
       </div>
 
-      {/* Форма */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+      {/* Форма + прогресс */}
+<div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
 
-        <form
-          onSubmit={submit}
-          className="space-y-5"
-        >
+  <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_280px] lg:gap-8 items-start">
+
+    {/* ================= ФОРМА ================= */}
+
+    <form
+      onSubmit={submit}
+      className="space-y-5 min-w-0"
+    >
 
           {/* 1. НАЗВАНИЕ */}
-          <section className="bg-white border border-gray-200 rounded-3xl shadow-sm overflow-hidden">
+          <section 
+          ref={stepRefs[0]}
+          className="bg-white border border-gray-200 rounded-3xl shadow-sm overflow-hidden">
             <div className="p-5 sm:p-7">
 
               <div className="flex items-start gap-4 mb-6">
@@ -300,7 +401,9 @@ const availableCities = region
 
 
           {/* 2. КАТЕГОРИЯ */}
-          <section className="bg-white border border-gray-200 rounded-3xl shadow-sm">
+          <section 
+          ref={stepRefs[1]}
+          className="bg-white border border-gray-200 rounded-3xl shadow-sm">
             <div className="p-5 sm:p-7">
 
               <div className="flex items-start gap-4 mb-6">
@@ -371,7 +474,9 @@ const availableCities = region
             </div>
           </section>
           {/* 3. СОСТОЯНИЕ И ПРОДАВЕЦ */}
-<section className="bg-white border border-gray-200 rounded-3xl shadow-sm">
+<section 
+ref={stepRefs[2]}
+className="bg-white border border-gray-200 rounded-3xl shadow-sm">
   <div className="p-5 sm:p-7">
 
     <div className="flex items-start gap-4 mb-6">
@@ -488,7 +593,9 @@ const availableCities = region
 
 
           {/* 4. ОПИСАНИЕ */}
-          <section className="bg-white border border-gray-200 rounded-3xl shadow-sm">
+          <section 
+          ref={stepRefs[3]}
+          className="bg-white border border-gray-200 rounded-3xl shadow-sm">
             <div className="p-5 sm:p-7">
 
               <div className="flex items-start gap-4 mb-6">
@@ -560,7 +667,9 @@ const availableCities = region
 
 
           {/* 5. ФОТО */}
-          <section className="bg-white border border-gray-200 rounded-3xl shadow-sm">
+          <section 
+          ref={stepRefs[4]}
+          className="bg-white border border-gray-200 rounded-3xl shadow-sm">
             <div className="p-5 sm:p-7">
 
               <div className="flex items-start gap-4 mb-6">
@@ -723,6 +832,57 @@ const availableCities = region
                 ))}
 
               </div>
+              <div className="mt-4 flex justify-center">
+  <button
+    type="button"
+    onClick={() => {
+      setNoPhotos(true);
+      setImages([]);
+      setPreviews([]);
+    }}
+    className={`
+      inline-flex
+      items-center
+      gap-2
+      px-4
+      h-11
+      rounded-xl
+      border-2
+      border-dashed
+      transition-all
+      duration-200
+      text-sm
+      font-medium
+
+      ${
+        noPhotos
+          ? "border-blue-500 bg-blue-50 text-blue-600"
+          : "border-gray-300 bg-gray-50 text-gray-500 hover:border-blue-400 hover:bg-blue-50/50 hover:text-blue-600"
+      }
+    `}
+  >
+    <span
+      className={`
+        w-6
+        h-6
+        rounded-lg
+        flex
+        items-center
+        justify-center
+        text-sm
+        ${
+          noPhotos
+            ? "bg-blue-100 text-blue-600"
+            : "bg-gray-100 text-gray-400"
+        }
+      `}
+    >
+      ✓
+    </span>
+
+    {noPhotos ? "Без фотографий выбрано" : "Добавить без фотографий"}
+  </button>
+</div>
 
 
               <div className="
@@ -753,7 +913,9 @@ const availableCities = region
 
 
           {/* 6. ЦЕНА */}
-          <section className="bg-white border border-gray-200 rounded-3xl shadow-sm">
+          <section 
+          ref={stepRefs[5]}
+          className="bg-white border border-gray-200 rounded-3xl shadow-sm">
             <div className="p-5 sm:p-7">
 
               <div className="flex items-start gap-4 mb-6">
@@ -834,7 +996,9 @@ const availableCities = region
 
 
           {/* 7. МЕСТОПОЛОЖЕНИЕ */}
-          <section className="bg-white border border-gray-200 rounded-3xl shadow-sm">
+          <section 
+          ref={stepRefs[6]}
+          className="bg-white border border-gray-200 rounded-3xl shadow-sm">
             <div className="p-5 sm:p-7">
 
               <div className="flex items-start gap-4 mb-6">
@@ -965,7 +1129,9 @@ const availableCities = region
 
 
           {/* 8. ПРОДАВЕЦ */}
-          <section className="bg-white border border-gray-200 rounded-3xl shadow-sm">
+          <section 
+          ref={stepRefs[7]}
+          className="bg-white border border-gray-200 rounded-3xl shadow-sm">
             <div className="p-5 sm:p-7">
 
               <div className="flex items-start gap-4 mb-6">
@@ -1098,7 +1264,7 @@ const availableCities = region
 </div>
 
 {/* КНОПКА */}
-<div className="sticky bottom-4 z-20">
+<div className="bottom-4 z-20">
   <button
     type="submit"
     disabled={loading || !user?.phone}
@@ -1174,6 +1340,162 @@ const availableCities = region
 
         </form>
 
+        {/* ================= ПРОГРЕСС ================= */}
+
+      <aside className="hidden lg:block sticky top-15 self-start h-fit">
+  <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-4">
+
+    <div className="mb-4">
+      <h3 className="font-bold text-gray-900">
+        Заполнение объявления
+      </h3>
+
+      <p className="text-xs text-gray-500 mt-1">
+        Шаг {activeStep} из {steps.length}
+      </p>
+    </div>
+
+    {/* ШАГИ */}
+
+    <div className="space-y-1">
+
+      {steps.map((step, index) => {
+
+        const number = index + 1;
+
+        const isActive =
+          activeStep === number;
+
+        const isCompleted = isStepCompleted(number);
+
+        return (
+          <button
+            key={step}
+            type="button"
+            onClick={() => {
+              stepRefs[index].current?.scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+              });
+            }}
+            className={`
+              w-full
+              flex
+              items-center
+              gap-3
+              text-left
+              rounded-xl
+              px-3
+              py-2.5
+              transition-all
+              duration-200
+              min-w-0
+
+              ${
+                isActive
+                  ? "bg-blue-50 text-blue-700"
+                  : "hover:bg-gray-50 text-gray-600"
+              }
+            `}
+          >
+
+            <span
+              className={`
+                shrink-0
+                w-7
+                h-7
+                rounded-full
+                flex
+                items-center
+                justify-center
+                border-2
+                text-xs
+                font-bold
+                transition-all
+
+                ${
+                  isCompleted
+                    ? "bg-blue-600 border-blue-600 text-white"
+                    : isActive
+                      ? "border-blue-600 text-blue-600"
+                      : "border-gray-300 text-gray-400"
+                }
+              `}
+            >
+              {isCompleted ? "✓" : number}
+            </span>
+
+            <span
+              className={`
+                text-sm
+                leading-tight
+                min-w-0
+
+                ${
+                  isActive
+                    ? "font-semibold text-blue-700"
+                    : isCompleted
+                      ? "text-gray-700"
+                      : "text-gray-500"
+                }
+              `}
+            >
+              {step}
+            </span>
+
+          </button>
+        );
+      })}
+
+    </div>
+
+    {/* ПРОГРЕСС */}
+
+    <div className="mt-4 pt-4 border-t border-gray-100">
+
+      <div className="flex justify-between text-xs text-gray-500 mb-2">
+        <span>
+          Прогресс
+        </span>
+
+        <span>
+          {
+  Math.round(
+    (steps.filter((_, index) =>
+      isStepCompleted(index + 1)
+    ).length / steps.length) * 100
+  )
+}%
+        </span>
+      </div>
+
+      <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+
+        <div
+          className="
+            h-full
+            bg-blue-600
+            rounded-full
+            transition-all
+            duration-500
+          "
+          style={{
+  width: `${
+    (steps.filter((_, index) =>
+      isStepCompleted(index + 1)
+    ).length / steps.length) * 100
+  }%`,
+}}
+        />
+
+      </div>
+
+    </div>
+
+  </div>
+</aside>
+    
+</div>
       </div>
     </div>
   </MainLayout>

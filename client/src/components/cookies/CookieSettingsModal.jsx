@@ -24,64 +24,70 @@ export default function CookieSettingsModal() {
     }));
   };
 
-  const CookieItem = ({
-    title,
-    description,
-    checked,
-    disabled = false,
-    onToggle,
-  }) => (
-    <div className="flex justify-between items-center py-4 border-b last:border-b-0">
-      <div className="pr-5">
-        <h3 className="font-semibold text-lg">
-          {title}
-        </h3>
+ const CookieItem = ({
+  title,
+  description,
+  checked,
+  disabled = false,
+  onToggle,
+}) => (
+  <div className="flex items-start justify-between gap-4 py-4 border-b last:border-b-0">
+    
+    {/* Текст */}
+    <div className="min-w-0 flex-1 pr-1">
+      <h3 className="font-semibold text-lg">
+        {title}
+      </h3>
 
-        <p className="text-gray-500 text-sm mt-1">
-          {description}
-        </p>
-      </div>
+      <p className="text-gray-500 text-sm mt-1 whitespace-pre-line wrap-break-words">
+        {description}
+      </p>
+    </div>
 
-      <button
-        disabled={disabled}
-        onClick={onToggle}
+    {/* Переключатель */}
+    <button
+      type="button"
+      disabled={disabled}
+      onClick={onToggle}
+      className={`
+        relative
+        shrink-0
+        w-14
+        h-8
+        rounded-full
+        transition-all
+        duration-300
+        ${
+          checked
+            ? "bg-blue-600"
+            : "bg-gray-300"
+        }
+        ${disabled ? "opacity-60 cursor-default" : ""}
+      `}
+    >
+      <span
         className={`
-          relative
-          w-14
-          h-8
+          absolute
+          top-1
+          left-1
+          w-6
+          h-6
           rounded-full
+          bg-white
+          shadow
           transition-all
           duration-300
           ${
             checked
-              ? "bg-blue-600"
-              : "bg-gray-300"
+              ? "translate-x-6"
+              : ""
           }
-          ${disabled ? "opacity-60 cursor-default" : ""}
         `}
-      >
-        <span
-          className={`
-            absolute
-            top-1
-            left-1
-            w-6
-            h-6
-            rounded-full
-            bg-white
-            shadow
-            transition-all
-            duration-300
-            ${
-              checked
-                ? "translate-x-6"
-                : ""
-            }
-          `}
-        />
-      </button>
-    </div>
-  );
+      />
+    </button>
+
+  </div>
+);
 
   return (
     <div
@@ -138,7 +144,8 @@ export default function CookieSettingsModal() {
 
           <CookieItem
             title="Функциональные"
-            description="Запоминают язык, тему оформления и другие персональные настройки."
+            description="Запоминают язык, тему оформления и другие
+            персональные настройки."
             checked={form.functional}
             onToggle={() => toggle("functional")}
           />

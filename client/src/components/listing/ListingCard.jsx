@@ -2,6 +2,7 @@ import { Heart } from "lucide-react";
 import { useFavoriteStore } from "../../store/favoriteStore";
 import { useNavigate } from "react-router-dom";
 import { memo, useState } from "react";
+import NoImage from "../ui/NoImage";
 
 function ListingCard({ listing, priority }) {
   if (!listing) return null;
@@ -174,19 +175,7 @@ function ListingCard({ listing, priority }) {
             "
           />
         ) : (
-          <div
-            className="
-              absolute
-              inset-0
-              flex
-              items-center
-              justify-center
-              text-3xl
-              text-gray-400
-            "
-          >
-            📷
-          </div>
+          <NoImage />
         )}
 
 
