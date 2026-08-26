@@ -51,13 +51,39 @@ export const getFavorites = async (req, res) => {
   try {
     const favorites = await Favorite.find({
       user: req.user._id
-    }).populate({
-  path: "listing",
-  model: "Listing"
-});
-    res.json(favorites);
+    })
+      .populate({
+        path: "listing",
+        model: "Listing"
+      })
+      .lean();
+
+    // Удаляем записи, у которых объявление уже удалено
+    const validFavorites = favorites.filter(
+      (favorite) => favorite.listing !== null
+    );
+
+    // Заодно удаляем битые записи из БД
+    const invalidFavorites = favorites.filter(
+      (favorite) => favorite.listing === null
+    );
+
+    if (invalidFavorites.length > 0) {
+      await Favorite.deleteMany({
+        _id: {
+          $in: invalidFavorites.map(
+            (favorite) => favorite._id
+          )
+        }
+      });
+    }
+
+    res.json(validFavorites);
+
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({
+      message: error.message
+    });
   }
 };
 

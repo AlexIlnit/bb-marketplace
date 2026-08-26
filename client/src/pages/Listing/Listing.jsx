@@ -21,16 +21,29 @@ export default function Listing() {
   const [currentImage, setCurrentImage] = useState(0);
   const [showPhone, setShowPhone] = useState(false);
 
-  const isFavorite = useFavoriteStore(
-  (state) =>
-    state.favorites.some(
-      (fav) => fav.listing?._id === listing._id
-    )
-  );
+ 
+
+  const favorites = useFavoriteStore(
+  (state) => state.favorites
+);
 
 const toggleFavorite = useFavoriteStore(
   (state) => state.toggleFavorite
 );
+
+const validFavorites = favorites.filter(
+  (fav) => fav?.listing?._id
+);
+
+const isFavorite = listing
+  ? validFavorites.some(
+      (fav) => fav.listing._id === listing._id
+    )
+  : false;
+
+const favoritesCount = validFavorites.length;
+
+
 
   useEffect(() => {
     loadListing();
