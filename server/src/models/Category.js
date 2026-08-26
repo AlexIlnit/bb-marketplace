@@ -5,23 +5,30 @@ const categorySchema = new mongoose.Schema(
     name: {
       type: String,
       required: true,
-      unique: true
+      unique: true,
     },
 
     slug: {
       type: String,
       required: true,
-      unique: true
+      unique: true,
     },
 
     icon: {
       type: String,
-      default: "box"
+      default: "box",
     },
 
     image: {
-      type: String
-    }
+      type: String,
+    },
+
+    // Родительская категория
+    parent: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
+      default: null,
+    },
   },
   { timestamps: true }
 );

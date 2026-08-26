@@ -27,6 +27,14 @@ export default function FilterSidebar() {
   const { categories, fetchCategories } = useCategoryStore();
   const [open, setOpen] = useState(false);
   const [localSearch, setLocalSearch] = useState(search);
+  const [openCategories, setOpenCategories] = useState({});
+
+  const toggleCategory = (id) => {
+  setOpenCategories((prev) => ({
+    ...prev,
+    [id]: !prev[id],
+  }));
+};
 
   // 1. Первоначальная загрузка категорий
   useEffect(() => {
@@ -119,22 +127,192 @@ export default function FilterSidebar() {
         </select>
       </label>
 
-      <label className="flex flex-col gap-1 text-black">
-        <span>Категория</span>
-        <select
-          name="category"
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          className={fieldClass}
-        >
-          <option value="">Все</option>
-          {categories.map((c) => (
-           <option key={c._id} value={c._id}>
-            {c.name}
-          </option>
-          ))}
-        </select>
-      </label>
+      <div className="flex flex-col gap-1 text-black">
+  <span>Категория</span>
+
+  <div className="border border-blue-100 rounded-xl bg-white overflow-hidden">
+
+    {/* Все категории */}
+    <button
+      type="button"
+      onClick={() => setCategory("")}
+      className={`
+        w-full
+        flex
+        items-center
+        justify-between
+        px-3
+        py-2.5
+        text-xs
+        transition
+        ${
+          !category
+            ? "bg-blue-50 text-blue-600 font-semibold"
+            : "hover:bg-gray-50 text-gray-700"
+        }
+      `}
+    >
+      <span>Все категории</span>
+
+      {!category && (
+        <span className="text-blue-600">✓</span>
+      )}
+    </button>
+
+    {/* Главные категории */}
+    {categories
+      .filter((cat) => !cat.parent)
+      .map((parent) => {
+        const children = categories.filter(
+  (cat) =>
+    cat.parent &&
+    String(cat.parent?._id || cat.parent) === String(parent._id)
+);
+
+        const isOpen = !!openCategories[parent.slug];
+        const isParentActive = category === parent.slug;
+
+        const hasActiveChild = children.some(
+          (child) => child.slug === category
+        );
+
+        return (
+          <div key={parent.slug}>
+
+            {/* Главная категория */}
+            <div
+              className={`
+                flex
+                items-center
+                border-t
+                border-gray-100
+                transition
+                ${
+                  isParentActive || hasActiveChild
+                    ? "bg-blue-50"
+                    : "hover:bg-gray-50"
+                }
+              `}
+            >
+
+              <button
+                type="button"
+                onClick={() => setCategory(parent.slug)}
+                className={`
+                  flex-1
+                  text-left
+                  px-3
+                  py-2.5
+                  text-xs
+                  ${
+                    isParentActive || hasActiveChild
+                      ? "text-blue-600 font-semibold"
+                      : "text-gray-700"
+                  }
+                `}
+              >
+                {parent.name}
+              </button>
+
+              {/* Стрелка */}
+              {children.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() =>
+                    toggleCategory(parent.slug)
+                  }
+                  aria-label={
+                    isOpen
+                      ? "Скрыть подкатегории"
+                      : "Показать подкатегории"
+                  }
+                  className="
+                    w-10
+                    h-10
+                    flex
+                    items-center
+                    justify-center
+                    text-gray-400
+                    hover:text-blue-600
+                    transition
+                  "
+                >
+                  <span
+                    className={`
+                      text-base
+                      transition-transform
+                      duration-200
+                      ${isOpen ? "rotate-90" : ""}
+                    `}
+                  >
+                    ›
+                  </span>
+                </button>
+              )}
+
+              {isParentActive && (
+                <span className="pr-3 text-blue-600 text-xs">
+                  ✓
+                </span>
+              )}
+
+            </div>
+
+            {/* Подкатегории */}
+            {isOpen && children.length > 0 && (
+              <div className="bg-gray-50 border-t border-gray-100">
+
+                {children.map((child) => {
+                  const isActive =
+                    category === child.slug;
+
+                  return (
+                    <button
+                      key={child.slug}
+                      type="button"
+                      onClick={() =>
+                        setCategory(child.slug)
+                      }
+                      className={`
+                        w-full
+                        flex
+                        items-center
+                        justify-between
+                        text-left
+                        pl-8
+                        pr-3
+                        py-2
+                        text-xs
+                        transition
+                        ${
+                          isActive
+                            ? "text-blue-600 bg-blue-100 font-semibold"
+                            : "text-gray-600 hover:bg-gray-100"
+                        }
+                      `}
+                    >
+                      <span>
+                        {child.name}
+                      </span>
+
+                      {isActive && (
+                        <span className="text-blue-600">
+                          ✓
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+
+              </div>
+            )}
+
+          </div>
+        );
+      })}
+
+  </div>
+</div>
 
       <label className="flex flex-col gap-1 text-black">
         <span>Цена от</span>

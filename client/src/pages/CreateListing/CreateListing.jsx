@@ -45,6 +45,10 @@ export default function CreateListing() {
   const [noPhotos, setNoPhotos] = useState(false);
 
   const [activeStep, setActiveStep] = useState(1);
+
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const selectedCategory = categories.find( (cat) => cat._id === form.category);
+  const [categoryPath, setCategoryPath] = useState([]);   
   
 
   const stepRefs = Array.from({ length: 8 }, () => useRef(null)); 
@@ -113,6 +117,55 @@ useEffect(() => {
       [e.target.name]: e.target.value
     });
   };
+
+  const getParentId = (category) => {
+  if (!category?.parent) return null;
+
+  if (typeof category.parent === "object") {
+    return category.parent._id;
+  }
+
+  return category.parent;
+};
+
+const rootCategories = categories.filter(
+  (cat) => !getParentId(cat)
+);
+
+const getSubcategories = (parentId) => {
+  return categories.filter(
+    (cat) => getParentId(cat) === parentId
+  );
+};
+
+const openCategory = (category) => {
+  const subcategories = getSubcategories(category._id);
+
+  // Если есть подкатегории — открываем их
+  if (subcategories.length > 0) {
+    setCategoryPath((prev) => [...prev, category]);
+    return;
+  }
+
+  // Если это конечная категория — выбираем её
+  setForm((prev) => ({
+    ...prev,
+    category: category._id,
+  }));
+
+ 
+  setShowCategoryModal(false);
+  setCategoryPath([]);
+};
+
+const goBackCategory = () => {
+  setCategoryPath((prev) => prev.slice(0, -1));
+};
+
+const closeCategoryModal = () => {
+  setShowCategoryModal(false);
+  setCategoryPath([]);
+};
 
  const submit = async (e) => {
   e.preventDefault();
@@ -435,41 +488,48 @@ useEffect(() => {
 
               </div>
 
-              <select
-                name="category"
-                value={form.category}
-                onChange={handleChange}
-                required
-                className="
-                  w-full
-                  h-14
-                  px-4
-                  rounded-2xl
-                  border
-                  border-gray-200
-                  bg-gray-50
-                  outline-none
-                  cursor-pointer
-                  transition
-                  focus:bg-white
-                  focus:border-blue-500
-                  focus:ring-4
-                  focus:ring-blue-500/10
-                "
-              >
-                <option value="">
-                  Выберите категорию
-                </option>
+              <button
+  type="button"
+  onClick={() => setShowCategoryModal(true)}
+  className="
+    w-full
+    min-h-14
+    px-4
+    rounded-2xl
+    border
+    border-gray-200
+    bg-gray-50
+    outline-none
+    cursor-pointer
+    transition
+    text-left
+    flex
+    items-center
+    justify-between
+    gap-3
+    hover:bg-white
+    hover:border-blue-400
+    focus:border-blue-500
+    focus:ring-4
+    focus:ring-blue-500/10
+  "
+>
+  <span
+    className={
+      selectedCategory
+        ? "text-gray-900 font-medium"
+        : "text-gray-400"
+    }
+  >
+    {selectedCategory
+      ? selectedCategory.name
+      : "Выберите категорию"}
+  </span>
 
-                {categories.map((cat) => (
-                  <option
-                    key={cat._id}
-                    value={cat._id}
-                  >
-                    {cat.name}
-                  </option>
-                ))}
-              </select>
+  <span className="text-gray-400 text-xl">
+    ›
+  </span>
+</button>
 
             </div>
           </section>
@@ -1498,6 +1558,259 @@ className="bg-white border border-gray-200 rounded-3xl shadow-sm">
 </div>
       </div>
     </div>
+    {showCategoryModal && (
+  <div
+    className="
+      fixed
+      inset-0
+      z-50
+      bg-black/50
+      backdrop-blur-sm
+      flex
+      items-center
+      justify-center
+      p-4
+    "
+    onMouseDown={(e) => {
+      if (e.target === e.currentTarget) {
+        closeCategoryModal();
+      }
+    }}
+  >
+    <div
+      className="
+        w-full
+        max-w-2xl
+        max-h-[85vh]
+        bg-white
+        rounded-3xl
+        shadow-2xl
+        overflow-hidden
+        flex
+        flex-col
+      "
+    >
+
+      {/* HEADER */}
+      <div className="
+        shrink-0
+        px-5
+        sm:px-7
+        py-5
+        border-b
+        border-gray-100
+        flex
+        items-center
+        gap-3
+      ">
+
+        {/* Назад */}
+        {categoryPath.length > 0 && (
+          <button
+            type="button"
+            onClick={goBackCategory}
+            className="
+              w-10
+              h-10
+              rounded-xl
+              bg-gray-100
+              hover:bg-gray-200
+              flex
+              items-center
+              justify-center
+              text-xl
+              text-gray-600
+              transition
+              shrink-0
+            "
+          >
+            ‹
+          </button>
+        )}
+
+        <div className="flex-1 min-w-0">
+          <h3 className="text-xl font-bold text-gray-900">
+            {categoryPath.length > 0
+              ? categoryPath[categoryPath.length - 1].name
+              : "Выберите категорию"}
+          </h3>
+
+          {categoryPath.length > 0 && (
+            <p className="text-sm text-gray-500 mt-1">
+              Выберите подкатегорию
+            </p>
+          )}
+        </div>
+
+        {/* Закрыть */}
+        <button
+          type="button"
+          onClick={closeCategoryModal}
+          className="
+            w-10
+            h-10
+            rounded-xl
+            bg-gray-100
+            hover:bg-gray-200
+            flex
+            items-center
+            justify-center
+            text-xl
+            text-gray-500
+            transition
+            shrink-0
+          "
+        >
+          ×
+        </button>
+
+      </div>
+
+      {/* ХЛЕБНЫЕ КРОШКИ */}
+      {categoryPath.length > 0 && (
+        <div className="
+          px-5
+          sm:px-7
+          pt-4
+          text-sm
+          text-gray-400
+        ">
+          <button
+            type="button"
+            onClick={() => {
+              setCategoryPath([]);
+            }}
+            className="hover:text-blue-600 transition"
+          >
+            Все категории
+          </button>
+
+          {categoryPath.map((category) => (
+            <span key={category._id}>
+              <span className="mx-2">›</span>
+              <span className="text-gray-600">
+                {category.name}
+              </span>
+            </span>
+          ))}
+        </div>
+      )}
+
+      {/* СПИСОК */}
+      <div className="
+        flex-1
+        overflow-y-auto
+        p-5
+        sm:p-7
+      ">
+
+        {(() => {
+          const currentParent =
+            categoryPath.length > 0
+              ? categoryPath[categoryPath.length - 1]._id
+              : null;
+
+          const currentCategories =
+            categoryPath.length > 0
+              ? getSubcategories(currentParent)
+              : rootCategories;
+
+          return (
+            <div className="space-y-2">
+
+              {currentCategories.map((category) => {
+
+                const hasChildren =
+                  getSubcategories(category._id).length > 0;
+
+                return (
+                  <button
+                    key={category._id}
+                    type="button"
+                    onClick={() => openCategory(category)}
+                    className="
+                      w-full
+                      min-h-16
+                      px-5
+                      py-3
+                      rounded-2xl
+                      border
+                      border-gray-100
+                      bg-gray-50
+                      hover:bg-blue-50
+                      hover:border-blue-200
+                      transition
+                      flex
+                      items-center
+                      justify-between
+                      text-left
+                      group
+                    "
+                  >
+
+                    <div className="flex items-center gap-4">
+
+                      <div className="
+                        w-11
+                        h-11
+                        rounded-xl
+                        bg-white
+                        border
+                        border-gray-100
+                        flex
+                        items-center
+                        justify-center
+                        text-xl
+                        group-hover:bg-blue-100
+                        group-hover:border-blue-200
+                        transition
+                      ">
+                        📦
+                      </div>
+
+                      <span className="
+                        font-medium
+                        text-gray-800
+                        group-hover:text-blue-700
+                        transition
+                      ">
+                        {category.name}
+                      </span>
+
+                    </div>
+
+                    <span className="
+                      text-xl
+                      text-gray-300
+                      group-hover:text-blue-500
+                      transition
+                    ">
+                      {hasChildren ? "›" : "✓"}
+                    </span>
+
+                  </button>
+                );
+              })}
+
+              {currentCategories.length === 0 && (
+                <div className="
+                  py-12
+                  text-center
+                  text-gray-400
+                ">
+                  Категории не найдены
+                </div>
+              )}
+
+            </div>
+          );
+        })()}
+
+      </div>
+
+    </div>
+  </div>
+)}
   </MainLayout>
 );
 }

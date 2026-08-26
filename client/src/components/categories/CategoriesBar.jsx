@@ -43,7 +43,9 @@ function CategoriesBar() {
             />
           </button>
 
-          {categories.map((cat) => {
+          {categories
+  .filter((cat) => !cat.parent)
+  .map((cat) => {
             const isActive = activeCategory === cat.slug;
 
             return (
