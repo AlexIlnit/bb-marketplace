@@ -6,6 +6,7 @@ import MainLayout from "../../layouts/MainLayout";
 import AdminSettings from "./AdminSettings";
 import AdminChats from "./AdminChats";
 import AdminCategories from "./AdminCategories";
+import { Helmet } from "react-helmet-async";
 
 export default function AdminDashboard() {
   const [tab, setTab] = useState("listings");
@@ -33,6 +34,13 @@ export default function AdminDashboard() {
 
   return (
     <MainLayout>
+      <Helmet>
+      <title>Панель администратора | BB доска объявлений</title>
+      <meta
+        name="description"
+        content="Панель администратора"
+      />
+    </Helmet>
       <div className="max-w-7xl mx-auto p-3 sm:p-4 md:p-6">
 
         {/* TOP NAV */}

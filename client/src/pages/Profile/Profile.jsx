@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, Fragment } from "react";
 import { getMyListings } from "../../api/userApi";
 import { useAuthStore } from "../../store/authStore";
 import ListingCard from "../../components/listing/ListingCard";
@@ -912,21 +912,87 @@ hover:underline
         placeholder="Город"
       />
 
-      {/* CATEGORY */}
-      <select
-        className="w-full border p-2 mb-2 rounded"
-        value={form.category}
-        onChange={(e) =>
-          setForm({ ...form, category: e.target.value })
+{/* CATEGORY */}
+<div className="mb-4">
+  <label className="block text-sm font-medium text-gray-700 mb-1">
+    Категория
+  </label>
+
+  <select
+    className="
+      w-full
+      border
+      border-gray-200
+      bg-white
+      p-3
+      rounded-xl
+      text-sm
+      text-gray-900
+      focus:outline-none
+      focus:border-blue-500
+      focus:ring-2
+      focus:ring-blue-500/10
+    "
+    value={form.category}
+    onChange={(e) =>
+      setForm({
+        ...form,
+        category: e.target.value,
+      })
+    }
+  >
+    <option value="">
+      Выберите категорию
+    </option>
+
+    {categories
+      .filter((cat) => !cat.parent)
+      .map((parent) => {
+        const children = categories.filter(
+          (cat) =>
+            cat.parent &&
+            (
+              cat.parent === parent._id ||
+              cat.parent?._id === parent._id
+            )
+        );
+
+        return (
+          <Fragment key={parent._id}>
+
+            {/* Главная категория */}
+            <option value={parent._id}>
+              {parent.name}
+            </option>
+
+            {/* Подкатегории */}
+            {children.map((child) => (
+              <option
+                key={child._id}
+                value={child._id}
+              >
+                ↳ {child.name}
+              </option>
+            ))}
+
+          </Fragment>
+        );
+      })}
+  </select>
+
+  {form.category && (
+    <p className="mt-1 text-xs text-gray-500">
+      Выбрана категория:{" "}
+      <span className="font-medium text-gray-700">
+        {
+          categories.find(
+            (cat) => cat._id === form.category
+          )?.name
         }
-      >
-        <option value="">Выберите категорию</option>
-        {categories.map((cat) => (
-          <option key={cat._id} value={cat._id}>
-            {cat.name}
-          </option>
-        ))}
-      </select>
+      </span>
+    </p>
+  )}
+</div>
 
       {/* IMAGE UPLOAD */}
       <div className="border p-3 rounded mb-3">

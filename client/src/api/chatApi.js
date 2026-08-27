@@ -4,12 +4,25 @@ const API = axios.create({
   baseURL: "http://localhost:5000/api",
 });
 
+// =========================
+// Авторизация
+// =========================
+
 API.interceptors.request.use((req) => {
   const token = localStorage.getItem("token");
-  if (token) req.headers.Authorization = `Bearer ${token}`;
+
+  if (token) {
+    req.headers.Authorization = `Bearer ${token}`;
+  }
+
   return req;
 });
 
+// =========================
+// Диалоги
+// =========================
+
+// Создать или получить диалог
 export const getOrCreateConversation = (
   userId,
   listingId
@@ -18,12 +31,24 @@ export const getOrCreateConversation = (
     userId,
     listingId,
   });
+
+// Получить все диалоги
 export const getConversations = () =>
   API.get("/chat/conversations");
 
+// Удалить диалог
+export const deleteConversation = (id) =>
+  API.delete(`/chat/conversation/${id}`);
+
+// =========================
+// Сообщения
+// =========================
+
+// Получить сообщения диалога
 export const getMessages = (id) =>
   API.get(`/chat/messages/${id}`);
 
+// Отправить сообщение
 export const sendMessage = ({
   conversationId,
   text,
@@ -34,6 +59,3 @@ export const sendMessage = ({
     text,
     receiverId,
   });
-
-  export const deleteConversation = (id) =>
-  API.delete(`/chat/conversation/${id}`);

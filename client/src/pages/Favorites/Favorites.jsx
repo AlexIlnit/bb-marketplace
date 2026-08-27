@@ -1,16 +1,12 @@
-import {
-  useEffect
-} from "react";
+import { useEffect } from "react";
 
-import MainLayout
-from "../../layouts/MainLayout";
+import MainLayout from "../../layouts/MainLayout";
 
-import ListingCard
-from "../../components/listing/ListingCard";
+import ListingCard from "../../components/listing/ListingCard";
 
-import {
-  useFavoriteStore
-} from "../../store/favoriteStore";
+import { useFavoriteStore } from "../../store/favoriteStore";
+
+import { Helmet } from "react-helmet-async";
 
 export default function Favorites() {
 
@@ -26,6 +22,13 @@ export default function Favorites() {
 
   return (
     <MainLayout>
+      <Helmet>
+      <title>Избранное | BB доска объявлений</title>
+      <meta
+        name="description"
+        content="Избранные объявления"
+      />
+    </Helmet>
 
       <h1
         className="
