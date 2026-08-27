@@ -11,14 +11,20 @@ export default function MessagesPage() {
   const [selectedChat, setSelectedChat] = useState(null);
   const [selectedConversation, setSelectedConversation] = useState(null);
 
-  // Если открыли чат с другого места сайта
+  // Если открыли конкретный чат с другой страницы
   useEffect(() => {
     if (location.state?.conversationId) {
       setSelectedChat(location.state.conversationId);
+
+      // Здесь объекта conversation ещё может не быть.
+      // ConversationsList позже загрузит его.
+      setSelectedConversation(null);
     }
   }, [location.state]);
 
   const handleSelectChat = (conversation) => {
+    if (!conversation?._id) return;
+
     setSelectedChat(conversation._id);
     setSelectedConversation(conversation);
   };
@@ -27,10 +33,6 @@ export default function MessagesPage() {
     setSelectedChat(null);
     setSelectedConversation(null);
   };
-
-  const otherUser = selectedConversation?.members?.find(
-    (member) => String(member._id) !== String(selectedConversation?.currentUserId)
-  );
 
   return (
     <ChatLayout>
@@ -44,24 +46,59 @@ export default function MessagesPage() {
 
       <div className="flex h-[calc(100vh-80px)] overflow-hidden">
 
-  <div className="w-1/2 min-w-0 border-r bg-white overflow-y-auto">
-    <ConversationsList
-      selectedChat={selectedChat}
-      setSelectedChat={setSelectedChat}
-    />
-  </div>
+        {/* =========================
+            СПИСОК ДИАЛОГОВ
+        ========================= */}
 
-  <div className="w-1/2 min-w-0 bg-gray-50 flex flex-col overflow-hidden">
-    {selectedChat ? (
-      <ChatRoom chatId={selectedChat} />
-    ) : (
-      <div className="flex-1 flex items-center justify-center text-gray-600">
-        Выберите диалог
+        <div
+          className={`
+            w-full
+            lg:w-1/2
+            min-w-0
+            border-r
+            bg-white
+            overflow-y-auto
+            ${selectedChat ? "hidden lg:block" : "block"}
+          `}
+        >
+          <ConversationsList
+            selectedChat={selectedChat}
+            setSelectedChat={setSelectedChat}
+            selectedConversation={selectedConversation}
+            setSelectedConversation={setSelectedConversation}
+          />
+        </div>
+
+        {/* =========================
+            CHAT
+        ========================= */}
+
+        <div
+          className={`
+            w-full
+            lg:w-1/2
+            min-w-0
+            bg-gray-50
+            flex
+            flex-col
+            overflow-hidden
+            ${selectedChat ? "flex" : "hidden lg:flex"}
+          `}
+        >
+          {selectedChat ? (
+            <ChatRoom
+              chatId={selectedChat}
+              conversation={selectedConversation}
+              onBack={handleBackToList}
+            />
+          ) : (
+            <div className="flex-1 flex items-center justify-center text-gray-600">
+              Выберите диалог
+            </div>
+          )}
+        </div>
+
       </div>
-    )}
-  </div>
-
-</div>
     </ChatLayout>
   );
 }

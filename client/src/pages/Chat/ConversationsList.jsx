@@ -41,6 +41,9 @@ const CANCEL_REASONS = {
 export default function ConversationsList({
   selectedChat,
   setSelectedChat,
+  selectedConversation,
+  setSelectedConversation,
+  onSelectChat,
 }) {
   const user = useAuthStore((s) => s.user);
 
@@ -779,16 +782,14 @@ export default function ConversationsList({
                     {/* ДИАЛОГ */}
                     {/* ========================= */}
 
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSelectedChat(
-                          conversation._id
-                        );
+                   <button
+  type="button"
+ onClick={() => {
+  setSelectedChat(conversation._id);
+  setSelectedConversation(conversation);
 
-                        // При открытии не меняем
-                        // выбор чекбокса
-                      }}
+  // При открытии не меняем выбор чекбокса
+}}
                       className="
                         flex-1
                         min-w-0

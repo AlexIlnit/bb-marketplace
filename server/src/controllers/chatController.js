@@ -7,7 +7,6 @@ import Deal from "../models/Deal.js";
 
 export const getConversations = async (req, res) => {
   try {
-
     const conversations = await Conversation.find({
       members: req.user._id,
     })
@@ -15,29 +14,30 @@ export const getConversations = async (req, res) => {
       .populate("listing", "title images")
       .sort({ updatedAt: -1 });
 
-
     const result = await Promise.all(
       conversations.map(async (conversation) => {
-
         const deal = await Deal.findOne({
           conversation: conversation._id,
         });
 
+        const otherUser = conversation.members.find(
+          (member) =>
+            String(member._id) !== String(req.user._id)
+        );
 
         return {
           ...conversation.toObject(),
+
+          // второй участник диалога
+          otherUser: otherUser || null,
+
           deal,
         };
-
       })
     );
 
-
     res.json(result);
-
-
   } catch (err) {
-
     console.error(
       "GET CONVERSATIONS ERROR:",
       err
@@ -46,7 +46,6 @@ export const getConversations = async (req, res) => {
     res.status(500).json({
       message: err.message,
     });
-
   }
 };
 export const sendMessage = async (req, res) => {
