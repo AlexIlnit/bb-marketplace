@@ -7,6 +7,7 @@ import MainLayout from "../../layouts/MainLayout";
 import { useAuthStore } from "../../store/authStore";
 import { regions } from "../../data/regions";
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 
 
 export default function CreateListing() {
@@ -321,6 +322,13 @@ useEffect(() => {
 
   return (
   <MainLayout>
+    <Helmet>
+  <title>Подать объявление | {user?.name}</title>
+  <meta
+    name="description"
+    content={`Подать объявление  ${user?.name} `}
+  />
+</Helmet>
     <div className="min-h-screen bg-gray-50">
 
       {/* Верхняя часть */}

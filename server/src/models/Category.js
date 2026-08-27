@@ -6,12 +6,14 @@ const categorySchema = new mongoose.Schema(
       type: String,
       required: true,
       unique: true,
+      trim: true,
     },
 
     slug: {
       type: String,
       required: true,
       unique: true,
+      trim: true,
     },
 
     icon: {
@@ -21,16 +23,20 @@ const categorySchema = new mongoose.Schema(
 
     image: {
       type: String,
+      default: "",
     },
 
-    // Родительская категория
+    // null = главная категория
+    // ObjectId = подкатегория
     parent: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Category",
       default: null,
     },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
 
 export default mongoose.model("Category", categorySchema);

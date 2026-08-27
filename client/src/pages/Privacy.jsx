@@ -1,7 +1,15 @@
 import MainLayout from "../layouts/MainLayout";
+import { Helmet } from "react-helmet-async";
 export default function Privacy() {
   return (
      <MainLayout>
+      <Helmet>
+        <title>Политика обработки персональных данных | BB Market</title>
+        <meta
+          name="description"
+          content="Согласие пользователя на обработку персональных данных сервиса BB Market."
+        />
+      </Helmet>
     <div className="max-w-4xl mx-auto px-4 py-10">
 
       <h1 className="text-3xl font-bold mb-6">

@@ -74,7 +74,7 @@ export const seedCategories = async () => {
       },
       {
         upsert: true,
-        new: true,
+        returnDocument: "after",
       }
     );
   }
@@ -386,7 +386,7 @@ export const seedCategories = async () => {
       category,
       {
         upsert: true,
-        new: true,
+        returnDocument: "after",
       }
     );
   }

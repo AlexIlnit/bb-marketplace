@@ -54,7 +54,7 @@ export const approveListing = async (req, res) => {
         },
       },
       {
-        new: true,
+        returnDocument: "after",
       }
     ).select("name email points");
 

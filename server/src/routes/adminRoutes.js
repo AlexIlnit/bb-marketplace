@@ -124,7 +124,7 @@ router.put("/me/avatar", authMiddleware, adminOnly, async (req, res) => {
     const user = await User.findByIdAndUpdate(
       req.user._id,
       { avatar },
-      { new: true }
+      { returnDocument: "after" }
     ).select("-password");
 
     res.json(user);

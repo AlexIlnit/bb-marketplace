@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import {
   createCategory,
@@ -20,18 +20,19 @@ export default function AdminCategories() {
     loading,
   } = useCategoryStore();
 
-  // =========================
-  // Создание
-  // =========================
+  // =====================================================
+  // СОЗДАНИЕ
+  // =====================================================
 
   const [name, setName] = useState("");
+  const [parentId, setParentId] = useState("");
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState("");
   const [creating, setCreating] = useState(false);
 
-  // =========================
-  // Редактирование
-  // =========================
+  // =====================================================
+  // РЕДАКТИРОВАНИЕ
+  // =====================================================
 
   const [editingId, setEditingId] = useState(null);
   const [editingName, setEditingName] = useState("");
@@ -39,17 +40,61 @@ export default function AdminCategories() {
   const [editingPreview, setEditingPreview] = useState("");
   const [savingEdit, setSavingEdit] = useState(false);
 
-  // =========================
-  // Загрузка категорий
-  // =========================
+  // =====================================================
+  // ОТКРЫТЫЕ ГЛАВНЫЕ КАТЕГОРИИ
+  // =====================================================
+
+  const [openCategories, setOpenCategories] = useState({});
+
+  // =====================================================
+  // ЗАГРУЗКА
+  // =====================================================
 
   useEffect(() => {
     fetchCategories(true);
   }, [fetchCategories]);
 
-  // =========================
-  // Выбор картинки при создании
-  // =========================
+  // =====================================================
+  // ГЛАВНЫЕ КАТЕГОРИИ
+  // =====================================================
+
+  const mainCategories = useMemo(() => {
+    return categories.filter(
+      (category) => !category.parent
+    );
+  }, [categories]);
+
+  // =====================================================
+  // ПОДКАТЕГОРИИ
+  // =====================================================
+
+  const getChildren = (parentId) => {
+    return categories.filter((category) => {
+      const categoryParent =
+        category.parent?._id ||
+        category.parent;
+
+      return (
+        categoryParent &&
+        String(categoryParent) === String(parentId)
+      );
+    });
+  };
+
+  // =====================================================
+  // ОТКРЫТЬ / ЗАКРЫТЬ
+  // =====================================================
+
+  const toggleCategory = (id) => {
+    setOpenCategories((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
+
+  // =====================================================
+  // ВЫБОР КАРТИНКИ
+  // =====================================================
 
   const handleImageChange = (e) => {
     const file = e.target.files?.[0];
@@ -57,12 +102,14 @@ export default function AdminCategories() {
     if (!file) return;
 
     setImage(file);
-    setImagePreview(URL.createObjectURL(file));
+    setImagePreview(
+      URL.createObjectURL(file)
+    );
   };
 
-  // =========================
-  // Создание категории
-  // =========================
+  // =====================================================
+  // СОЗДАНИЕ КАТЕГОРИИ
+  // =====================================================
 
   const handleCreate = async (e) => {
     e.preventDefault();
@@ -70,7 +117,7 @@ export default function AdminCategories() {
     const categoryName = name.trim();
 
     if (!categoryName) {
-      alert("Введите название категории");
+      alert("Введите название");
       return;
     }
 
@@ -79,32 +126,43 @@ export default function AdminCategories() {
     try {
       let imageUrl = "";
 
-      // Сначала загружаем изображение
-      if (image) {
+      // Картинка нужна только главной категории
+      if (!parentId && image) {
         const response = await uploadImage(image);
+
         imageUrl = response.data.url;
       }
 
-      // Создаём категорию
       const { data } = await createCategory({
         name: categoryName,
         image: imageUrl,
+        parent: parentId || null,
       });
 
       addCategory(data);
 
-      // Очистка формы
+      // Сбрасываем форму
       setName("");
+      setParentId("");
       setImage(null);
       setImagePreview("");
 
-      // Очищаем input file
-      const fileInput = document.getElementById(
-        "category-image-input"
-      );
+      const input =
+        document.getElementById(
+          "category-image-input"
+        );
 
-      if (fileInput) {
-        fileInput.value = "";
+      if (input) {
+        input.value = "";
+      }
+
+      // Если создали подкатегорию —
+      // автоматически открываем родителя
+      if (parentId) {
+        setOpenCategories((prev) => ({
+          ...prev,
+          [parentId]: true,
+        }));
       }
     } catch (error) {
       console.error(
@@ -121,9 +179,9 @@ export default function AdminCategories() {
     }
   };
 
-  // =========================
-  // Начать редактирование
-  // =========================
+  // =====================================================
+  // НАЧАТЬ РЕДАКТИРОВАНИЕ
+  // =====================================================
 
   const handleEditStart = (category) => {
     setEditingId(category._id);
@@ -132,9 +190,9 @@ export default function AdminCategories() {
     setEditingPreview(category.image || "");
   };
 
-  // =========================
-  // Отмена редактирования
-  // =========================
+  // =====================================================
+  // ОТМЕНА
+  // =====================================================
 
   const handleEditCancel = () => {
     setEditingId(null);
@@ -143,9 +201,9 @@ export default function AdminCategories() {
     setEditingPreview("");
   };
 
-  // =========================
-  // Выбор новой картинки
-  // =========================
+  // =====================================================
+  // НОВАЯ КАРТИНКА
+  // =====================================================
 
   const handleEditImageChange = (e) => {
     const file = e.target.files?.[0];
@@ -159,15 +217,15 @@ export default function AdminCategories() {
     );
   };
 
-  // =========================
-  // Сохранение категории
-  // =========================
+  // =====================================================
+  // СОХРАНЕНИЕ
+  // =====================================================
 
   const handleEditSave = async (id) => {
     const cleanName = editingName.trim();
 
     if (!cleanName) {
-      alert("Введите название категории");
+      alert("Введите название");
       return;
     }
 
@@ -176,8 +234,6 @@ export default function AdminCategories() {
     try {
       let imageUrl = editingPreview;
 
-      // Если выбрали новую картинку —
-      // загружаем её
       if (editingImage) {
         const response = await uploadImage(
           editingImage
@@ -209,16 +265,26 @@ export default function AdminCategories() {
     }
   };
 
-  // =========================
-  // Удаление
-  // =========================
+  // =====================================================
+  // УДАЛЕНИЕ
+  // =====================================================
 
   const handleDelete = async (
     id,
     categoryName
   ) => {
+    const children = getChildren(id);
+
+    if (children.length > 0) {
+      alert(
+        `Нельзя удалить "${categoryName}", пока у неё есть ${children.length} подкатегорий. Сначала удалите подкатегории.`
+      );
+
+      return;
+    }
+
     const confirmed = window.confirm(
-      `Удалить категорию "${categoryName}"?`
+      `Удалить "${categoryName}"?`
     );
 
     if (!confirmed) return;
@@ -229,7 +295,7 @@ export default function AdminCategories() {
       removeCategory(id);
     } catch (error) {
       console.error(
-        "Ошибка удаления категории:",
+        "Ошибка удаления:",
         error
       );
 
@@ -240,12 +306,16 @@ export default function AdminCategories() {
     }
   };
 
+  // =====================================================
+  // ФОРМА
+  // =====================================================
+
   return (
     <div className="space-y-6">
 
-      {/* ========================= */}
-      {/* Заголовок */}
-      {/* ========================= */}
+      {/* ================================================= */}
+      {/* HEADER */}
+      {/* ================================================= */}
 
       <div>
         <h2 className="text-2xl font-bold text-gray-900">
@@ -253,54 +323,41 @@ export default function AdminCategories() {
         </h2>
 
         <p className="text-sm text-gray-500 mt-1">
-          Управление категориями объявлений
+          Управление главными категориями и
+          подкатегориями
         </p>
       </div>
 
-      {/* ========================= */}
-      {/* Добавление */}
-      {/* ========================= */}
+      {/* ================================================= */}
+      {/* СОЗДАНИЕ */}
+      {/* ================================================= */}
 
-      <section className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
+      <section className="
+        bg-white
+        border
+        border-gray-200
+        rounded-2xl
+        shadow-sm
+        p-5
+      ">
 
-        <h3 className="font-semibold text-lg mb-4">
-          Добавить категорию
-        </h3>
+        <div className="mb-5">
+          <h3 className="text-lg font-semibold">
+            Добавить категорию
+          </h3>
+
+          <p className="text-sm text-gray-500 mt-1">
+            Выберите, будет это главная категория
+            или подкатегория.
+          </p>
+        </div>
 
         <form
           onSubmit={handleCreate}
           className="space-y-4"
         >
 
-          {/* Название */}
-
-          <input
-            id="category-name"
-            name="categoryName"
-            type="text"
-            value={name}
-            onChange={(e) =>
-              setName(e.target.value)
-            }
-            placeholder="Например: Автомобили"
-            maxLength={100}
-            className="
-              w-full
-              h-12
-              px-4
-              rounded-xl
-              border
-              border-gray-200
-              bg-gray-50
-              outline-none
-              focus:bg-white
-              focus:border-blue-500
-              focus:ring-4
-              focus:ring-blue-500/10
-            "
-          />
-
-          {/* Картинка */}
+          {/* ТИП */}
 
           <div>
             <label className="
@@ -310,36 +367,130 @@ export default function AdminCategories() {
               text-gray-700
               mb-2
             ">
-              Фоновое изображение категории
+              Тип категории
+            </label>
+
+            <select
+              value={parentId}
+              onChange={(e) =>
+                setParentId(e.target.value)
+              }
+              className="
+                w-full
+                h-12
+                px-4
+                rounded-xl
+                border
+                border-gray-200
+                bg-gray-50
+                outline-none
+                focus:bg-white
+                focus:border-blue-500
+                focus:ring-4
+                focus:ring-blue-500/10
+              "
+            >
+
+              <option value="">
+                Главная категория
+              </option>
+
+              {mainCategories.map((category) => (
+                <option
+                  key={category._id}
+                  value={category._id}
+                >
+                  ↳ Подкатегория: {category.name}
+                </option>
+              ))}
+
+            </select>
+          </div>
+
+          {/* НАЗВАНИЕ */}
+
+          <div>
+            <label className="
+              block
+              text-sm
+              font-medium
+              text-gray-700
+              mb-2
+            ">
+              Название
             </label>
 
             <input
-              name="categoryImage"
-              id="category-image-input"
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-              className="block w-full text-sm"
+              type="text"
+              value={name}
+              onChange={(e) =>
+                setName(e.target.value)
+              }
+              placeholder={
+                parentId
+                  ? "Например: Телефоны"
+                  : "Например: Электроника"
+              }
+              maxLength={100}
+              className="
+                w-full
+                h-12
+                px-4
+                rounded-xl
+                border
+                border-gray-200
+                bg-gray-50
+                outline-none
+                focus:bg-white
+                focus:border-blue-500
+                focus:ring-4
+                focus:ring-blue-500/10
+              "
             />
+          </div>
 
-            {imagePreview && (
-              <div className="mt-3">
+          {/* ИЗОБРАЖЕНИЕ */}
+
+          {!parentId && (
+            <div>
+
+              <label className="
+                block
+                text-sm
+                font-medium
+                text-gray-700
+                mb-2
+              ">
+                Изображение главной категории
+              </label>
+
+              <input
+                id="category-image-input"
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="block w-full text-sm"
+              />
+
+              {imagePreview && (
                 <img
                   src={imagePreview}
-                  alt="Предпросмотр"
+                  alt=""
                   className="
+                    mt-3
                     w-48
                     h-28
-                    object-cover
                     rounded-xl
+                    object-cover
                     border
                   "
                 />
-              </div>
-            )}
-          </div>
+              )}
 
-          {/* Кнопка */}
+            </div>
+          )}
+
+          {/* КНОПКА */}
 
           <button
             type="submit"
@@ -358,15 +509,17 @@ export default function AdminCategories() {
           >
             {creating
               ? "Добавление..."
-              : "Добавить категорию"}
+              : parentId
+                ? "Добавить подкатегорию"
+                : "Добавить главную категорию"}
           </button>
 
         </form>
       </section>
 
-      {/* ========================= */}
-      {/* Существующие категории */}
-      {/* ========================= */}
+      {/* ================================================= */}
+      {/* СПИСОК */}
+      {/* ================================================= */}
 
       <section className="
         bg-white
@@ -383,13 +536,32 @@ export default function AdminCategories() {
           border-gray-100
         ">
 
-          <h3 className="font-semibold text-lg">
-            Существующие категории
-          </h3>
+          <div className="
+            flex
+            items-center
+            justify-between
+            gap-4
+          ">
 
-          <p className="text-sm text-gray-500 mt-1">
-            Всего: {categories.length}
-          </p>
+            <div>
+              <h3 className="font-semibold text-lg">
+                Структура категорий
+              </h3>
+
+              <p className="
+                text-sm
+                text-gray-500
+                mt-1
+              ">
+                Главных категорий:{" "}
+                <b>{mainCategories.length}</b>
+                {" · "}
+                Всего категорий:{" "}
+                <b>{categories.length}</b>
+              </p>
+            </div>
+
+          </div>
 
         </div>
 
@@ -400,10 +572,10 @@ export default function AdminCategories() {
             text-center
             text-gray-500
           ">
-            Загрузка категорий...
+            Загрузка...
           </div>
 
-        ) : categories.length === 0 ? (
+        ) : mainCategories.length === 0 ? (
 
           <div className="
             p-8
@@ -415,128 +587,104 @@ export default function AdminCategories() {
 
         ) : (
 
-          <div className="divide-y divide-gray-100">
+          <div className="p-4 space-y-3">
 
-            {categories.map((category) => (
+            {mainCategories.map((parent) => {
 
-              <div
-                key={category._id}
-                className="
-                  flex
-                  flex-col
-                  sm:flex-row
-                  sm:items-center
-                  justify-between
-                  gap-4
-                  px-5
-                  py-4
-                  hover:bg-gray-50
-                  transition
-                "
-              >
+              const children =
+                getChildren(parent._id);
 
-                {/* ========================= */}
-                {/* Левая часть */}
-                {/* ========================= */}
+              const isOpen =
+                openCategories[parent._id];
 
-                <div className="
-                  flex
-                  items-start
-                  gap-4
-                  min-w-0
-                  flex-1
-                ">
+              return (
+                <div
+                  key={parent._id}
+                  className="
+                    border
+                    border-gray-200
+                    rounded-2xl
+                    overflow-hidden
+                  "
+                >
 
-                  {/* Изображение */}
-
-                  {category.image ? (
-
-                    <img
-                      src={category.image}
-                      alt={category.name}
-                      className="
-                        w-24
-                        h-16
-                        sm:w-28
-                        sm:h-20
-                        rounded-xl
-                        object-cover
-                        border
-                        shrink-0
-                      "
-                    />
-
-                  ) : (
-
-                    <div className="
-                      w-24
-                      h-16
-                      sm:w-28
-                      sm:h-20
-                      rounded-xl
-                      bg-blue-50
-                      text-blue-600
-                      flex
-                      items-center
-                      justify-center
-                      font-bold
-                      text-xl
-                      shrink-0
-                    ">
-                      {category.name
-                        .charAt(0)
-                        .toUpperCase()}
-                    </div>
-
-                  )}
-
-                  {/* Название / редактирование */}
+                  {/* ================================= */}
+                  {/* ГЛАВНАЯ */}
+                  {/* ================================= */}
 
                   <div className="
-                    flex-1
-                    min-w-0
+                    flex
+                    items-center
+                    gap-4
+                    p-4
+                    bg-gray-50
                   ">
 
-                    {editingId === category._id ? (
+                    {/* КАРТИНКА */}
 
-                      <div className="space-y-3">
+                    {parent.image ? (
 
-                        {/* Название */}
+                      <img
+                        src={parent.image}
+                        alt={parent.name}
+                        className="
+                          w-20
+                          h-14
+                          rounded-xl
+                          object-cover
+                          border
+                          shrink-0
+                        "
+                      />
 
-                        <input
-                          value={editingName}
-                          onChange={(e) =>
-                            setEditingName(
-                              e.target.value
-                            )
-                          }
-                          autoFocus
-                          maxLength={100}
-                          className="
-                            w-full
-                            h-10
-                            px-3
-                            rounded-lg
-                            border
-                            border-blue-300
-                            outline-none
-                            focus:ring-2
-                            focus:ring-blue-500/20
-                          "
-                        />
+                    ) : (
 
-                        {/* Новое изображение */}
+                      <div className="
+                        w-20
+                        h-14
+                        rounded-xl
+                        bg-blue-100
+                        text-blue-600
+                        flex
+                        items-center
+                        justify-center
+                        font-bold
+                        text-xl
+                        shrink-0
+                      ">
+                        {parent.name
+                          .charAt(0)
+                          .toUpperCase()}
+                      </div>
 
-                        <div>
+                    )}
 
-                          <label className="
-                            block
-                            text-xs
-                            text-gray-500
-                            mb-1
-                          ">
-                            Изменить изображение
-                          </label>
+                    {/* НАЗВАНИЕ */}
+
+                    <div className="flex-1 min-w-0">
+
+                      {editingId === parent._id ? (
+
+                        <div className="space-y-3">
+
+                          <input
+                            value={editingName}
+                            onChange={(e) =>
+                              setEditingName(
+                                e.target.value
+                              )
+                            }
+                            autoFocus
+                            className="
+                              w-full
+                              h-10
+                              px-3
+                              rounded-lg
+                              border
+                              border-blue-300
+                              outline-none
+                            "
+                          />
 
                           <input
                             type="file"
@@ -551,251 +699,426 @@ export default function AdminCategories() {
                             "
                           />
 
+                          {editingPreview && (
+                            <img
+                              src={editingPreview}
+                              alt=""
+                              className="
+                                w-40
+                                h-24
+                                rounded-xl
+                                object-cover
+                              "
+                            />
+                          )}
+
                         </div>
 
-                        {/* Preview */}
+                      ) : (
 
-                        {editingPreview && (
+                        <>
+                          <div className="
+                            flex
+                            items-center
+                            gap-2
+                          ">
 
-                          <img
-                            src={editingPreview}
-                            alt=""
-                            className="
-                              w-40
-                              h-24
-                              object-cover
-                              rounded-xl
-                              border
-                            "
-                          />
+                            <span className="
+                              text-lg
+                              font-bold
+                              text-gray-900
+                            ">
+                              {parent.name}
+                            </span>
 
-                        )}
+                            <span className="
+                              px-2
+                              py-1
+                              rounded-md
+                              bg-blue-100
+                              text-blue-700
+                              text-[10px]
+                              font-bold
+                            ">
+                              ГЛАВНАЯ
+                            </span>
+
+                          </div>
+
+                          <div className="
+                            text-xs
+                            text-gray-400
+                            mt-1
+                          ">
+                            Подкатегорий:{" "}
+                            {children.length}
+                          </div>
+                        </>
+
+                      )}
+
+                    </div>
+
+                    {/* КНОПКИ */}
+
+                    {editingId === parent._id ? (
+
+                      <div className="
+                        flex
+                        gap-2
+                        shrink-0
+                      ">
+
+                        <button
+                          type="button"
+                          disabled={savingEdit}
+                          onClick={() =>
+                            handleEditSave(
+                              parent._id
+                            )
+                          }
+                          className="
+                            px-3
+                            py-2
+                            rounded-xl
+                            bg-green-600
+                            text-white
+                            text-sm
+                          "
+                        >
+                          {savingEdit
+                            ? "..."
+                            : "Сохранить"}
+                        </button>
+
+                        <button
+                          type="button"
+                          disabled={savingEdit}
+                          onClick={
+                            handleEditCancel
+                          }
+                          className="
+                            px-3
+                            py-2
+                            rounded-xl
+                            bg-gray-200
+                            text-gray-700
+                            text-sm
+                          "
+                        >
+                          Отмена
+                        </button>
 
                       </div>
 
                     ) : (
 
-                      <>
-  <div className="
-    font-semibold
-    text-gray-900
-    text-lg
-  ">
-    {category.name}
-  </div>
+                      <div className="
+                        flex
+                        items-center
+                        gap-2
+                        shrink-0
+                      ">
 
-  <div className="
-    text-xs
-    text-gray-400
-    mt-1
-  ">
-    ID: {category._id}
-  </div>
+                        {children.length > 0 && (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              toggleCategory(
+                                parent._id
+                              )
+                            }
+                            className="
+                              w-9
+                              h-9
+                              rounded-xl
+                              bg-white
+                              border
+                              border-gray-200
+                              flex
+                              items-center
+                              justify-center
+                              text-gray-500
+                              hover:text-blue-600
+                            "
+                          >
+                            <span
+                              className={`
+                                text-xl
+                                transition-transform
+                                ${
+                                  isOpen
+                                    ? "rotate-90"
+                                    : ""
+                                }
+                              `}
+                            >
+                              ›
+                            </span>
+                          </button>
+                        )}
 
-  {/* Статистика объявлений */}
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleEditStart(parent)
+                          }
+                          className="
+                            px-3
+                            py-2
+                            rounded-xl
+                            bg-blue-50
+                            text-blue-600
+                            text-sm
+                            font-medium
+                          "
+                        >
+                          Изменить
+                        </button>
 
-  <div className="
-    flex
-    flex-wrap
-    items-center
-    gap-2
-    mt-3
-  ">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleDelete(
+                              parent._id,
+                              parent.name
+                            )
+                          }
+                          className="
+                            px-3
+                            py-2
+                            rounded-xl
+                            bg-red-50
+                            text-red-600
+                            text-sm
+                            font-medium
+                          "
+                        >
+                          Удалить
+                        </button>
 
-    {/* Всего */}
-
-    <div className="
-      px-3
-      py-1.5
-      rounded-lg
-      bg-gray-100
-      text-gray-700
-      text-xs
-      font-medium
-    ">
-      Всего:{" "}
-      <span className="font-bold">
-        {category.listingsCount ?? 0}
-      </span>
-    </div>
-
-    {/* На модерации */}
-
-    <div className="
-      px-3
-      py-1.5
-      rounded-lg
-      bg-yellow-50
-      text-yellow-700
-      text-xs
-      font-medium
-    ">
-      На модерации:{" "}
-      <span className="font-bold">
-        {category.pendingCount ?? 0}
-      </span>
-    </div>
-
-    {/* Одобрено */}
-
-    <div className="
-      px-3
-      py-1.5
-      rounded-lg
-      bg-green-50
-      text-green-700
-      text-xs
-      font-medium
-    ">
-      Одобрено:{" "}
-      <span className="font-bold">
-        {category.approvedCount ?? 0}
-      </span>
-    </div>
-
-    {/* Отклонено */}
-
-    <div className="
-      px-3
-      py-1.5
-      rounded-lg
-      bg-red-50
-      text-red-700
-      text-xs
-      font-medium
-    ">
-      Отклонено:{" "}
-      <span className="font-bold">
-        {category.rejectedCount ?? 0}
-      </span>
-    </div>
-
-  </div>
-</>
+                      </div>
 
                     )}
 
                   </div>
+
+
+                  {/* ================================= */}
+                  {/* ПОДКАТЕГОРИИ */}
+                  {/* ================================= */}
+
+                  {isOpen &&
+                    children.length > 0 && (
+                      <div className="
+                        bg-white
+                        border-t
+                        border-gray-200
+                      ">
+
+                        {children.map(
+                          (child) => (
+
+                            <div
+                              key={child._id}
+                              className="
+                                flex
+                                items-center
+                                gap-4
+                                px-5
+                                py-3
+                                border-b
+                                last:border-b-0
+                                border-gray-100
+                              "
+                            >
+
+                              <div className="
+                                w-8
+                                text-center
+                                text-gray-300
+                                text-lg
+                              ">
+                                ↳
+                              </div>
+
+                              <div className="
+                                flex-1
+                                min-w-0
+                              ">
+
+                                {editingId ===
+                                child._id ? (
+
+                                  <input
+                                    value={
+                                      editingName
+                                    }
+                                    onChange={(e) =>
+                                      setEditingName(
+                                        e.target.value
+                                      )
+                                    }
+                                    className="
+                                      w-full
+                                      h-10
+                                      px-3
+                                      rounded-lg
+                                      border
+                                      border-blue-300
+                                    "
+                                  />
+
+                                ) : (
+
+                                  <div className="
+                                    flex
+                                    items-center
+                                    gap-2
+                                  ">
+
+                                    <span className="
+                                      font-medium
+                                      text-gray-800
+                                    ">
+                                      {child.name}
+                                    </span>
+
+                                    <span className="
+                                      px-2
+                                      py-1
+                                      rounded-md
+                                      bg-gray-100
+                                      text-gray-500
+                                      text-[10px]
+                                    ">
+                                      ПОДКАТЕГОРИЯ
+                                    </span>
+
+                                  </div>
+
+                                )}
+
+                              </div>
+
+
+                              {/* КНОПКИ */}
+
+                              {editingId ===
+                              child._id ? (
+
+                                <div className="
+                                  flex
+                                  gap-2
+                                ">
+
+                                  <button
+                                    type="button"
+                                    disabled={
+                                      savingEdit
+                                    }
+                                    onClick={() =>
+                                      handleEditSave(
+                                        child._id
+                                      )
+                                    }
+                                    className="
+                                      px-3
+                                      py-2
+                                      rounded-xl
+                                      bg-green-600
+                                      text-white
+                                      text-sm
+                                    "
+                                  >
+                                    {savingEdit
+                                      ? "..."
+                                      : "Сохранить"}
+                                  </button>
+
+                                  <button
+                                    type="button"
+                                    disabled={
+                                      savingEdit
+                                    }
+                                    onClick={
+                                      handleEditCancel
+                                    }
+                                    className="
+                                      px-3
+                                      py-2
+                                      rounded-xl
+                                      bg-gray-100
+                                      text-gray-700
+                                      text-sm
+                                    "
+                                  >
+                                    Отмена
+                                  </button>
+
+                                </div>
+
+                              ) : (
+
+                                <div className="
+                                  flex
+                                  gap-2
+                                ">
+
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      handleEditStart(
+                                        child
+                                      )
+                                    }
+                                    className="
+                                      px-3
+                                      py-2
+                                      rounded-xl
+                                      bg-blue-50
+                                      text-blue-600
+                                      text-sm
+                                    "
+                                  >
+                                    Изменить
+                                  </button>
+
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      handleDelete(
+                                        child._id,
+                                        child.name
+                                      )
+                                    }
+                                    className="
+                                      px-3
+                                      py-2
+                                      rounded-xl
+                                      bg-red-50
+                                      text-red-600
+                                      text-sm
+                                    "
+                                  >
+                                    Удалить
+                                  </button>
+
+                                </div>
+
+                              )}
+
+                            </div>
+
+                          )
+                        )}
+
+                      </div>
+                    )}
+
                 </div>
-
-                {/* ========================= */}
-                {/* Кнопки */}
-                {/* ========================= */}
-
-                {editingId === category._id ? (
-
-                  <div className="
-                    flex
-                    items-center
-                    gap-2
-                    shrink-0
-                  ">
-
-                    <button
-                      type="button"
-                      disabled={savingEdit}
-                      onClick={() =>
-                        handleEditSave(
-                          category._id
-                        )
-                      }
-                      className="
-                        px-3
-                        py-2
-                        rounded-xl
-                        bg-green-600
-                        hover:bg-green-700
-                        disabled:bg-gray-300
-                        text-white
-                        text-sm
-                        font-medium
-                      "
-                    >
-                      {savingEdit
-                        ? "Сохранение..."
-                        : "Сохранить"}
-                    </button>
-
-                    <button
-                      type="button"
-                      disabled={savingEdit}
-                      onClick={
-                        handleEditCancel
-                      }
-                      className="
-                        px-3
-                        py-2
-                        rounded-xl
-                        bg-gray-100
-                        hover:bg-gray-200
-                        text-gray-700
-                        text-sm
-                      "
-                    >
-                      Отмена
-                    </button>
-
-                  </div>
-
-                ) : (
-
-                  <div className="
-                    flex
-                    items-center
-                    gap-2
-                    shrink-0
-                  ">
-
-                    <button
-                      type="button"
-                      onClick={() =>
-                        handleEditStart(category)
-                      }
-                      className="
-                        px-3
-                        py-2
-                        rounded-xl
-                        bg-blue-50
-                        text-blue-600
-                        hover:bg-blue-100
-                        font-medium
-                        text-sm
-                        transition
-                      "
-                    >
-                      Изменить
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() =>
-                        handleDelete(
-                          category._id,
-                          category.name
-                        )
-                      }
-                      className="
-                        px-3
-                        py-2
-                        rounded-xl
-                        bg-red-50
-                        text-red-600
-                        hover:bg-red-100
-                        font-medium
-                        text-sm
-                        transition
-                      "
-                    >
-                      Удалить
-                    </button>
-
-                  </div>
-
-                )}
-
-              </div>
-
-            ))}
+              );
+            })}
 
           </div>
 

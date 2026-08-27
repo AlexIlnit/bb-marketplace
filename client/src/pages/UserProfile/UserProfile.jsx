@@ -4,6 +4,7 @@ import { getUserProfile } from "../../api/userApi";
 import ListingCard from "../../components/listing/ListingCard";
 import MainLayout from "../../layouts/MainLayout";
 import { getSellerRatings } from "../../api/ratingApi";
+import { Helmet } from "react-helmet-async";
 
 export default function UserProfile() {
 
@@ -35,6 +36,13 @@ export default function UserProfile() {
 
   return (
     <MainLayout>
+      <Helmet>
+        <title>Профиль пользователя | BB Market</title>
+        <meta
+          name="description"
+          content="Профиль пользователя сервиса BB Market."
+        />
+      </Helmet>
 
       <div className="max-w-7xl mx-auto p-6">
 
