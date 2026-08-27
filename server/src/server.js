@@ -63,7 +63,7 @@ io.on("connection", (socket) => {
 
     onlineUsers.set(id, socket.id);
 
-    console.log("USER ONLINE:", id);
+    // console.log("USER ONLINE:", id);
 
     socket.broadcast.emit("userOnline", id);
   });
