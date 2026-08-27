@@ -344,7 +344,12 @@ export default function ChatRoom({
   const handleSendMessage = async () => {
   const messageText = text.trim();
 
-  if (!messageText || sending || !chatId || !user?._id) {
+  if (
+    !messageText ||
+    sending ||
+    !chatId ||
+    !user?._id
+  ) {
     return;
   }
 
@@ -357,12 +362,13 @@ export default function ChatRoom({
       receiverId: otherUserId,
     });
 
-    // Добавляем сообщение сразу в текущий чат
+    // Сразу показываем отправленное сообщение
     if (data) {
       setMessages((prev) => {
         const exists = prev.some(
           (message) =>
-            String(message._id) === String(data._id)
+            String(message._id) ===
+            String(data._id)
         );
 
         if (exists) {
@@ -375,11 +381,12 @@ export default function ChatRoom({
 
     setText("");
 
-    // Сообщаем второму пользователю через socket
-    socket.emit("sendMessage", {
+    // Останавливаем индикатор "печатает"
+    socket.emit("typing", {
       receiverId: otherUserId,
-      message: data,
+      isTyping: false,
     });
+
   } catch (error) {
     console.error(
       "Ошибка отправки сообщения:",
@@ -1487,113 +1494,85 @@ export default function ChatRoom({
       </div>
 
 
-      {/* =================================================
-          INPUT
-      ================================================= */}
+    
+{/* =================================================
+    INPUT
+================================================= */}
 
-      <div
-        className="
-          shrink-0
-          bg-white
-          border-t
-          border-gray-200
-          px-3
-          sm:px-5
-          py-3
-        "
-      >
-        <div
-          className="
-            max-w-4xl
-            mx-auto
-            flex
-            items-end
-            gap-2
-          "
-        >
-          <textarea
-            value={text}
-            onChange={(event) => {
-              setText(event.target.value);
-              handleTyping();
-            }}
-            onKeyDown={(event) => {
-              if (
-                event.key === "Enter" &&
-                !event.shiftKey
-              ) {
-                event.preventDefault();
+<div className="shrink-0 bg-white border-t border-gray-200 px-3 sm:px-5 py-3">
+  <div className="max-w-4xl mx-auto flex items-end gap-2">
 
-                handleSendMessage();
-              }
-            }}
-            rows={1}
-            placeholder="Напишите сообщение..."
-            className="
-              flex-1
-              resize-none
-              min-h-11
-              max-h-32
-              border
-              border-gray-200
-              rounded-2xl
-              px-4
-              py-3
-              text-sm
-              outline-none
-              focus:border-green-500
-              focus:ring-2
-              focus:ring-green-100
-              transition
-              bg-gray-50
-              focus:bg-white
-            "
-          />
+    <textarea
+      value={text}
+      onChange={(event) => {
+        setText(event.target.value);
+        handleTyping();
+      }}
+      onKeyDown={(event) => {
+        if (
+          event.key === "Enter" &&
+          !event.shiftKey
+        ) {
+          event.preventDefault();
+          handleSendMessage();
+        }
+      }}
+      rows={1}
+      placeholder="Напишите сообщение..."
+      className="
+        flex-1
+        resize-none
+        min-h-11
+        max-h-32
+        border
+        border-gray-200
+        rounded-2xl
+        px-4
+        py-3
+        text-sm
+        outline-none
+        focus:border-green-500
+        focus:ring-2
+        focus:ring-green-100
+        transition
+        bg-gray-50
+        focus:bg-white
+      "
+    />
 
-          <button
-            type="button"
-            onClick={handleSendMessage}
-            disabled={
-              !text.trim() ||
-              sending ||
-              !otherUserId
-            }
-            className="
-              w-11
-              h-11
-              rounded-full
-              flex
-              items-center
-              justify-center
-              bg-green-600
-              hover:bg-green-700
-              disabled:bg-gray-200
-              disabled:text-gray-400
-              text-white
-              transition
-              shrink-0
-            "
-          >
-            <Send
-              size={18}
-              className="translate-x-px"
-            />
-          </button>
-        </div>
+    <button
+      type="button"
+      onClick={handleSendMessage}
+      disabled={!text.trim() || sending}
+      aria-label="Отправить сообщение"
+      className="
+        w-11
+        h-11
+        rounded-full
+        flex
+        items-center
+        justify-center
+        bg-green-600
+        hover:bg-green-700
+        disabled:bg-gray-200
+        disabled:text-gray-400
+        text-white
+        transition
+        shrink-0
+      "
+    >
+      <Send
+        size={18}
+        className="translate-x-px"
+      />
+    </button>
 
-        <div
-          className="
-            max-w-4xl
-            mx-auto
-            text-[10px]
-            text-gray-400
-            mt-1.5
-            px-1
-          "
-        >
-          Enter — отправить · Shift + Enter — новая строка
-        </div>
-      </div>
+  </div>
+
+  <div className="max-w-4xl mx-auto text-[10px] text-gray-400 mt-1.5 px-1">
+    Enter — отправить · Shift + Enter — новая строка
+  </div>
+</div>
 
 
       {/* =================================================

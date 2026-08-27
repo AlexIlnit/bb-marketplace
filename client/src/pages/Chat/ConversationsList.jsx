@@ -422,7 +422,7 @@ export default function ConversationsList({
   // =========================
 
   return (
-    <div className="w-full max-w-3xl bg-white">
+    <div className="w-full min-w-0 bg-white">
 
       {/* ========================= */}
       {/* Заголовок */}
@@ -446,7 +446,7 @@ export default function ConversationsList({
 
       <div className="px-4 sm:px-6 pb-3">
 
-        <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
+        <div className="flex flex-wrap gap-2 pb-1">
 
           {[
             {

@@ -42,96 +42,26 @@ export default function MessagesPage() {
         />
       </Helmet>
 
-      <div className="h-[calc(100vh-80px)] bg-gray-50 overflow-hidden">
+      <div className="flex h-[calc(100vh-80px)] overflow-hidden">
 
-        <div className="h-full max-w-375 mx-auto flex">
+  <div className="w-1/2 min-w-0 border-r bg-white overflow-y-auto">
+    <ConversationsList
+      selectedChat={selectedChat}
+      setSelectedChat={setSelectedChat}
+    />
+  </div>
 
-          {/* ========================= */}
-          {/* СПИСОК ДИАЛОГОВ */}
-          {/* ========================= */}
-
-          <aside
-            className={`
-              w-full
-              md:w-95
-              lg:w-105
-              shrink-0
-              bg-white
-              border-r
-              border-gray-200
-              overflow-hidden
-              ${selectedChat ? "hidden md:flex md:flex-col" : "flex flex-col"}
-            `}
-          >
-            <ConversationsList
-              selectedChat={selectedChat}
-              setSelectedChat={setSelectedChat}
-              setSelectedConversation={setSelectedConversation}
-            />
-          </aside>
-
-          {/* ========================= */}
-          {/* ЧАТ */}
-          {/* ========================= */}
-
-          <main
-            className={`
-              flex-1
-              min-w-0
-              bg-gray-50
-              ${selectedChat ? "flex flex-col" : "hidden md:flex"}
-            `}
-          >
-            {selectedChat ? (
-              <ChatRoom
-                chatId={selectedChat}
-                otherUserId={otherUser?._id}
-                conversation={selectedConversation}
-                onBack={handleBackToList}
-              />
-            ) : (
-              <div className="flex-1 flex items-center justify-center">
-                <div className="text-center px-6">
-
-                  <div className="
-                    w-20
-                    h-20
-                    mx-auto
-                    mb-5
-                    rounded-full
-                    bg-white
-                    shadow-sm
-                    flex
-                    items-center
-                    justify-center
-                    text-3xl
-                  ">
-                    💬
-                  </div>
-
-                  <h2 className="
-                    text-lg
-                    font-semibold
-                    text-gray-900
-                  ">
-                    Выберите диалог
-                  </h2>
-
-                  <p className="
-                    text-sm
-                    text-gray-500
-                    mt-1
-                  ">
-                    Здесь появится ваша переписка
-                  </p>
-
-                </div>
-              </div>
-            )}
-          </main>
-
-        </div>
+  <div className="w-1/2 min-w-0 bg-gray-50 flex flex-col overflow-hidden">
+    {selectedChat ? (
+      <ChatRoom chatId={selectedChat} />
+    ) : (
+      <div className="flex-1 flex items-center justify-center text-gray-600">
+        Выберите диалог
       </div>
+    )}
+  </div>
+
+</div>
     </ChatLayout>
   );
 }

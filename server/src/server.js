@@ -12,84 +12,118 @@ import adminRoutes from "./routes/adminRoutes.js";
 import favoriteRoutes from "./routes/favoriteRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
 import chatRoutes from "./routes/chatRoutes.js";
-import { initSocket } from "./socket/index.js";
 
 export const onlineUsers = new Map();
+
 const PORT = process.env.PORT || 5000;
 
 // ================= DB =================
-connectDB().then(() => {
-  seedCategories();
-});
+
+connectDB()
+  .then(() => {
+    // seedCategories();
+  })
+  .catch((err) => {
+    console.error("MongoDB connection error:", err);
+  });
 
 // ================= HTTP SERVER =================
+
 const server = http.createServer(app);
 
-// ================= SOCKET =================
+// ================= SOCKET.IO =================
+
 const io = new Server(server, {
   cors: {
     origin: "http://localhost:5173",
+    methods: ["GET", "POST", "PATCH", "DELETE"],
+    credentials: true,
   },
 });
+
+// Передаём socket.io и onlineUsers в Express
 app.set("io", io);
+app.set("onlineUsers", onlineUsers);
+
+// ================= SOCKET CONNECTION =================
 
 io.on("connection", (socket) => {
-  // console.log("USER CONNECTED:", socket.id);
+  // console.log("Socket connected:", socket.id);
+
+  // ================= ADD USER =================
 
   socket.on("addUser", (userId) => {
-    onlineUsers.set(userId, socket.id);
-     // 🔥 уведомляем всех что юзер онлайн
-  socket.broadcast.emit("userOnline", userId);
+    if (!userId) {
+      return;
+    }
+
+    const id = String(userId);
+
+    socket.userId = id;
+
+    onlineUsers.set(id, socket.id);
+
+    console.log("USER ONLINE:", id);
+
+    socket.broadcast.emit("userOnline", id);
   });
 
-  
-
-  socket.on("sendMessage", ({ receiverId, senderId, message }) => {
-  const receiverSocket = onlineUsers.get(receiverId);
-  const senderSocket = onlineUsers.get(senderId);
-    
-  if (receiverSocket) {
-    io.to(receiverSocket).emit("newMessage", message);
-  }
-
-  if (senderSocket) {
-    io.to(senderSocket).emit("newMessage", message);
-  }
-});
+  // ================= TYPING =================
 
   socket.on("typing", ({ receiverId, isTyping }) => {
-  const receiverSocket = onlineUsers.get(String(receiverId));
+    if (!receiverId || !socket.userId) {
+      return;
+    }
 
-  if (receiverSocket) {
+    const receiverSocket = onlineUsers.get(
+      String(receiverId)
+    );
+
+    if (!receiverSocket) {
+      return;
+    }
+
     io.to(receiverSocket).emit("typing", {
-      userId: socket.userId,
+      senderId: String(socket.userId),
       isTyping,
     });
-  }
-});
+  });
+
+  // ================= DISCONNECT =================
 
   socket.on("disconnect", () => {
-    for (const [userId, socketId] of onlineUsers.entries()) {
-      if (socketId === socket.id) {
-        onlineUsers.delete(userId);
-        // 🔥 уведомляем оффлайн
+    if (!socket.userId) {
+      return;
+    }
+
+    const userId = String(socket.userId);
+
+    const currentSocket = onlineUsers.get(userId);
+
+    // Не удаляем нового socket,
+    // если старый socket отключился
+    if (currentSocket === socket.id) {
+      onlineUsers.delete(userId);
+
+      console.log("USER OFFLINE:", userId);
+
       io.emit("userOffline", userId);
-        break;
-      }
     }
   });
 });
 
-// ================= ROUTES (ВСЕ СЮДА) =================
+// ================= ROUTES =================
+
 app.use("/api/admin", adminRoutes);
+
 app.use("/api/favorites", favoriteRoutes);
+
 app.use("/api/notifications", notificationRoutes);
+
 app.use("/api/chat", chatRoutes);
 
-app.set("onlineUsers", onlineUsers);
-
-
 // ================= START SERVER =================
+
 server.listen(PORT, () => {
   console.log(`Server started ${PORT}`);
 });

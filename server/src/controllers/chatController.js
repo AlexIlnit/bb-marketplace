@@ -50,52 +50,113 @@ export const getConversations = async (req, res) => {
   }
 };
 export const sendMessage = async (req, res) => {
-  const onlineUsers = req.app.get("onlineUsers");
-  const io = req.app.get("io");
   try {
     const { conversationId, text } = req.body;
+
+    if (!conversationId) {
+      return res.status(400).json({
+        message: "conversationId обязателен",
+      });
+    }
+
+    if (!text?.trim()) {
+      return res.status(400).json({
+        message: "Сообщение не может быть пустым",
+      });
+    }
 
     const conversation = await Conversation.findById(conversationId);
 
     if (!conversation) {
-      return res.status(404).json({ message: "Conversation not found" });
+      return res.status(404).json({
+        message: "Диалог не найден",
+      });
     }
 
+    // Проверяем, что пользователь действительно участник диалога
+    const isMember = conversation.members.some(
+      (memberId) =>
+        String(memberId) === String(req.user._id)
+    );
+
+    if (!isMember) {
+      return res.status(403).json({
+        message: "Нет доступа к этому диалогу",
+      });
+    }
+
+    // Находим второго участника
     const receiverId = conversation.members.find(
-      (id) => id.toString() !== req.user._id.toString()
+      (memberId) =>
+        String(memberId) !== String(req.user._id)
     );
 
     if (!receiverId) {
-      return res.status(400).json({ message: "Receiver not found" });
+      return res.status(400).json({
+        message: "Получатель не найден",
+      });
     }
 
+    // Создаём сообщение
     const message = await Message.create({
       conversationId,
-      text,
+      text: text.trim(),
       senderId: req.user._id,
       receiverId,
     });
-    const fullMessage = await Message.findById(message._id)
-      .populate("senderId", "name avatar");
 
-    await Conversation.findByIdAndUpdate(conversationId, {
-      lastMessage: text,
-      updatedAt: new Date(),
-    });
+    // Получаем полноценное сообщение
+    const fullMessage = await Message.findById(
+      message._id
+    ).populate(
+      "senderId",
+      "name avatar _id"
+    );
 
-    // socket
+    // Обновляем диалог
+    await Conversation.findByIdAndUpdate(
+      conversationId,
+      {
+        lastMessage: text.trim(),
+        updatedAt: new Date(),
+      }
+    );
+
+    // ==========================
+    // SOCKET
+    // ==========================
+
+    const onlineUsers =
+      req.app.get("onlineUsers");
+
     const io = req.app.get("io");
 
-    const receiverSocketId = onlineUsers.get(String(receiverId));
+    if (onlineUsers && io) {
+      const receiverSocketId =
+        onlineUsers.get(
+          String(receiverId)
+        );
 
-    if (receiverSocketId) {
-      io.to(receiverSocketId).emit("newMessage", fullMessage);
+      if (receiverSocketId) {
+        io.to(receiverSocketId).emit(
+          "newMessage",
+          fullMessage
+        );
+      }
     }
 
-    res.json(message);
+    // Отправителю возвращаем полноценное сообщение
+    res.status(201).json(fullMessage);
+
   } catch (err) {
-    console.error("SEND MESSAGE ERROR:", err);
-    res.status(500).json({ message: err.message });
+    console.error(
+      "SEND MESSAGE ERROR:",
+      err
+    );
+
+    res.status(500).json({
+      message: err.message,
+    });
   }
 };
 
