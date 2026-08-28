@@ -1133,7 +1133,8 @@ transition
     </span>
 
     <span className="text-[10px] text-gray-400">
-      {filteredCities.length} городов
+
+    городов: {filteredCities.length} 
     </span>
 
   </div>

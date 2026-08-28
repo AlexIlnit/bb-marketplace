@@ -182,3 +182,77 @@ export const getSellerRatings = async (req, res) => {
 
   }
 };
+
+export const replyToRating = async (req, res) => {
+  try {
+    const { text } = req.body;
+
+    if (!text || !text.trim()) {
+      return res.status(400).json({
+        message: "Введите текст ответа",
+      });
+    }
+
+    if (text.trim().length > 500) {
+      return res.status(400).json({
+        message: "Ответ не должен превышать 500 символов",
+      });
+    }
+
+    const rating = await Rating.findById(req.params.ratingId);
+
+    if (!rating) {
+      return res.status(404).json({
+        message: "Отзыв не найден",
+      });
+    }
+
+    // Отвечать может только продавец,
+    // которому оставили этот отзыв
+    if (
+      rating.seller.toString() !==
+      req.user._id.toString()
+    ) {
+      return res.status(403).json({
+        message: "Вы не можете отвечать на этот отзыв",
+      });
+    }
+
+    const now = new Date();
+
+    // Если ответа ещё нет — создаём.
+    // Если есть — обновляем.
+    if (!rating.sellerReply) {
+      rating.sellerReply = {};
+    }
+
+    rating.sellerReply.text = text.trim();
+
+    if (!rating.sellerReply.createdAt) {
+      rating.sellerReply.createdAt = now;
+    }
+
+    rating.sellerReply.updatedAt = now;
+
+    await rating.save();
+
+    const updatedRating = await Rating.findById(rating._id)
+      .populate("buyer", "name avatar")
+      .populate("listing", "title");
+
+    res.json({
+      message: "Ответ на отзыв сохранён",
+      rating: updatedRating,
+    });
+
+  } catch (err) {
+    console.error(
+      "REPLY TO RATING ERROR:",
+      err
+    );
+
+    res.status(500).json({
+      message: err.message,
+    });
+  }
+};

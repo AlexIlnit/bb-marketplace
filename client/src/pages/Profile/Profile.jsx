@@ -13,6 +13,8 @@ import { Helmet } from "react-helmet-async";
 import { LogOut } from "lucide-react";
 import { updateProfile } from "../../api/userApi";
 import { promoteListing } from "../../api/listingApi";
+import { getSellerRatings, replyToRating } from "../../api/ratingApi";
+
 
 export default function Profile() {
   const user = useAuthStore((s) => s.user);
@@ -41,6 +43,13 @@ const [profileMessage, setProfileMessage] = useState("");
   score: 0,
   text: "",
 });
+
+const [ratings, setRatings] = useState([]);
+const [activeTab, setActiveTab] = useState("listings");
+
+const [replyRatingId, setReplyRatingId] = useState(null);
+const [replyText, setReplyText] = useState("");
+const [replyLoading, setReplyLoading] = useState(false);
 
 const formatPhone = (value) => {
   let digits = value.replace(/\D/g, "");
@@ -138,6 +147,41 @@ const checkPasswordStrength = (password) => {
 
 };
 
+const handleReplyToRating = async (ratingId) => {
+  if (!replyText.trim()) {
+    return;
+  }
+
+  setReplyLoading(true);
+
+  try {
+    const { data } = await replyToRating(
+      ratingId,
+      replyText
+    );
+
+    setRatings((prev) =>
+      prev.map((rating) =>
+        rating._id === ratingId
+          ? data.rating
+          : rating
+      )
+    );
+
+    setReplyRatingId(null);
+    setReplyText("");
+
+  } catch (error) {
+    alert(
+      error?.response?.data?.message ||
+      "Не удалось сохранить ответ"
+    );
+  } finally {
+    setReplyLoading(false);
+  }
+};
+
+
 const [profileModal, setProfileModal] = useState(false);
 const [profileForm, setProfileForm] = useState({
   name: "",
@@ -162,6 +206,21 @@ const refreshUser = async () => {
     console.log("GET ME ERROR", err);
   }
   }
+
+  useEffect(() => {
+  if (!user?._id) return;
+
+  const loadRatings = async () => {
+    try {
+      const { data } = await getSellerRatings(user._id);
+      setRatings(data);
+    } catch (error) {
+      console.error("GET RATINGS ERROR:", error);
+    }
+  };
+
+  loadRatings();
+}, [user?._id]);
 
  const openEditModal = (listing) => {
   setEditItem(listing);
@@ -192,25 +251,45 @@ const handleUpload = async () => {
 };
 
   useEffect(() => {
-    loadListings();
-    fetchCategories();
-    refreshUser();
-  }, []);
+  loadListings();
+  fetchCategories();
+  refreshUser();
+}, []);
+
+useEffect(() => {
+  if (!user?._id) return;
+
+  const loadRatings = async () => {
+    try {
+      const { data } = await getSellerRatings(user._id);
+      setRatings(data);
+    } catch (error) {
+      console.error("GET RATINGS ERROR:", error);
+    }
+  };
+
+  loadRatings();
+}, [user?._id]);
 
    const handleLogout = () => {
   logout();
   };
 
   const loadListings = async () => {
-    try {
-      const { data } = await getMyListings();
-      setListings(data);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
+  try {
+    const { data } = await getMyListings();
+    setListings(data);
+
+    if (user?._id) {
+      const ratingsRes = await getSellerRatings(user._id);
+      setRatings(ratingsRes.data);
     }
-  };
+  } catch (error) {
+    console.error(error);
+  } finally {
+    setLoading(false);
+  }
+};
 const handlePromote = async (listingId) => {
   try {
     const { data } = await promoteListing(listingId);
@@ -420,6 +499,24 @@ setProfileModal(false);
         <h1 className="text-2xl md:text-3xl font-bold">
           Имя: {user?.name}
         </h1>
+
+        <div className="flex items-center gap-2 mt-1">
+  <span className="text-yellow-500 text-xl">
+    ★
+  </span>
+
+  <span className="font-semibold text-gray-900">
+    {Number(user?.rating?.average || 0).toFixed(1)}
+  </span>
+
+  <button
+    type="button"
+    onClick={() => setActiveTab("ratings")}
+    className="text-gray-500 text-sm hover:text-gray-700 hover:underline"
+  >
+    ({user?.rating?.count || 0} отзывов)
+  </button>
+</div>
 
         <p className="text-gray-500 text-sm">
           Email: {user?.email}
@@ -744,127 +841,447 @@ hover:underline
 
 </div>
 
-      <h2 className="text-2xl font-bold mb-6">
-        Мои объявления
-      </h2>
+    
+{/* TABS */}
 
-      {listings.length === 0 ? (
-        <div className="bg-white p-8 rounded-2xl">
-          У вас пока нет объявлений
-        </div>
-      ) : (
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {listings.map((listing) => (
-              <div key={listing._id} className="relative">
+<div className="flex gap-3 border-b mb-6">
 
-                <ListingCard listing={listing} />
-                <div className="mt-2">
+  <button
+    type="button"
+    onClick={() => setActiveTab("listings")}
+    className={`pb-3 px-4 ${
+      activeTab === "listings"
+        ? "border-b-2 border-green-600 font-semibold text-gray-900"
+        : "text-gray-500 hover:text-gray-700"
+    }`}
+  >
+    Мои объявления ({listings.length})
+  </button>
 
-  {listing.status === "pending" && (
-    <div className="bg-yellow-100 text-yellow-700 px-3 py-2 rounded-lg text-sm">
-      ⏳ Объявление находится на модерации
-    </div>
-  )}
-
-  {listing.status === "approved" && (
-    <div className="bg-green-100 text-green-700 px-3 py-2 rounded-lg text-sm">
-      ✅ Объявление опубликовано
-    </div>
-  )}
-
-  {listing.status === "rejected" && (
-    <div className="bg-red-100 text-red-700 px-3 py-2 rounded-lg text-sm">
-      ❌ Объявление отклонено модератором
-    </div>
-  )}
+  <button
+    type="button"
+    onClick={() => setActiveTab("ratings")}
+    className={`pb-3 px-4 ${
+      activeTab === "ratings"
+        ? "border-b-2 border-green-600 font-semibold text-gray-900"
+        : "text-gray-500 hover:text-gray-700"
+    }`}
+  >
+    Отзывы ({ratings.length})
+  </button>
 
 </div>
 
-                {/* ACTIONS */}
-                <div className="flex flex-wrap gap-2 mt-2 w-full">
 
-  {!user?.isBlocked && (
-    <button
-    onClick={() => setDeleteItem(listing)}
-    className="bg-red-500 text-white px-2 py-1 text-xs rounded"
-  >
-    Удалить
-  </button>
-  
-  )}
-  {!user?.isBlocked &&
-  listing.status === "approved" && (
-    <>
-      {listing.isTop &&
-      listing.topUntil &&
-      new Date(listing.topUntil) > new Date() ? (
-        <button
-          disabled
-          className="
-            bg-yellow-100
-            text-yellow-700
-            px-2
-            py-1
-            text-xs
-            rounded
-            cursor-not-allowed
-          "
-        >
-          ⭐ В ТОП
-        </button>
-      ) : (
-        <button
-          onClick={() => handlePromote(listing._id)}
-          className="
-            bg-yellow-400
-            hover:bg-yellow-500
-            text-yellow-950
-            px-2
-            py-1
-            text-xs
-            font-medium
-            rounded
-            transition
-          "
-        >
-          ⭐ В ТОП — 10 баллов
-        </button>
-      )}
-    </>
-  )}
+{/* MY LISTINGS */}
 
-  {!user?.isBlocked ? (
-  listing.status === "rejected" ? (
-    <button
-      onClick={() => openEditModal(listing)}
-      className="bg-orange-500 text-white px-2 py-1 text-xs rounded"
-    >
-      Исправить
-    </button>
-  ) : (
-    <button
-      onClick={() => openEditModal(listing)}
-      className="bg-blue-500 text-white px-2 py-1 text-xs rounded"
-    >
-      Редактировать
-    </button>
-  )
-) : (
-  <button
-    disabled
-    className="bg-gray-300 text-gray-600 px-2 py-1 text-xs rounded cursor-not-allowed"
-    title="Аккаунт заблокирован"
-  >
-    Редактирование недоступно
-  </button>
+{activeTab === "listings" && (
+  <>
+    <h2 className="text-2xl font-bold mb-6">
+      Мои объявления
+    </h2>
+
+    {listings.length === 0 ? (
+
+      <div className="bg-white p-8 rounded-2xl">
+        У вас пока нет объявлений
+      </div>
+
+    ) : (
+
+      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+        {listings.map((listing) => (
+
+          <div
+            key={listing._id}
+            className="relative"
+          >
+
+            <ListingCard listing={listing} />
+
+            <div className="mt-2">
+
+              {listing.status === "pending" && (
+                <div className="bg-yellow-100 text-yellow-700 px-3 py-2 rounded-lg text-sm">
+                  ⏳ Объявление находится на модерации
+                </div>
+              )}
+
+              {listing.status === "approved" && (
+                <div className="bg-green-100 text-green-700 px-3 py-2 rounded-lg text-sm">
+                  ✅ Объявление опубликовано
+                </div>
+              )}
+
+              {listing.status === "rejected" && (
+                <div className="bg-red-100 text-red-700 px-3 py-2 rounded-lg text-sm">
+                  ❌ Объявление отклонено модератором
+                </div>
+              )}
+
+            </div>
+
+            {/* ACTIONS */}
+
+            <div className="flex flex-wrap gap-2 mt-2 w-full">
+
+              {!user?.isBlocked && (
+                <button
+                  onClick={() => setDeleteItem(listing)}
+                  className="bg-red-500 text-white px-2 py-1 text-xs rounded"
+                >
+                  Удалить
+                </button>
+              )}
+
+              {!user?.isBlocked &&
+                listing.status === "approved" && (
+                  <>
+                    {listing.isTop &&
+                    listing.topUntil &&
+                    new Date(listing.topUntil) > new Date() ? (
+
+                      <button
+                        disabled
+                        className="
+                          bg-yellow-100
+                          text-yellow-700
+                          px-2
+                          py-1
+                          text-xs
+                          rounded
+                          cursor-not-allowed
+                        "
+                      >
+                        ⭐ В ТОП
+                      </button>
+
+                    ) : (
+
+                      <button
+                        onClick={() =>
+                          handlePromote(listing._id)
+                        }
+                        className="
+                          bg-yellow-400
+                          hover:bg-yellow-500
+                          text-yellow-950
+                          px-2
+                          py-1
+                          text-xs
+                          font-medium
+                          rounded
+                          transition
+                        "
+                      >
+                        ⭐ В ТОП — 10 баллов
+                      </button>
+
+                    )}
+                  </>
+              )}
+
+              {!user?.isBlocked ? (
+
+                listing.status === "rejected" ? (
+
+                  <button
+                    onClick={() => openEditModal(listing)}
+                    className="bg-orange-500 text-white px-2 py-1 text-xs rounded"
+                  >
+                    Исправить
+                  </button>
+
+                ) : (
+
+                  <button
+                    onClick={() => openEditModal(listing)}
+                    className="bg-blue-500 text-white px-2 py-1 text-xs rounded"
+                  >
+                    Редактировать
+                  </button>
+
+                )
+
+              ) : (
+
+                <button
+                  disabled
+                  className="
+                    bg-gray-300
+                    text-gray-600
+                    px-2
+                    py-1
+                    text-xs
+                    rounded
+                    cursor-not-allowed
+                  "
+                  title="Аккаунт заблокирован"
+                >
+                  Редактирование недоступно
+                </button>
+
+              )}
+
+            </div>
+
+          </div>
+
+        ))}
+
+      </div>
+
+    )}
+  </>
 )}
 
-</div>
 
-              </div>
-            ))}
+{/* RATINGS */}
+
+{activeTab === "ratings" && (
+
+  <div className="space-y-4">
+
+    <div className="flex items-center gap-3 mb-5">
+
+      <div className="text-yellow-500 text-2xl">
+        ★
+      </div>
+
+      <div>
+        <div className="text-2xl font-bold">
+          {Number(user?.rating?.average || 0).toFixed(1)}
+        </div>
+
+        <div className="text-sm text-gray-500">
+          {user?.rating?.count || 0} отзывов
+        </div>
+      </div>
+
+    </div>
+
+
+    {ratings.length === 0 && (
+
+      <div className="bg-white rounded-2xl p-8 text-center text-gray-500">
+        Пока нет отзывов
+      </div>
+
+    )}
+
+
+    {ratings.map((rating) => (
+
+      <div
+        key={rating._id}
+        className="bg-white rounded-2xl p-5 border"
+      >
+
+        <div className="flex items-center gap-3">
+
+          <img
+            src={
+              rating.buyer?.avatar ||
+              "/default-avatar.png"
+            }
+            alt=""
+            className="w-12 h-12 rounded-full object-cover"
+          />
+
+          <div>
+
+            <div className="font-semibold">
+              {rating.buyer?.name || "Пользователь"}
+            </div>
+
+            <div className="text-yellow-500 text-lg">
+              {"★".repeat(rating.stars)}
+              {"☆".repeat(5 - rating.stars)}
+            </div>
+
           </div>
+
+        </div>
+
+
+        {rating.comment && (
+
+          <div className="mt-4 text-gray-700">
+            {rating.comment}
+          </div>
+
         )}
+        
+{/* ОТВЕТ ПРОДАВЦА */}
+
+{rating.sellerReply?.text ? (
+
+  <div className="mt-4 ml-6 border-l-4 border-green-200 pl-4">
+
+    <div className="text-sm font-semibold text-gray-700">
+      Ответ продавца
+    </div>
+
+    <div className="mt-1 text-gray-600">
+      {rating.sellerReply.text}
+    </div>
+
+    {rating.sellerReply.updatedAt && (
+      <div className="mt-2 text-xs text-gray-400">
+        {new Date(
+          rating.sellerReply.updatedAt
+        ).toLocaleDateString("ru-RU")}
+      </div>
+    )}
+
+    <button
+      type="button"
+      onClick={() => {
+        setReplyRatingId(rating._id);
+        setReplyText(
+          rating.sellerReply.text
+        );
+      }}
+      className="
+        mt-2
+        text-sm
+        text-green-600
+        hover:underline
+      "
+    >
+      Изменить ответ
+    </button>
+
+  </div>
+
+) : (
+
+  <button
+    type="button"
+    onClick={() => {
+      setReplyRatingId(rating._id);
+      setReplyText("");
+    }}
+    className="
+      mt-4
+      text-sm
+      text-blue-600
+      hover:underline
+    "
+  >
+    Ответить на отзыв
+  </button>
+
+)}
+
+
+{/* ФОРМА ОТВЕТА */}
+
+{replyRatingId === rating._id && (
+
+  <div className="mt-4 ml-6">
+
+    <textarea
+      value={replyText}
+      onChange={(e) =>
+        setReplyText(e.target.value)
+      }
+      maxLength={500}
+      rows={3}
+      placeholder="Напишите ответ на отзыв..."
+      className="
+        w-full
+        border
+        rounded-xl
+        p-3
+        text-sm
+        resize-none
+        focus:outline-none
+        focus:ring-2
+        focus:ring-green-500/20
+        focus:border-green-500
+      "
+    />
+
+    <div className="flex items-center justify-between mt-2">
+
+      <span className="text-xs text-gray-400">
+        {replyText.length}/500
+      </span>
+
+      <div className="flex gap-2">
+
+        <button
+          type="button"
+          onClick={() => {
+            setReplyRatingId(null);
+            setReplyText("");
+          }}
+          className="
+            px-3
+            py-2
+            text-sm
+            text-gray-600
+            hover:bg-gray-100
+            rounded-lg
+          "
+        >
+          Отмена
+        </button>
+
+        <button
+          type="button"
+          disabled={
+            replyLoading ||
+            !replyText.trim()
+          }
+          onClick={() =>
+            handleReplyToRating(
+              rating._id
+            )
+          }
+          className="
+            px-4
+            py-2
+            bg-green-600
+            hover:bg-green-700
+            text-white
+            text-sm
+            rounded-lg
+            disabled:bg-gray-300
+            disabled:cursor-not-allowed
+          "
+        >
+          {replyLoading
+            ? "Сохранение..."
+            : "Ответить"}
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+)}
+
+
+
+        <div className="mt-3 text-xs text-gray-500">
+          {new Date(
+            rating.createdAt
+          ).toLocaleDateString("ru-RU")}
+        </div>
+
+      </div>
+
+    ))}
+
+  </div>
+
+)}
+
 
 
     </div>

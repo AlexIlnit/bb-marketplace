@@ -5,3 +5,9 @@ export const createRating = (data) =>
 
 export const getSellerRatings = (sellerId) =>
   api.get(`/ratings/${sellerId}`);
+
+export const replyToRating = (ratingId, text) =>
+  api.patch(`/ratings/${ratingId}/reply`, {
+    text,
+  });
+

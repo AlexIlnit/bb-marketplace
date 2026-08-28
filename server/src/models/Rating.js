@@ -32,6 +32,25 @@ const ratingSchema = new mongoose.Schema(
       maxlength: 500,
       default: "",
     },
+
+    // Ответ продавца на отзыв
+    sellerReply: {
+      text: {
+        type: String,
+        maxlength: 500,
+        default: "",
+      },
+
+      createdAt: {
+        type: Date,
+        default: null,
+      },
+
+      updatedAt: {
+        type: Date,
+        default: null,
+      },
+    },
   },
   {
     timestamps: true,

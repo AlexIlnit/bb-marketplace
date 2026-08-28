@@ -190,6 +190,25 @@ export default function UserProfile() {
           </div>
 
         )}
+        {rating.sellerReply?.text && (
+  <div className="mt-4 ml-6 border-l-4 border-green-200 pl-4">
+    <div className="text-sm font-semibold text-gray-700">
+      Ответ продавца
+    </div>
+
+    <div className="mt-1 text-gray-600">
+      {rating.sellerReply.text}
+    </div>
+
+    {rating.sellerReply.updatedAt && (
+      <div className="mt-2 text-xs text-gray-400">
+        {new Date(
+          rating.sellerReply.updatedAt
+        ).toLocaleDateString("ru-RU")}
+      </div>
+    )}
+  </div>
+)}
 
         <div className="mt-3 text-xs text-gray-600">
 
