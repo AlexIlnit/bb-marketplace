@@ -302,26 +302,43 @@ export const getListingsCount = async (req, res) => {
     const city = req.query.city;
     const region = req.query.region;
 
+    // =====================================
+    // ГОРОД
+    // =====================================
+
     if (
       city &&
       city !== "Вся Беларусь" &&
       city !== "Все города" &&
       city !== "Все области"
     ) {
+      // Если выбран конкретный город —
+      // считаем только объявления этого города
       filter.city = city;
-    } else if (
+    }
+
+    // =====================================
+    // ОБЛАСТЬ
+    // =====================================
+
+    else if (
       region &&
       region !== "Вся Беларусь" &&
       region !== "Все области" &&
       region !== "Все города"
     ) {
+      // Если город не выбран —
+      // считаем объявления всей области
       filter.region = region;
     }
 
     const total = await Listing.countDocuments(filter);
 
     res.json({ total });
+
   } catch (error) {
+    console.error("GET LISTINGS COUNT ERROR:", error);
+
     res.status(500).json({
       message: error.message,
     });

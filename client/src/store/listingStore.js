@@ -15,8 +15,8 @@ create((set, get) => ({
   priceTo: "",
   condition: "",
   sellerType: "",
-  region: "",
-  city: "",
+  region: localStorage.getItem("region") || "",
+city: localStorage.getItem("city") || "",
 
   setRegion: (region) =>
     set({ region }),

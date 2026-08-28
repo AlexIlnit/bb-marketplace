@@ -7,7 +7,8 @@ import {
   MessageCircle,
   X,
   MapPin,
-  Bell
+  Bell,
+  Package
 } from "lucide-react";
 
 import { useRef, useState, useEffect } from "react";
@@ -33,8 +34,9 @@ export default function Header() {
 
 const [citySearch, setCitySearch] = useState("");
 
-const [selectedRegion, setSelectedRegion] =
-  useState("Все города");
+const [selectedRegion, setSelectedRegion] = useState(
+  localStorage.getItem("region") || "Все города"
+);
 
 const allCities = [...new Set(Object.values(regions).flat())];
 
@@ -51,11 +53,20 @@ const filteredCities = citiesToShow.filter((city) =>
   const city = useListingStore((s) => s.city);
   const setCity = useListingStore((s) => s.setCity);
 
+  const region = useListingStore((s) => s.region);
+  const setRegion = useListingStore((s) => s.setRegion);
+
   const [selectedCity, setSelectedCity] = useState(
   localStorage.getItem("city") || "Вся Беларусь"
-  );
+);
 
   const finalCity = selectedCity || "Все города";
+  const selectionLabel =
+  selectedRegion !== "Все города"
+    ? selectedCity
+      ? `${selectedRegion} · ${selectedCity}`
+      : selectedRegion
+    : selectedCity || "Вся Беларусь";
 
   const navigate = useNavigate();
   const { notifications, fetchNotifications, markAsRead  } =
@@ -129,8 +140,10 @@ useEffect(() => {
 
 useEffect(() => {
   if (cityModal) {
-    setSelectedRegion("Все города");
-   
+    setSelectedRegion(region || "Все города");
+
+    setSelectedCity(city || "");
+
     setCitySearch("");
   }
 }, [cityModal]);
@@ -177,14 +190,22 @@ const [adsCount, setAdsCount] = useState(0);
 useEffect(() => {
   const loadCount = async () => {
     try {
-      const { data } = await getListingsCount({
-        city: selectedCity,
-        region: selectedRegion,
-      });
+      const params = {
+        city: selectedCity === "Вся Беларусь"
+          ? ""
+          : selectedCity,
+
+        region: selectedRegion === "Все города"
+          ? ""
+          : selectedRegion,
+      };
+
+      const { data } = await getListingsCount(params);
 
       setAdsCount(data.total);
     } catch (err) {
-      console.error(err);
+      console.error("Ошибка получения количества объявлений:", err);
+      setAdsCount(0);
     }
   };
 
@@ -425,7 +446,7 @@ transition
 </span> */}
 
 <span className="font-semibold text-sm">
-{city || "Вся Беларусь"}
+{city || region || "Вся Беларусь"}
 </span>
 
 </div>
@@ -814,193 +835,929 @@ transition
     </div>
 
 </div>
+
 {cityModal && (
   <div
     className="
-fixed
-inset-0
-z-100
-bg-black/60
-flex
-items-center
-justify-center
-p-4
-overflow-y-auto
-"
+      fixed inset-0 z-100
+      bg-black/55 backdrop-blur-sm
+      flex items-center justify-center
+      p-3 sm:p-5
+    "
     onClick={() => setCityModal(false)}
-    aria-label="Закрыть окно"
   >
     <div
       onClick={(e) => e.stopPropagation()}
-      className="relative
-bg-white
-rounded-3xl
-w-full
-max-w-4xl
-max-h-[90vh]
-flex
-flex-col
-overflow-hidden
-shadow-2xl
-my-8"
-    >
-
-  {/* HEADER */}
-<div className="sticky
-top-0
-z-20
-bg-white
-border-b
-px-8
-py-6
-shadow-sm">
-
-  <div className="flex items-start justify-between mb-4">
-
-    <div>
-      <h2 className="text-xl font-bold">
-        Выбор региона
-      </h2>
-
-      <p className="text-sm text-gray-500 mt-1">
-        Текущий город:
-        <span className="font-semibold ml-1">
-          {selectedCity || "Все города"}
-        </span>
-      </p>
-    </div>
-
-    <button
-      onClick={() => setCityModal(false)}
-      aria-label="Закрыть окно"
       className="
-        p-2
-        rounded-lg
-        hover:bg-gray-100
-        transition
+        w-full max-w-5xl
+        h-[90vh]
+        bg-white
+        rounded-3xl
+        shadow-2xl
+        overflow-hidden
+        flex flex-col
       "
     >
-      <X size={22} aria-hidden="true" />
-    </button>
 
-  </div>
+      {/* =====================================================
+          HEADER
+      ===================================================== */}
 
-  <input
-    value={citySearch}
-    onChange={(e) => setCitySearch(e.target.value)}
-    placeholder="Поиск города..."
-    className="w-full border rounded-xl p-2 mb-4"
+      <div
+        className="
+          shrink-0
+          bg-white
+          border-b border-gray-200
+          px-5 sm:px-6
+          pt-4
+          pb-3
+        "
+      >
+
+        {/* TOP ROW */}
+
+        <div
+          className="
+            flex
+            items-center
+            gap-3
+          "
+        >
+
+          {/* TITLE */}
+
+          <div
+            className="
+              flex
+              items-center
+              gap-3
+              shrink-0
+            "
+          >
+
+            <div
+              className="
+                w-10 h-10
+                rounded-xl
+                bg-blue-50
+                text-blue-600
+                flex
+                items-center
+                justify-center
+              "
+            >
+              <MapPin size={20} />
+            </div>
+
+            <div className="hidden sm:block">
+
+              <h2
+                className="
+                  text-base
+                  font-bold
+                  text-gray-900
+                  leading-tight
+                "
+              >
+                Выберите город
+              </h2>
+
+              <p
+                className="
+                  text-[11px]
+                  text-gray-400
+                  mt-0.5
+                "
+              >
+                Объявления рядом с вами
+              </p>
+
+            </div>
+
+          </div>
+
+
+          {/* CURRENT CITY */}
+
+          <div
+  className="
+    hidden md:flex
+    items-center
+    gap-2
+    px-3
+    h-10
+    rounded-xl
+    bg-blue-50
+    border border-blue-100
+    min-w-35
+    max-w-60
+  "
+>
+  <MapPin
+    size={15}
+    className="text-blue-600 shrink-0"
   />
 
-  <div className="flex flex-wrap gap-2">
-    {Object.keys(regions).map((region) => (
-      <button
-        key={region}
-        onClick={() => {
-          setSelectedRegion(region);
-          setCitySearch("");
-        }}
-        className={`px-3 py-2 border rounded-full text-sm ${
-          selectedRegion === region
-            ? "bg-blue-600 text-white border-blue-600"
-            : "hover:border-blue-500"
-        }`}
-      >
-        {region}
-      </button>
-    ))}
-  </div>
+  <div className="min-w-0">
 
+    <div
+      className="
+        text-[9px]
+        text-blue-500
+        uppercase
+        font-semibold
+        leading-none
+      "
+    >
+      Ваш выбор
+    </div>
+
+    <div
+      className="
+        text-xs
+        font-semibold
+        text-blue-700
+        truncate
+        mt-1
+      "
+      title={selectionLabel}
+    >
+      {selectionLabel}
+    </div>
+
+  </div>
 </div>
 
-  {/* BODY */}
- <div className="flex-1
-overflow-y-auto
-px-8
-py-6">
-  <div className="grid grid-cols-2 md:grid-cols-3 gap-x-8 gap-y-2">
+          
 
-    {filteredCities.map((city) => (
-      <label
-        key={city}
-        onClick={() => setSelectedCity(city)}
-        className="group flex items-center gap-3 cursor-pointer p-2"
-      >
-        <div
-          className={`w-5 h-5 border-2 rounded-sm flex items-center justify-center transition-colors ${
-            city === selectedCity
-              ? "bg-blue-600 border-blue-600"
-              : "border-gray-400 group-hover:border-blue-600"
-          }`}
-        >
-          {city === selectedCity && (
-            <svg
-              className="w-3 h-3 text-white"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="3"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M5 13l4 4L19 7"
-              />
-            </svg>
-          )}
+
+          {/* SEARCH */}
+
+          <div className="relative flex-1 min-w-30">
+
+            <Search
+              size={17}
+              className="
+                absolute
+                left-3.5
+                top-1/2
+                -translate-y-1/2
+                text-gray-400
+              "
+            />
+
+            <input
+              autoFocus
+              value={citySearch}
+              onChange={(e) =>
+                setCitySearch(e.target.value)
+              }
+              placeholder="Найти город..."
+              className="
+                w-full
+                h-10
+                pl-10
+                pr-9
+                rounded-xl
+                bg-gray-50
+                border border-gray-200
+                text-sm
+                outline-none
+                transition
+                focus:bg-white
+                focus:border-blue-400
+                focus:ring-2
+                focus:ring-blue-100
+              "
+            />
+
+            {citySearch && (
+              <button
+                type="button"
+                onClick={() => setCitySearch("")}
+                className="
+                  absolute
+                  right-2
+                  top-1/2
+                  -translate-y-1/2
+                  w-6 h-6
+                  rounded-md
+                  flex
+                  items-center
+                  justify-center
+                  text-gray-400
+                  hover:bg-gray-200
+                  hover:text-gray-700
+                "
+              >
+                <X size={14} />
+              </button>
+            )}
+
+          </div>
+
+
+          {/* CLOSE */}
+
+          <button
+            type="button"
+            onClick={() => setCityModal(false)}
+            aria-label="Закрыть"
+            className="
+              w-10 h-10
+              shrink-0
+              rounded-xl
+              flex
+              items-center
+              justify-center
+              text-gray-400
+              hover:bg-gray-100
+              hover:text-gray-700
+              transition
+            "
+          >
+            <X size={20} />
+          </button>
+
         </div>
 
-        <span>{city}</span>
-      </label>
-    ))}
 
-  </div>
-</div>
+        {/* MOBILE CURRENT CITY */}
 
-  {/* FOOTER */}
-  <div className="sticky
-bottom-0
-bg-white
-border-t
-px-8
-py-5
-flex
-gap-4
-shadow-[0_-5px_20px_rgba(0,0,0,.04)]">
+        <div
+          className="
+            md:hidden
+            mt-3
+            flex
+            items-center
+            gap-2
+            text-xs
+            text-gray-500
+          "
+        >
 
-    <button
-      onClick={() => {
-        const finalCity = selectedCity || "Все города";
+          <span>
+            Ваш выбор:
+          </span>
 
-        setCity(finalCity);
-        setSelectedCity(finalCity);
+          <span
+  className="
+    font-semibold
+    text-blue-600
+    truncate
+  "
+>
+  {selectionLabel}
+</span>
 
-        localStorage.setItem("city", finalCity);
+        </div>
 
-        setCityModal(false);
-        navigate("/");
-      }}
-      className="flex-1 bg-blue-600 text-white py-3 rounded-xl font-medium"
+{/* =================================================
+    REGIONS
+================================================= */}
+
+<div className="mt-3">
+
+  <div className="flex items-center justify-between mb-2">
+
+    <span
+      className="
+        text-[10px]
+        font-semibold
+        text-gray-400
+        uppercase
+        tracking-wide
+      "
     >
-      Показать объявления ({adsCount})
-    </button>
+      Регион
+    </span>
 
-    {selectedCity !== "Все города" && (
-      <button
-        onClick={() => setSelectedCity("Вся Беларусь")}
-        className="flex-1 border py-3 rounded-xl hover:bg-gray-50"
-      >
-        Сбросить
-      </button>
-    )}
+    <span className="text-[10px] text-gray-400">
+      {filteredCities.length} городов
+    </span>
 
   </div>
- </div> 
-</div>
+
+
+  <div
+    className="
+      grid
+      grid-cols-4
+      sm:grid-cols-5
+      lg:grid-cols-6
+      gap-1.5
+    "
+  >
+
+{/* ВСЯ БЕЛАРУСЬ */}
+
+<button
+  type="button"
+  onClick={() => {
+    setSelectedRegion("Все города");
+    setSelectedCity("Вся Беларусь");
+    setCitySearch("");
+  }}
+  className={`
+    h-8
+    px-2
+    rounded-lg
+    border
+    text-[11px]
+    font-semibold
+    transition
+    truncate
+    ${
+      selectedRegion === "Все города"
+        ? `
+          bg-blue-600
+          border-blue-600
+          text-white
+          shadow-sm
+        `
+        : `
+          bg-white
+          border-gray-200
+          text-gray-600
+          hover:border-blue-300
+          hover:text-blue-600
+        `
+    }
+  `}
+>
+  Вся Беларусь
+</button>
+
+
+{/* ОБЛАСТИ */}
+
+{Object.entries(regions).map(
+  ([region, regionCities]) => {
+
+    const active =
+      selectedRegion === region;
+
+    return (
+      <button
+        key={region}
+        type="button"
+        onClick={() => {
+          setSelectedRegion(region);
+          setSelectedCity("");
+          setCitySearch("");
+        }}
+        className={`
+          h-8
+          px-2
+          rounded-lg
+          border
+          text-[11px]
+          font-medium
+          transition
+          truncate
+          flex
+          items-center
+          justify-center
+          gap-1
+          ${
+            active
+              ? `
+                bg-blue-600
+                border-blue-600
+                text-white
+                shadow-sm
+              `
+              : `
+                bg-white
+                border-gray-200
+                text-gray-600
+                hover:border-blue-300
+                hover:text-blue-600
+              `
+          }
+        `}
+        title={region}
+      >
+        <span className="truncate">
+          {region}
+        </span>
+
+        <span
+          className={`
+            shrink-0
+            text-[8px]
+            px-1
+            rounded-full
+            ${
+              active
+                ? "bg-white/20 text-white"
+                : "bg-gray-100 text-gray-400"
+            }
+          `}
+        >
+          {regionCities.length}
+        </span>
+      </button>
+    );
+  }
 )}
 
 
-      
+  </div>
+
+</div>
+
+
+      </div>
+
+
+      {/* =====================================================
+          CITIES
+      ===================================================== */}
+
+      <div
+        className="
+          flex-1
+          min-h-0
+          overflow-y-auto
+          bg-gray-50
+          px-4 sm:px-6
+          py-4
+        "
+      >
+
+        {/* CITY HEADER */}
+
+        <div
+          className="
+            flex
+            items-center
+            justify-between
+            mb-3
+          "
+        >
+
+          <div
+            className="
+              flex
+              items-center
+              gap-2
+            "
+          >
+
+            <h3
+              className="
+                text-sm
+                font-bold
+                text-gray-800
+              "
+            >
+              {selectedRegion === "Все города"
+                ? "Города Беларуси"
+                : selectedRegion}
+            </h3>
+
+            {selectedCity !== "Вся Беларусь" && (
+              <span
+                className="
+                  px-2
+                  py-0.5
+                  rounded-md
+                  bg-blue-100
+                  text-blue-600
+                  text-[10px]
+                  font-semibold
+                "
+              >
+                {selectedCity}
+              </span>
+            )}
+
+          </div>
+
+          {citySearch && (
+            <span
+              className="
+                text-[11px]
+                text-gray-400
+              "
+            >
+              Поиск: {filteredCities.length}
+            </span>
+          )}
+
+        </div>
+
+
+        {/* CITY LIST */}
+
+        {filteredCities.length > 0 ? (
+
+          <div
+            className="
+              grid
+              grid-cols-2
+              sm:grid-cols-3
+              lg:grid-cols-4
+              xl:grid-cols-5
+              gap-2
+            "
+          >
+
+            {filteredCities.map((cityName) => {
+
+              const selected =
+                cityName === selectedCity;
+
+              return (
+                <button
+                  key={cityName}
+                  type="button"
+                  onClick={() => {
+  setSelectedCity(cityName);
+}}
+                  className={`
+                    group
+                    relative
+                    min-h-12
+                    px-3
+                    py-2.5
+                    rounded-xl
+                    border
+                    text-left
+                    transition-all
+                    duration-150
+                    ${
+                      selected
+                        ? `
+                          bg-blue-600
+                          border-blue-600
+                          shadow-md
+                          shadow-blue-500/20
+                          scale-[1.01]
+                        `
+                        : `
+                          bg-white
+                          border-gray-200
+                          hover:border-blue-300
+                          hover:bg-blue-50
+                          hover:shadow-sm
+                        `
+                    }
+                  `}
+                >
+
+                  <div
+                    className="
+                      flex
+                      items-center
+                      gap-2.5
+                    "
+                  >
+
+                    {/* CITY ICON */}
+
+                    <div
+                      className={`
+                        w-8 h-8
+                        shrink-0
+                        rounded-lg
+                        flex
+                        items-center
+                        justify-center
+                        transition
+                        ${
+                          selected
+                            ? `
+                              bg-white/15
+                              text-white
+                            `
+                            : `
+                              bg-gray-100
+                              text-gray-400
+                              group-hover:bg-blue-100
+                              group-hover:text-blue-600
+                            `
+                        }
+                      `}
+                    >
+                      <MapPin size={15} />
+                    </div>
+
+
+                    {/* NAME */}
+
+                    <span
+                      className={`
+                        text-sm
+                        leading-tight
+                        truncate
+                        ${
+                          selected
+                            ? `
+                              text-white
+                              font-semibold
+                            `
+                            : `
+                              text-gray-700
+                              font-medium
+                            `
+                        }
+                      `}
+                    >
+                      {cityName}
+                    </span>
+
+
+                    {/* CHECK */}
+
+                    {selected && (
+                      <div
+                        className="
+                          ml-auto
+                          w-5 h-5
+                          shrink-0
+                          rounded-full
+                          bg-white
+                          text-blue-600
+                          flex
+                          items-center
+                          justify-center
+                        "
+                      >
+                        <svg
+                          className="w-3 h-3"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="3"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M5 13l4 4L19 7"
+                          />
+                        </svg>
+                      </div>
+                    )}
+
+                  </div>
+
+                </button>
+              );
+            })}
+
+          </div>
+
+        ) : (
+
+          /* EMPTY */
+
+          <div
+            className="
+              h-64
+              rounded-2xl
+              bg-white
+              border border-gray-200
+              flex
+              flex-col
+              items-center
+              justify-center
+              text-center
+            "
+          >
+
+            <div
+              className="
+                w-12 h-12
+                rounded-xl
+                bg-gray-100
+                text-gray-400
+                flex
+                items-center
+                justify-center
+                mb-3
+              "
+            >
+              <Search size={21} />
+            </div>
+
+            <p
+              className="
+                text-sm
+                font-semibold
+                text-gray-700
+              "
+            >
+              Город не найден
+            </p>
+
+            <p
+              className="
+                text-xs
+                text-gray-400
+                mt-1
+              "
+            >
+              Попробуйте изменить поисковый запрос
+            </p>
+
+            <button
+              type="button"
+              onClick={() => setCitySearch("")}
+              className="
+                mt-3
+                px-4 py-2
+                rounded-lg
+                bg-blue-50
+                text-blue-600
+                text-xs
+                font-medium
+                hover:bg-blue-100
+                transition
+              "
+            >
+              Очистить поиск
+            </button>
+
+          </div>
+
+        )}
+
+      </div>
+
+
+      {/* =====================================================
+          FOOTER
+      ===================================================== */}
+
+      <div
+        className="
+          shrink-0
+          bg-white
+          border-t border-gray-200
+          px-4 sm:px-6
+          py-3
+        "
+      >
+
+        <div
+          className="
+            flex
+            items-center
+            gap-3
+          "
+        >
+
+          {/* SELECTED */}
+
+          <div
+            className="
+              hidden sm:flex
+              items-center
+              gap-2
+              flex-1
+              min-w-0
+            "
+          >
+
+            <div
+              className="
+                w-8 h-8
+                shrink-0
+                rounded-lg
+                bg-blue-50
+                text-blue-600
+                flex
+                items-center
+                justify-center
+              "
+            >
+              <MapPin size={15} />
+            </div>
+
+            <div className="min-w-0">
+
+              <div
+                className="
+                  text-[10px]
+                  text-gray-400
+                "
+              >
+                Выбранный город
+              </div>
+
+              <div
+                className="
+                  text-xs
+                  font-semibold
+                  text-gray-800
+                  truncate
+                "
+              >
+                {selectionLabel}
+              </div>
+
+            </div>
+
+          </div>
+
+
+          {/* RESET */}
+
+          {selectedCity !== "Вся Беларусь" && (
+            <button
+              type="button"
+              onClick={() =>
+                setSelectedCity("Вся Беларусь")
+              }
+              className="
+                h-10
+                px-4
+                rounded-xl
+                border border-gray-200
+                text-xs
+                font-medium
+                text-gray-600
+                hover:bg-gray-50
+                transition
+              "
+            >
+              Сбросить
+            </button>
+          )}
+
+
+          {/* APPLY */}
+
+          <button
+            type="button"
+            onClick={() => {
+  const finalCity =
+    selectedCity === "Вся Беларусь"
+      ? ""
+      : selectedCity;
+
+  const finalRegion =
+    selectedRegion === "Все города"
+      ? ""
+      : selectedRegion;
+
+  setCity(finalCity);
+  setRegion(finalRegion);
+
+  localStorage.setItem("city", finalCity);
+  localStorage.setItem("region", finalRegion);
+
+  setCityModal(false);
+  navigate("/");
+}}
+            className="
+              h-10
+              px-5
+              rounded-xl
+              bg-blue-600
+              hover:bg-blue-700
+              text-white
+              text-xs
+              sm:text-sm
+              font-semibold
+              shadow-md
+              shadow-blue-500/20
+              transition
+              flex
+              items-center
+              justify-center
+              gap-2
+            "
+          >
+
+            <MapPin size={15} />
+
+            Показать объявления
+
+            <span
+              className="
+                px-1.5
+                py-0.5
+                rounded-md
+                bg-white/15
+                text-[10px]
+              "
+            >
+              {adsCount}
+            </span>
+
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+)}
+     
 
       <MobileMenu
         open={mobileOpen}
