@@ -105,7 +105,7 @@ io.on("connection", (socket) => {
     if (currentSocket === socket.id) {
       onlineUsers.delete(userId);
 
-      console.log("USER OFFLINE:", userId);
+      // console.log("USER OFFLINE:", userId);
 
       io.emit("userOffline", userId);
     }

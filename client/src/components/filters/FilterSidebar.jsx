@@ -82,50 +82,269 @@ export default function FilterSidebar() {
         />
       </label>
 
-      <label className="flex flex-col gap-1 text-black">
-        <span>Область</span>
-        <select
-          value={region}
-          name="region"
-          autoComplete="off"
-          onChange={(e) => {
-            setRegion(e.target.value);
-            setCity(""); // При смене области обязательно сбрасываем город
-          }}
-          className={fieldClass}
-        >
-          <option value="">Все области</option>
-          {Object.keys(regions)
-  .filter(
-    (regionName) =>
-      regionName !== "Все города"
-  )
-  .map((regionName) => (
-    <option key={regionName} value={regionName}>
-      {regionName}
-    </option>
-  ))}
-        </select>
-      </label>
+{/* ========================================= */}
+{/* ОБЛАСТЬ / ГОРОД */}
+{/* ========================================= */}
 
-      <label className="flex flex-col gap-1 text-black">
-        <span>Город</span>
-        <select
-          value={city}
-          name="city"
-          autoComplete="off"
-          onChange={(e) => setCity(e.target.value)}
-          disabled={!region} // Блокируем, если область не выбрана
-          className={fieldClass}
-        >
-          <option value="">Все города</option>
-          {availableCities.map((cityName) => (
-            <option key={cityName} value={cityName}>
-              {cityName}
-            </option>
-          ))}
-        </select>
-      </label>
+<div className="flex flex-col gap-1 text-black">
+  <span>Местоположение</span>
+
+  <div className="border border-blue-100 rounded-xl bg-white overflow-hidden">
+
+    {/* Вся Беларусь */}
+    <button
+      type="button"
+      onClick={() => {
+        setRegion("");
+        setCity("");
+      }}
+      className={`
+        w-full
+        flex
+        items-center
+        justify-between
+        px-3
+        py-2.5
+        text-xs
+        transition
+        ${
+          !region && !city
+            ? "bg-blue-50 text-blue-600 font-semibold"
+            : "hover:bg-gray-50 text-gray-700"
+        }
+      `}
+    >
+      <span>Вся Беларусь</span>
+
+      {!region && !city && (
+        <span className="text-blue-600">
+          ✓
+        </span>
+      )}
+    </button>
+
+
+    {/* ОБЛАСТИ */}
+    {Object.entries(regions)
+      .filter(
+        ([regionName]) =>
+          regionName !== "Все города" &&
+          regionName !== "Вся Беларусь"
+      )
+      .map(([regionName, cities]) => {
+
+        const isOpen =
+          openCategories[`region-${regionName}`];
+
+        const isRegionActive =
+          region === regionName && !city;
+
+        const hasActiveCity =
+          region === regionName && !!city;
+
+        return (
+          <div key={regionName}>
+
+            {/* Область */}
+            <div
+              className={`
+                flex
+                items-center
+                border-t
+                border-gray-100
+                transition
+                ${
+                  isRegionActive || hasActiveCity
+                    ? "bg-blue-50"
+                    : "hover:bg-gray-50"
+                }
+              `}
+            >
+
+              {/* Название области */}
+              <button
+                type="button"
+                onClick={() => {
+                  setRegion(regionName);
+                  setCity("");
+                }}
+                className={`
+                  flex-1
+                  text-left
+                  px-3
+                  py-2.5
+                  text-xs
+                  ${
+                    isRegionActive || hasActiveCity
+                      ? "text-blue-600 font-semibold"
+                      : "text-gray-700"
+                  }
+                `}
+              >
+                {regionName}
+              </button>
+
+
+              {/* Стрелка */}
+              {cities.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() =>
+                    toggleCategory(
+                      `region-${regionName}`
+                    )
+                  }
+                  aria-label={
+                    isOpen
+                      ? "Скрыть города"
+                      : "Показать города"
+                  }
+                  className="
+                    w-10
+                    h-10
+                    flex
+                    items-center
+                    justify-center
+                    text-gray-400
+                    hover:text-blue-600
+                    transition
+                  "
+                >
+                  <span
+                    className={`
+                      text-base
+                      transition-transform
+                      duration-200
+                      ${
+                        isOpen
+                          ? "rotate-90"
+                          : ""
+                      }
+                    `}
+                  >
+                    ›
+                  </span>
+                </button>
+              )}
+
+
+              {/* Галочка области */}
+              {isRegionActive && (
+                <span className="pr-3 text-blue-600 text-xs">
+                  ✓
+                </span>
+              )}
+
+            </div>
+
+
+            {/* ГОРОДА */}
+            {isOpen && cities.length > 0 && (
+              <div
+                className="
+                  bg-gray-50
+                  border-t
+                  border-gray-100
+                "
+              >
+
+                {/* Все города области */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setRegion(regionName);
+                    setCity("");
+                  }}
+                  className={`
+                    w-full
+                    flex
+                    items-center
+                    justify-between
+                    text-left
+                    pl-8
+                    pr-3
+                    py-2
+                    text-xs
+                    transition
+                    ${
+                      region === regionName &&
+                      !city
+                        ? "text-blue-600 bg-blue-100 font-semibold"
+                        : "text-gray-600 hover:bg-gray-100"
+                    }
+                  `}
+                >
+                  <span>
+                    Все города
+                  </span>
+
+                  {region === regionName &&
+                    !city && (
+                      <span className="text-blue-600">
+                        ✓
+                      </span>
+                    )}
+                </button>
+
+
+                {/* Список городов */}
+                {cities.map((cityName) => {
+
+                  const isCityActive =
+                    region === regionName &&
+                    city === cityName;
+
+                  return (
+                    <button
+                      key={cityName}
+                      type="button"
+                      onClick={() => {
+                        setRegion(regionName);
+                        setCity(cityName);
+                      }}
+                      className={`
+                        w-full
+                        flex
+                        items-center
+                        justify-between
+                        text-left
+                        pl-8
+                        pr-3
+                        py-2
+                        text-xs
+                        transition
+                        ${
+                          isCityActive
+                            ? "text-blue-600 bg-blue-100 font-semibold"
+                            : "text-gray-600 hover:bg-gray-100"
+                        }
+                      `}
+                    >
+
+                      <span>
+                        {cityName}
+                      </span>
+
+                      {isCityActive && (
+                        <span className="text-blue-600">
+                          ✓
+                        </span>
+                      )}
+
+                    </button>
+                  );
+                })}
+
+              </div>
+            )}
+
+          </div>
+        );
+      })}
+
+  </div>
+</div>
+
 
       <div className="flex flex-col gap-1 text-black">
   <span>Категория</span>
@@ -336,33 +555,96 @@ export default function FilterSidebar() {
         />
       </label>
 
-      <label className="flex flex-col gap-1 text-black">
-        <span>Состояние</span>
-        <select
-          name="condition"
-          value={condition}
-          onChange={(e) => setCondition(e.target.value)}
-          className={fieldClass}
-        >
-          <option value="">Любое</option>
-          <option value="new">Новое</option>
-          <option value="used">Б/У</option>
-        </select>
-      </label>
+{/* ========================================= */}
+{/* СОСТОЯНИЕ */}
+{/* ========================================= */}
 
-      <label className="flex flex-col gap-1 text-black">
-        <span>Продавец</span>
-        <select
-          name="sellerType"
-          value={sellerType}
-          onChange={(e) => setSellerType(e.target.value)}
-          className={fieldClass}
+<div className="flex flex-col gap-1 text-black">
+  <span>Состояние</span>
+
+  <div className="grid grid-cols-3 gap-1.5">
+
+    {[
+      { value: "", label: "Любое" },
+      { value: "new", label: "Новое" },
+      { value: "used", label: "Б/У" },
+    ].map((item) => {
+      const isActive = condition === item.value;
+
+      return (
+        <button
+          key={item.value}
+          type="button"
+          onClick={() => setCondition(item.value)}
+          className={`
+            px-2
+            py-2.5
+            rounded-xl
+            border
+            text-xs
+            transition
+            ${
+              isActive
+                ? "bg-blue-50 border-blue-500 text-blue-600 font-semibold"
+                : "bg-white border-blue-100 text-gray-700 hover:bg-gray-50 hover:border-blue-300"
+            }
+          `}
         >
-          <option value="">Любой</option>
-          <option value="private">Частное лицо</option>
-          <option value="company">Компания</option>
-        </select>
-      </label>
+          {item.label}
+        </button>
+      );
+    })}
+
+  </div>
+</div>
+
+{/* ========================================= */}
+{/* ПРОДАВЕЦ */}
+{/* ========================================= */}
+
+<div className="flex flex-col gap-1 text-black">
+  <span>Продавец</span>
+
+  <div className="grid grid-cols-[0.8fr_1.5fr_1fr] gap-1.5">
+
+    {[
+      { value: "", label: "Любой" },
+      { value: "private", label: "Частное лицо" },
+      { value: "company", label: "Компания" },
+    ].map((item) => {
+      const isActive = sellerType === item.value;
+
+      return (
+        <button
+          key={item.value}
+          type="button"
+          onClick={() => setSellerType(item.value)}
+          className={`
+            min-w-0
+            h-10
+            px-2
+            rounded-xl
+            border
+            text-[11px]
+            leading-none
+            whitespace-nowrap
+            transition
+            ${
+              isActive
+                ? "bg-blue-50 border-blue-500 text-blue-600 font-semibold"
+                : "bg-white border-blue-100 text-gray-700 hover:bg-gray-50 hover:border-blue-300"
+            }
+          `}
+        >
+          {item.label}
+        </button>
+      );
+    })}
+
+  </div>
+</div>
+
+
 
       <button
         onClick={() => {
