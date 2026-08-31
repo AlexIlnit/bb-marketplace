@@ -14,6 +14,7 @@ import { LogOut } from "lucide-react";
 import { updateProfile } from "../../api/userApi";
 import { promoteListing } from "../../api/listingApi";
 import { getSellerRatings, replyToRating } from "../../api/ratingApi";
+import EditListingModal from "../../components/listing/EditListingModal";
 
 
 export default function Profile() {
@@ -22,18 +23,18 @@ export default function Profile() {
   const logout = useAuthStore((s) => s.logout);
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [editItem, setEditItem] = useState(null);
+  // const [editItem, setEditItem] = useState(null);
   const [deleteItem, setDeleteItem] = useState(null);
   const { categories, fetchCategories } = useCategoryStore();
-  const [imageFile, setImageFile] = useState(null);
-  const [imageUrl, setImageUrl] = useState("");
-  const [uploading, setUploading] = useState(false);
-  const [form, setForm] = useState({
-  title: "",
-  price: "",
-  city: "",
-  description: "",
-    });
+  // const [imageFile, setImageFile] = useState(null);
+  // const [imageUrl, setImageUrl] = useState("");
+  // const [uploading, setUploading] = useState(false);
+  // const [form, setForm] = useState({
+  // title: "",
+  // price: "",
+  // city: "",
+  // description: "",
+  //   });
     
 const setUser = useAuthStore((s) => s.setUser);
 const [savingProfile, setSavingProfile] = useState(false);
@@ -50,6 +51,8 @@ const [activeTab, setActiveTab] = useState("listings");
 const [replyRatingId, setReplyRatingId] = useState(null);
 const [replyText, setReplyText] = useState("");
 const [replyLoading, setReplyLoading] = useState(false);
+
+const [editingListing, setEditingListing] = useState(null);
 
 const formatPhone = (value) => {
   let digits = value.replace(/\D/g, "");
@@ -1077,44 +1080,40 @@ setProfileModal(false);
               listing.status === "rejected" ? (
 
                 <button
-                  type="button"
-                  onClick={() =>
-                    openEditModal(listing)
-                  }
-                  className="
-                    py-2
-                    rounded-xl
-                    bg-orange-50
-                    hover:bg-orange-100
-                    text-orange-600
-                    text-xs
-                    font-semibold
-                    transition
-                  "
-                >
-                  Исправить
-                </button>
+  type="button"
+  onClick={() => setEditingListing(listing)}
+  className="
+    py-2
+    rounded-xl
+    bg-orange-50
+    hover:bg-orange-100
+    text-orange-600
+    text-xs
+    font-semibold
+    transition
+  "
+>
+  Исправить
+</button>
 
               ) : (
 
                 <button
-                  type="button"
-                  onClick={() =>
-                    openEditModal(listing)
-                  }
-                  className="
-                    py-2
-                    rounded-xl
-                    bg-blue-50
-                    hover:bg-blue-100
-                    text-blue-600
-                    text-xs
-                    font-semibold
-                    transition
-                  "
-                >
-                  Редактировать
-                </button>
+  type="button"
+  onClick={() => setEditingListing(listing)}
+  className="
+    py-2
+    rounded-xl
+    bg-blue-50
+    hover:bg-blue-100
+    text-blue-600
+    text-xs
+    font-semibold
+    transition
+  "
+>
+  Редактировать
+</button>
 
               )
 
@@ -1430,722 +1429,19 @@ setProfileModal(false);
 
 
   
-    {editItem && (
-
-  <div
-    className="
-      fixed
-      inset-0
-      z-50
-      bg-black/50
-      backdrop-blur-sm
-      flex
-      items-center
-      justify-center
-      p-4
-    "
-    onClick={() => setEditItem(null)}
-  >
-
-<div
-  className="
-    w-full
-    max-w-2xl
-    max-h-[92vh]
-    bg-white
-    rounded-3xl
-    shadow-2xl
-    overflow-hidden
-    flex
-    flex-col
-  "
-  onClick={(e) => e.stopPropagation()}
->
-
-  {/* ================= HEADER ================= */}
-
-  <div className="
-    flex
-    items-center
-    justify-between
-    px-6
-    py-4
-    border-b
-    border-gray-100
-    shrink-0
-  ">
-
-    <div>
-      <h2 className="
-        text-xl
-        font-bold
-        text-gray-900
-      ">
-        Редактировать объявление
-      </h2>
-
-      <p className="
-        text-xs
-        text-gray-500
-        mt-1
-      ">
-        Измените информацию об объявлении
-      </p>
-    </div>
-
-    <button
-      type="button"
-      onClick={() => setEditItem(null)}
-      className="
-        w-9
-        h-9
-        rounded-full
-        flex
-        items-center
-        justify-center
-        text-gray-400
-        hover:text-gray-700
-        hover:bg-gray-100
-        transition
-        text-xl
-      "
-      aria-label="Закрыть"
-    >
-      ×
-    </button>
-
-  </div>
-
-
-  {/* ================= CONTENT ================= */}
-
-  <div className="
-    overflow-y-auto
-    px-6
-    py-5
-    space-y-6
-  ">
-
-
-    {/* ================= PHOTO ================= */}
-
-    <section>
-
-      <div className="mb-3">
-
-        <h3 className="
-          text-sm
-          font-semibold
-          text-gray-900
-        ">
-          Фотография
-        </h3>
-
-        <p className="
-          text-xs
-          text-gray-500
-          mt-1
-        ">
-          Хорошее фото поможет быстрее продать товар
-        </p>
-
-      </div>
-
-
-      <div className="
-        grid
-        grid-cols-1
-        sm:grid-cols-[180px_1fr]
-        gap-4
-      ">
-
-        {/* PREVIEW */}
-
-        <div className="
-          relative
-          aspect-square
-          rounded-2xl
-          overflow-hidden
-          bg-gray-100
-          border
-          border-gray-200
-        ">
-
-          {imageUrl ? (
-
-            <img
-              src={imageUrl}
-              alt=""
-              className="
-                absolute
-                inset-0
-                w-full
-                h-full
-                object-cover
-              "
-            />
-
-          ) : (
-
-            <NoImage />
-
-          )}
-
-        </div>
-
-
-        {/* UPLOAD */}
-
-        <div className="
-          rounded-2xl
-          border
-          border-dashed
-          border-gray-300
-          bg-gray-50
-          p-4
-          flex
-          flex-col
-          justify-center
-        ">
-
-          <div className="
-            text-3xl
-            mb-2
-          ">
-            📷
-          </div>
-
-          <div className="
-            text-sm
-            font-medium
-            text-gray-800
-          ">
-            Загрузить новое фото
-          </div>
-
-          <div className="
-            text-xs
-            text-gray-500
-            mt-1
-            mb-3
-          ">
-            JPG, PNG или WEBP
-          </div>
-
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(e) =>
-              setImageFile(e.target.files[0])
-            }
-            className="
-              block
-              w-full
-              text-xs
-              text-gray-500
-              file:mr-3
-              file:py-2
-              file:px-3
-              file:rounded-lg
-              file:border-0
-              file:bg-blue-50
-              file:text-blue-600
-              file:font-medium
-              hover:file:bg-blue-100
-              cursor-pointer
-            "
-          />
-
-          <button
-            type="button"
-            onClick={handleUpload}
-            disabled={!imageFile || uploading}
-            className="
-              mt-3
-              w-full
-              py-2.5
-              rounded-xl
-              bg-blue-600
-              hover:bg-blue-700
-              text-white
-              text-sm
-              font-medium
-              transition
-              disabled:bg-gray-300
-              disabled:cursor-not-allowed
-            "
-          >
-            {uploading
-              ? "Загрузка..."
-              : "Загрузить фото"}
-          </button>
-
-        </div>
-
-      </div>
-
-    </section>
-
-
-    {/* ================= BASIC INFO ================= */}
-
-    <section>
-
-      <h3 className="
-        text-sm
-        font-semibold
-        text-gray-900
-        mb-3
-      ">
-        Основная информация
-      </h3>
-
-
-      <div className="
-        space-y-4
-      ">
-
-        {/* TITLE */}
-
-        <div>
-
-          <label className="
-            block
-            text-xs
-            font-medium
-            text-gray-600
-            mb-1.5
-          ">
-            Название объявления
-          </label>
-
-          <input
-            type="text"
-            value={form.title}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                title: e.target.value
-              })
-            }
-            placeholder="Например: iPhone 15 Pro"
-            className="
-              w-full
-              px-4
-              py-3
-              border
-              border-gray-200
-              rounded-xl
-              text-sm
-              text-gray-900
-              placeholder:text-gray-400
-              outline-none
-              transition
-              focus:border-blue-500
-              focus:ring-4
-              focus:ring-blue-500/10
-            "
-          />
-
-        </div>
-
-
-        {/* PRICE */}
-
-        <div>
-
-          <label className="
-            block
-            text-xs
-            font-medium
-            text-gray-600
-            mb-1.5
-          ">
-            Цена
-          </label>
-
-          <div className="relative">
-
-            <input
-              type="number"
-              value={form.price}
-              onChange={(e) =>
-                setForm({
-                  ...form,
-                  price: e.target.value
-                })
-              }
-              placeholder="0"
-              className="
-                w-full
-                px-4
-                py-3
-                pr-12
-                border
-                border-gray-200
-                rounded-xl
-                text-sm
-                font-medium
-                text-gray-900
-                outline-none
-                focus:border-blue-500
-                focus:ring-4
-                focus:ring-blue-500/10
-              "
-            />
-
-            <span className="
-              absolute
-              right-4
-              top-1/2
-              -translate-y-1/2
-              text-sm
-              text-gray-400
-              font-medium
-            ">
-              р.
-            </span>
-
-          </div>
-
-        </div>
-
-
-        {/* CITY */}
-
-        <div>
-
-          <label className="
-            block
-            text-xs
-            font-medium
-            text-gray-600
-            mb-1.5
-          ">
-            Город
-          </label>
-
-          <input
-            type="text"
-            value={form.city}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                city: e.target.value
-              })
-            }
-            placeholder="Введите город"
-            className="
-              w-full
-              px-4
-              py-3
-              border
-              border-gray-200
-              rounded-xl
-              text-sm
-              outline-none
-              focus:border-blue-500
-              focus:ring-4
-              focus:ring-blue-500/10
-            "
-          />
-
-        </div>
-
-
-        {/* CATEGORY */}
-
-        <div>
-
-          <label className="
-            block
-            text-xs
-            font-medium
-            text-gray-600
-            mb-1.5
-          ">
-            Категория
-          </label>
-
-          <select
-            value={form.category}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                category: e.target.value
-              })
-            }
-            className="
-              w-full
-              px-4
-              py-3
-              border
-              border-gray-200
-              bg-white
-              rounded-xl
-              text-sm
-              text-gray-900
-              outline-none
-              focus:border-blue-500
-              focus:ring-4
-              focus:ring-blue-500/10
-            "
-          >
-
-            <option value="">
-              Выберите категорию
-            </option>
-
-            {categories
-              .filter((cat) => !cat.parent)
-              .map((parent) => {
-
-                const children =
-                  categories.filter(
-                    (cat) =>
-                      cat.parent &&
-                      (
-                        cat.parent === parent._id ||
-                        cat.parent?._id === parent._id
-                      )
-                  );
-
-                return (
-                  <Fragment
-                    key={parent._id}
-                  >
-
-                    <option
-                      value={parent._id}
-                    >
-                      {parent.name}
-                    </option>
-
-                    {children.map(
-                      (child) => (
-                        <option
-                          key={child._id}
-                          value={child._id}
-                        >
-                          ↳ {child.name}
-                        </option>
-                      )
-                    )}
-
-                  </Fragment>
-                );
-
-              })}
-
-          </select>
-
-          {form.category && (
-
-            <div className="
-              mt-2
-              text-xs
-              text-blue-600
-            ">
-
-              Выбрана категория:{" "}
-
-              <span className="font-semibold">
-
-                {
-                  categories.find(
-                    (cat) =>
-                      cat._id ===
-                      form.category
-                  )?.name
-                }
-
-              </span>
-
-            </div>
-
-          )}
-
-        </div>
-
-
-        {/* DESCRIPTION */}
-
-        <div>
-
-          <div className="
-            flex
-            items-center
-            justify-between
-            mb-1.5
-          ">
-
-            <label className="
-              text-xs
-              font-medium
-              text-gray-600
-            ">
-              Описание
-            </label>
-
-            <span className="
-              text-xs
-              text-gray-400
-            ">
-              {form.description?.length || 0}
-            </span>
-
-          </div>
-
-          <textarea
-            value={form.description}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                description: e.target.value
-              })
-            }
-            rows={5}
-            placeholder="Опишите товар, его состояние и особенности..."
-            className="
-              w-full
-              px-4
-              py-3
-              border
-              border-gray-200
-              rounded-xl
-              text-sm
-              text-gray-900
-              placeholder:text-gray-400
-              resize-none
-              outline-none
-              focus:border-blue-500
-              focus:ring-4
-              focus:ring-blue-500/10
-            "
-          />
-
-        </div>
-
-      </div>
-
-    </section>
-
-
-    {/* ================= MODERATION NOTICE ================= */}
-
-    <div className="
-      flex
-      gap-3
-      p-4
-      rounded-2xl
-      bg-blue-50
-      border
-      border-blue-100
-    ">
-
-      <div className="
-        w-8
-        h-8
-        shrink-0
-        rounded-full
-        bg-blue-100
-        flex
-        items-center
-        justify-center
-        text-blue-600
-        text-sm
-      ">
-        ℹ
-      </div>
-
-      <div>
-
-        <div className="
-          text-sm
-          font-semibold
-          text-blue-900
-        ">
-          После сохранения объявление пройдет модерацию
-        </div>
-
-        <div className="
-          text-xs
-          text-blue-700
-          mt-1
-          leading-5
-        ">
-          После изменения информации статус объявления
-          будет установлен на «На модерации».
-        </div>
-
-      </div>
-
-    </div>
-
-  </div>
-
-
-  {/* ================= FOOTER ================= */}
-
-  <div className="
-    shrink-0
-    border-t
-    border-gray-100
-    bg-white
-    px-6
-    py-4
-    flex
-    flex-col-reverse
-    sm:flex-row
-    sm:items-center
-    sm:justify-between
-    gap-3
-  ">
-
-    <button
-      type="button"
-      onClick={() => setEditItem(null)}
-      className="
-        px-5
-        py-2.5
-        rounded-xl
-        text-sm
-        font-medium
-        text-gray-600
-        hover:bg-gray-100
-        transition
-      "
-    >
-      Отмена
-    </button>
-
-
-    <button
-      type="button"
-      onClick={handleUpdate}
-      className="
-        px-6
-        py-2.5
-        rounded-xl
-        bg-blue-600
-        hover:bg-blue-700
-        text-white
-        text-sm
-        font-semibold
-        shadow-sm
-        hover:shadow
-        transition
-      "
-    >
-      Сохранить изменения
-    </button>
-
-  </div>
-
-</div>
-
-  </div>
-)}
+<EditListingModal
+  listing={editingListing}
+  onClose={() => setEditingListing(null)}
+  onSaved={(updatedListing) => {
+    setListings((prev) =>
+      prev.map((item) =>
+        item._id === updatedListing._id
+          ? updatedListing
+          : item
+      )
+    );
+  }}
+/> 
 
 {deleteItem && (
   <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
@@ -3156,6 +2452,23 @@ setProfileModal(false);
     </div>
 
   </div>
+)}
+{editingListing && (
+  <EditListingModal
+    listing={editingListing}
+    onClose={() => setEditingListing(null)}
+    onUpdated={(updatedListing) => {
+      setListings((prev) =>
+        prev.map((item) =>
+          item._id === updatedListing._id
+            ? updatedListing
+            : item
+        )
+      );
+
+      setEditingListing(null);
+    }}
+  />
 )}
 
     </MainLayout>

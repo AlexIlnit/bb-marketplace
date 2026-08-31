@@ -359,16 +359,16 @@ export default function EditListingModal({
           );
         });
 
-      await updateListing(
-        listing._id,
-        formData
-      );
+      const updatedListing = await updateListing(
+  listing._id,
+  formData
+);
 
-      if (onSaved) {
-        onSaved();
-      }
+if (onSaved) {
+  onSaved(updatedListing);
+}
 
-      onClose();
+onClose();
     } catch (error) {
       console.error(
         "Ошибка редактирования объявления:",
@@ -1590,7 +1590,6 @@ export default function EditListingModal({
 
           <button
             type="submit"
-            form=""
             onClick={submit}
             disabled={loading}
             className="
