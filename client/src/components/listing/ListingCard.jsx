@@ -240,42 +240,54 @@ function ListingCard({ listing, priority }) {
 
 
         {/* Индикаторы */}
-        {images.length > 1 && (
-          <div
-            className="
-              absolute
-              bottom-2
-              left-1/2
-              -translate-x-1/2
-              flex
-              gap-1
-              z-10
-            "
-          >
-            {images.map((_, index) => (
-              <button
-                key={index}
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setCurrentImage(index);
-                }}
-                aria-label={`Фото ${index + 1}`}
-                className={`
-                  w-1.5
-                  h-1.5
-                  rounded-full
-                  transition-all
-                  ${
-                    currentImage === index
-                      ? "bg-white scale-125"
-                      : "bg-white/50"
-                  }
-                `}
-              />
-            ))}
-          </div>
-        )}
+{images.length > 1 && (
+  <div
+    className="
+      absolute
+      bottom-1
+      left-1/2
+      -translate-x-1/2
+      flex
+      gap-0.5
+      z-10
+    "
+  >
+    {images.map((_, index) => (
+      <button
+        key={index}
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          setCurrentImage(index);
+        }}
+        aria-label={`Фото ${index + 1}`}
+        className="
+          w-8
+          h-8
+          rounded-full
+          flex
+          items-center
+          justify-center
+          shrink-0
+        "
+      >
+        <span
+          className={`
+            w-2
+            h-2
+            rounded-full
+            transition-all
+            ${
+              currentImage === index
+                ? "bg-white scale-125"
+                : "bg-white/50"
+            }
+          `}
+        />
+      </button>
+    ))}
+  </div>
+)}
 
       </div>
 
