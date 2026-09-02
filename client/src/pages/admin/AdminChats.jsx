@@ -504,6 +504,9 @@ export default function AdminChats() {
             />
 
             <input
+              id="search_chat"
+              name="search_chat"
+              autoComplete="off"
               value={search}
               onChange={(event) =>
                 setSearch(

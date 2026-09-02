@@ -385,23 +385,18 @@ transition
   className="cursor-pointer"
   onClick={() => navigate("/")}
 />
-              <input
-  value={search}
+<input
+  id="header-search"
   name="search"
-  onChange={(e) => setSearch(e.target.value)}
-  onKeyDown={(e) => {
-    if (e.key === "Enter") {
-      navigate("/");
-    }
-  }}
+  type="search"
   placeholder="Поиск товаров"
   className="
-bg-transparent
-p-2
-w-full
-outline-none
-text-sm
-"
+    flex-1
+    bg-transparent
+    px-2
+    outline-none"
+  value={search}
+  onChange={(e) => setSearch(e.target.value)}
 />
 
             </div>
@@ -817,20 +812,18 @@ transition
         />
 
         <input
-            value={search}
-            onChange={(e)=>setSearch(e.target.value)}
-            onKeyDown={(e)=>{
-                if(e.key==="Enter"){
-                    navigate("/");
-                }
-            }}
-            placeholder="Поиск товаров"
-            className="
-            flex-1
-            bg-transparent
-            px-2
-            outline-none"
-        />
+  id="mobile-search"
+  name="search"
+  type="search"
+  placeholder="Поиск товаров"
+  className="
+    flex-1
+    bg-transparent
+    px-2
+    outline-none"
+  value={search}
+  onChange={(e) => setSearch(e.target.value)}
+/>
 
     </div>
 

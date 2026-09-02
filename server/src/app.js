@@ -15,7 +15,7 @@ import dealRoutes from "./routes/dealRoutes.js";
 const app = express();
 
 app.use(cors({
-    origin: ["http://localhost:5173", "http://localhost:3000", "https://alexbox.pro"],
+    origin: ["http://localhost:5173", "http://localhost:4173", "http://localhost:3000", "https://alexbox.pro"],
     credentials: true
 }));
 app.use(express.json());

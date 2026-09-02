@@ -360,7 +360,9 @@ export default function AdminCategories() {
           {/* ТИП */}
 
           <div>
-            <label className="
+            <label 
+            htmlFor="type"
+            className="
               block
               text-sm
               font-medium
@@ -371,6 +373,8 @@ export default function AdminCategories() {
             </label>
 
             <select
+              id="type"
+              name="type"
               value={parentId}
               onChange={(e) =>
                 setParentId(e.target.value)
@@ -410,7 +414,9 @@ export default function AdminCategories() {
           {/* НАЗВАНИЕ */}
 
           <div>
-            <label className="
+            <label 
+            htmlFor="name"
+            className="
               block
               text-sm
               font-medium
@@ -421,11 +427,14 @@ export default function AdminCategories() {
             </label>
 
             <input
+              id="name" 
+              name="name"
               type="text"
               value={name}
               onChange={(e) =>
                 setName(e.target.value)
               }
+              autoComplete="off"
               placeholder={
                 parentId
                   ? "Например: Телефоны"
@@ -454,7 +463,9 @@ export default function AdminCategories() {
           {!parentId && (
             <div>
 
-              <label className="
+              <label 
+              htmlFor="category-image"
+              className="
                 block
                 text-sm
                 font-medium
@@ -465,7 +476,7 @@ export default function AdminCategories() {
               </label>
 
               <input
-                id="category-image-input"
+                id="category-image"
                 type="file"
                 accept="image/*"
                 onChange={handleImageChange}

@@ -61,7 +61,10 @@ export default function AdminSettings() {
         <p className="font-medium">Email</p>
 
         <input
+          id="email"
+          name="email"
           type="email"
+          autoComplete="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           className="w-full border p-3 rounded-xl"
@@ -73,7 +76,9 @@ export default function AdminSettings() {
         <p className="font-medium">Старый пароль</p>
 
         <input
-          type="password"
+          id="password"
+          name="password"
+          type="email"          
           value={oldPassword}
           onChange={(e) => setOldPassword(e.target.value)}
           placeholder="Введите старый пароль"
@@ -86,6 +91,8 @@ export default function AdminSettings() {
         <p className="font-medium">Новый пароль</p>
 
         <input
+          id="new_password"
+          name="password"
           type="password"
           value={newPassword}
           onChange={(e) => setNewPassword(e.target.value)}
