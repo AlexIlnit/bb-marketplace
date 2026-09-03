@@ -92,8 +92,8 @@ export const getListings = async (req, res) => {
     const filter = {
       status: "approved"
     };
-console.log("========== GET LISTINGS ==========");
-    console.log("QUERY:", req.query);
+// console.log("========== GET LISTINGS ==========");
+    // console.log("QUERY:", req.query);
     const city = req.query.city;
     const region = req.query.region; // Получаем область из фронтенда
 
@@ -101,8 +101,8 @@ console.log("========== GET LISTINGS ==========");
   const category = await Category.findOne({
     slug: req.query.category,
   });
-console.log("CATEGORY SLUG:", req.query.category);
-      console.log("CATEGORY FOUND:", category);
+// console.log("CATEGORY SLUG:", req.query.category);
+//       console.log("CATEGORY FOUND:", category);
   if (!category) {
     return res.json({
       listings: [],
@@ -111,10 +111,10 @@ console.log("CATEGORY SLUG:", req.query.category);
   }
 
   filter.category = category._id;
-  console.log("CATEGORY ID:", category._id);
+  // console.log("CATEGORY ID:", category._id);
 }
  
-  console.log("FILTER BEFORE TOP:", filter);
+  // console.log("FILTER BEFORE TOP:", filter);
 
     
     // 🔥 ПРЯМАЯ ФИЛЬТРАЦИЯ ПО ОБЛАСТЯМ И ГОРОДАМ
@@ -182,9 +182,6 @@ const listings = await Listing.find(finalFilter)
   .limit(limit);
 
 const total = await Listing.countDocuments(finalFilter);
-console.log("LISTINGS FOUND:", listings.length);
-console.log("TOTAL:", total);
-console.log("================================");
     res.json({
       listings,
       totalPages: Math.ceil(total / limit)

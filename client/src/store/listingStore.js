@@ -39,13 +39,6 @@ export const useListingStore = create((set, get) => ({
     try {
       const state = get();
 
-      console.log("FETCH LISTINGS:", {
-        page,
-        category: state.category,
-        region: state.region,
-        city: state.city,
-      });
-
       const { data } = await getListings({
         page,
         search: state.search,
@@ -57,8 +50,6 @@ export const useListingStore = create((set, get) => ({
         condition: state.condition,
         sellerType: state.sellerType,
       });
-
-      console.log("LISTINGS RESPONSE:", data);
 
       set({
         listings: data.listings || [],
