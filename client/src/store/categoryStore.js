@@ -4,6 +4,7 @@ import { getCategories } from "../api/categoryApi";
 export const useCategoryStore = create((set, get) => ({
   categories: [],
   loading: false,
+  error: null,
 
   fetchCategories: async (force = false) => {
     const state = get();
@@ -12,32 +13,32 @@ export const useCategoryStore = create((set, get) => ({
       return;
     }
 
-    set({ loading: true });
+    set({
+      loading: true,
+      error: null,
+    });
 
     try {
       const { data } = await getCategories();
 
       set({
-        categories: data,
+        categories: Array.isArray(data) ? data : [],
+        loading: false,
       });
     } catch (error) {
-      console.error(
-        "Ошибка загрузки категорий:",
-        error
-      );
-    } finally {
+      console.error("Ошибка загрузки категорий:", error);
+
       set({
+        categories: [],
         loading: false,
+        error: error?.response?.data?.message || "Не удалось загрузить категории",
       });
     }
   },
 
   addCategory: (category) => {
     set((state) => ({
-      categories: [
-        ...state.categories,
-        category,
-      ].sort((a, b) =>
+      categories: [...state.categories, category].sort((a, b) =>
         a.name.localeCompare(b.name, "ru")
       ),
     }));

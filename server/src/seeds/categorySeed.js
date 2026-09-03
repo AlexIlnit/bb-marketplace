@@ -6,63 +6,63 @@ export const seedCategories = async () => {
   // =========================
 
   const mainCategories = [
-    {
-      name: "Недвижимость",
-      slug: "real-estate",
-      icon: "home",
-      image:
-        "https://images.unsplash.com/photo-1560518883-ce09059eeffa",
-    },
-    {
-      name: "Авто",
-      slug: "cars",
-      icon: "car",
-      image:
-        "https://images.unsplash.com/photo-1503376780353-7e6692767b70",
-    },
-    {
-      name: "Электроника",
-      slug: "electronics",
-      icon: "smartphone",
-      image:
-        "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9",
-    },
-    {
-      name: "Работа",
-      slug: "work",
-      icon: "briefcase",
-      image:
-        "https://images.unsplash.com/photo-1521791136064-7986c2920216",
-    },
-    {
-      name: "Одежда",
-      slug: "clothes",
-      icon: "shirt",
-      image:
-        "https://images.unsplash.com/photo-1445205170230-053b83016050",
-    },
-    {
-      name: "Услуги",
-      slug: "services",
-      icon: "wrench",
-      image:
-        "https://images.unsplash.com/photo-1581578731548-c64695cc6952",
-    },
-    {
-      name: "Животные",
-      slug: "animals",
-      icon: "paw-print",
-      image:
-        "https://images.unsplash.com/photo-1517849845537-4d257902454a",
-    },
-    {
-      name: "Дом и сад",
-      slug: "home-garden",
-      icon: "sofa",
-      image:
-        "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85",
-    },
-  ];
+  {
+    name: "Недвижимость",
+    slug: "nedvizhimost",
+    icon: "home",
+    image:
+      "https://images.unsplash.com/photo-1560518883-ce09059eeffa",
+  },
+  {
+    name: "Авто",
+    slug: "avto",
+    icon: "car",
+    image:
+      "https://images.unsplash.com/photo-1503376780353-7e6692767b70",
+  },
+  {
+    name: "Электроника",
+    slug: "elektronika",
+    icon: "smartphone",
+    image:
+      "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9",
+  },
+  {
+    name: "Работа",
+    slug: "rabota",
+    icon: "briefcase",
+    image:
+      "https://images.unsplash.com/photo-1521791136064-7986c2920216",
+  },
+  {
+    name: "Одежда",
+    slug: "odezhda",
+    icon: "shirt",
+    image:
+      "https://images.unsplash.com/photo-1445205170230-053b83016050",
+  },
+  {
+    name: "Услуги",
+    slug: "uslugi",
+    icon: "wrench",
+    image:
+      "https://images.unsplash.com/photo-1581578731548-c64695cc6952",
+  },
+  {
+    name: "Животные",
+    slug: "zhivotnye",
+    icon: "paw-print",
+    image:
+      "https://images.unsplash.com/photo-1517849845537-4d257902454a",
+  },
+  {
+    name: "Дом и сад",
+    slug: "dom-i-sad",
+    icon: "sofa",
+    image:
+      "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85",
+  },
+];
 
   // Создаём основные категории, если их ещё нет
   for (const category of mainCategories) {
@@ -84,37 +84,36 @@ export const seedCategories = async () => {
   // =========================
 
   const realEstate = await Category.findOne({
-    slug: "real-estate",
-  });
+  slug: "nedvizhimost",
+});
 
-  const cars = await Category.findOne({
-    slug: "cars",
-  });
+const cars = await Category.findOne({
+  slug: "avto",
+});
 
-  const electronics = await Category.findOne({
-    slug: "electronics",
-  });
+const electronics = await Category.findOne({
+  slug: "elektronika",
+});
 
-  const work = await Category.findOne({
-    slug: "work",
-  });
+const work = await Category.findOne({
+  slug: "rabota",
+});
 
-  const clothes = await Category.findOne({
-    slug: "clothes",
-  });
+const clothes = await Category.findOne({
+  slug: "odezhda",
+});
 
-  const services = await Category.findOne({
-    slug: "services",
-  });
+const services = await Category.findOne({
+  slug: "uslugi",
+});
 
-  const animals = await Category.findOne({
-    slug: "animals",
-  });
+const animals = await Category.findOne({
+  slug: "zhivotnye",
+});
 
-  const homeGarden = await Category.findOne({
-    slug: "home-garden",
-  });
-
+const homeGarden = await Category.findOne({
+  slug: "dom-i-sad",
+});
   // =========================
   // ПОДКАТЕГОРИИ
   // =========================

@@ -92,7 +92,8 @@ export const getListings = async (req, res) => {
     const filter = {
       status: "approved"
     };
-
+console.log("========== GET LISTINGS ==========");
+    console.log("QUERY:", req.query);
     const city = req.query.city;
     const region = req.query.region; // Получаем область из фронтенда
 
@@ -100,7 +101,8 @@ export const getListings = async (req, res) => {
   const category = await Category.findOne({
     slug: req.query.category,
   });
-
+console.log("CATEGORY SLUG:", req.query.category);
+      console.log("CATEGORY FOUND:", category);
   if (!category) {
     return res.json({
       listings: [],
@@ -109,7 +111,11 @@ export const getListings = async (req, res) => {
   }
 
   filter.category = category._id;
+  console.log("CATEGORY ID:", category._id);
 }
+ 
+  console.log("FILTER BEFORE TOP:", filter);
+
     
     // 🔥 ПРЯМАЯ ФИЛЬТРАЦИЯ ПО ОБЛАСТЯМ И ГОРОДАМ
     if (city && city !== "Вся Беларусь" && city !== "Все города" && city !== "Все области") {
@@ -176,6 +182,9 @@ const listings = await Listing.find(finalFilter)
   .limit(limit);
 
 const total = await Listing.countDocuments(finalFilter);
+console.log("LISTINGS FOUND:", listings.length);
+console.log("TOTAL:", total);
+console.log("================================");
     res.json({
       listings,
       totalPages: Math.ceil(total / limit)
