@@ -33,40 +33,74 @@ export const useListingStore = create((set, get) => ({
 
   setSellerType: (value) => set({ sellerType: value }),
 
-  fetchListings: async (page = 1) => {
-    set({ loading: true });
+ fetchListings: async (page = 1, overrides = {}) => {
+  set({ loading: true });
 
-    try {
-      const state = get();
+  try {
+    const state = get();
 
-      const { data } = await getListings({
-        page,
-        search: state.search,
-        category: state.category,
-        region: state.region,
-        city: state.city,
-        priceFrom: state.priceFrom,
-        priceTo: state.priceTo,
-        condition: state.condition,
-        sellerType: state.sellerType,
-      });
+    const params = {
+      page,
 
-      set({
-        listings: data.listings || [],
-        totalPages: data.totalPages || 1,
-      });
-    } catch (error) {
-      console.error(
-        "FETCH LISTINGS ERROR:",
-        error.response?.data || error.message
-      );
+      search:
+        overrides.search !== undefined
+          ? overrides.search
+          : state.search,
 
-      set({
-        listings: [],
-        totalPages: 1,
-      });
-    } finally {
-      set({ loading: false });
-    }
-  },
+      category:
+        overrides.category !== undefined
+          ? overrides.category
+          : state.category,
+
+      region:
+        overrides.region !== undefined
+          ? overrides.region
+          : state.region,
+
+      city:
+        overrides.city !== undefined
+          ? overrides.city
+          : state.city,
+
+      priceFrom:
+        overrides.priceFrom !== undefined
+          ? overrides.priceFrom
+          : state.priceFrom,
+
+      priceTo:
+        overrides.priceTo !== undefined
+          ? overrides.priceTo
+          : state.priceTo,
+
+      condition:
+        overrides.condition !== undefined
+          ? overrides.condition
+          : state.condition,
+
+      sellerType:
+        overrides.sellerType !== undefined
+          ? overrides.sellerType
+          : state.sellerType,
+    };
+
+    const { data } = await getListings(params);
+
+    set({
+      listings: data.listings || [],
+      totalPages: data.totalPages || 1,
+    });
+  } catch (error) {
+    console.error(
+      "FETCH LISTINGS ERROR:",
+      error.response?.data || error.message
+    );
+
+    set({
+      listings: [],
+      totalPages: 1,
+    });
+  } finally {
+    set({ loading: false });
+  }
+},
 }));

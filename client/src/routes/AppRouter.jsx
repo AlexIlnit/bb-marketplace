@@ -29,6 +29,7 @@ const Offer = lazy(() => import("../pages/Offer"));
 const Rules = lazy(() => import("../pages/Rules"));
 
 const CategoryPage = lazy(() => import("../pages/category/CategoryPage"));
+const SubCategoryPage = lazy(() => import("../pages/category/SubCategoryPage"));
 
 // Админка (lazy — идеальное решение для тяжелых панелей управления)
 const AdminDashboard = lazy(() => import("../pages/admin/AdminDashboard"));
@@ -123,14 +124,8 @@ export default function AppRouter() {
         <Route path="/messages" element={<ProtectedRoute><MessagesPage /></ProtectedRoute>} />
 
         <Route path="/category/:slug" element={<CategoryPage />}/>
-        <Route
-          path="/admin/users"
-          element={
-            <AdminRoute>
-              <AdminUsers />
-            </AdminRoute>
-          }
-        />
+        <Route path="/category/:slug/:subcategorySlug" element={<SubCategoryPage />}/>
+        <Route path="/admin/users" element={ <AdminRoute> <AdminUsers /> </AdminRoute> } />
       </Routes>
     </Suspense>
   );
