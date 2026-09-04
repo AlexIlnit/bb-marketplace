@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import { generateToken } from "../utils/jwt.js";
 import { sendVerifyEmail } from "../utils/sendVerifyEmail.js";
+import { sendSms } from "../utils/sendSms.js";
 
 
 // REGISTER
@@ -121,101 +122,212 @@ await sendVerifyEmail(
 
 
 // LOGIN
+export const login = async (req, res) => {
+  try {
+    const {
+      email,
+      password,
+    } = req.body;
 
-export const login = async(req,res)=>{
+    if (!email || !password) {
+      return res.status(400).json({
+        message: "Введите email и пароль",
+      });
+    }
 
-try {
+    const user = await User.findOne({
+      email: email.toLowerCase().trim(),
+    });
 
+    if (!user) {
+      return res.status(401).json({
+        message: "Неверный email или пароль",
+      });
+    }
 
-const {
- email,
- password
-}=req.body;
+    if (user.isBlocked) {
+      return res.status(403).json({
+        message: "Аккаунт заблокирован",
+      });
+    }
 
+    const isMatch = await bcrypt.compare(
+      password,
+      user.password
+    );
 
+    if (!isMatch) {
+      return res.status(401).json({
+        message: "Неверный email или пароль",
+      });
+    }
 
-const user =
-await User.findOne({email});
+    if (user.emailVerified !== true) {
+      return res.status(403).json({
+        message: "Подтвердите email перед входом",
+      });
+    }
 
+    if (!user.phone) {
+      return res.status(400).json({
+        message:
+          "Для входа необходимо добавить номер телефона",
+      });
+    }
 
+    const code = crypto
+      .randomInt(100000, 1000000)
+      .toString();
 
-if(!user){
+    const loginCodeHash = crypto
+      .createHash("sha256")
+      .update(code)
+      .digest("hex");
 
-return res.status(400).json({
-message:"Пользователь не найден"
-});
+    user.loginCodeHash = loginCodeHash;
 
-}
+    user.loginCodeExpires =
+      new Date(Date.now() + 5 * 60 * 1000);
 
+    user.loginCodeAttempts = 0;
 
+    await user.save();
 
-const isMatch =
-await bcrypt.compare(
- password,
- user.password
-);
+    await sendSms(
+      user.phone,
+      code
+    );
 
+    return res.json({
+      success: true,
+      requiresPhoneCode: true,
+      email: user.email,
+      message:
+        "Код подтверждения отправлен на телефон",
+    });
 
+  } catch (err) {
+    console.error("LOGIN ERROR:", err);
 
-if(!isMatch){
-
-return res.status(400).json({
-message:"Неверный пароль"
-});
-
-}
-
-
-
-// проверка email
-
-if(user.emailVerified !== true){
-
-return res.status(403).json({
-
-message:
-"Подтвердите email перед входом"
-
-});
-
-}
-
-
-res.json({
-
-_id:user._id,
-
-name:user.name,
-
-email:user.email,
-
-phone:user.phone,
-
-avatar:user.avatar,
-
-token:
-generateToken(user._id),
-
-role:user.role,
-
-isBlocked:user.isBlocked
-
-});
-
-
-
-}catch(err){
-
-res.status(500).json({
-message:err.message
-});
-
-}
-
+    res.status(500).json({
+      message: "Ошибка входа",
+    });
+  }
 };
 
+export const verifyLoginCode = async (req, res) => {
+  try {
+    const {
+      email,
+      code,
+    } = req.body;
 
+    if (!email || !code) {
+      return res.status(400).json({
+        message: "Введите код подтверждения",
+      });
+    }
 
+    const user = await User.findOne({
+      email: email.toLowerCase().trim(),
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        message: "Пользователь не найден",
+      });
+    }
+
+    if (!user.loginCodeHash) {
+      return res.status(400).json({
+        message:
+          "Сначала необходимо запросить код",
+      });
+    }
+
+    if (
+      !user.loginCodeExpires ||
+      user.loginCodeExpires < new Date()
+    ) {
+      user.loginCodeHash = null;
+      user.loginCodeExpires = null;
+      user.loginCodeAttempts = 0;
+
+      await user.save();
+
+      return res.status(400).json({
+        message:
+          "Срок действия кода истёк",
+      });
+    }
+
+    if (user.loginCodeAttempts >= 5) {
+      user.loginCodeHash = null;
+      user.loginCodeExpires = null;
+      user.loginCodeAttempts = 0;
+
+      await user.save();
+
+      return res.status(429).json({
+        message:
+          "Слишком много попыток. Запросите новый код",
+      });
+    }
+
+    const codeHash = crypto
+      .createHash("sha256")
+      .update(String(code))
+      .digest("hex");
+
+    if (codeHash !== user.loginCodeHash) {
+      user.loginCodeAttempts += 1;
+
+      await user.save();
+
+      return res.status(400).json({
+        message:
+          "Неверный код",
+      });
+    }
+
+    user.loginCodeHash = null;
+    user.loginCodeExpires = null;
+    user.loginCodeAttempts = 0;
+
+    await user.save();
+
+    return res.json({
+      _id: user._id,
+
+      name: user.name,
+
+      email: user.email,
+
+      phone: user.phone,
+
+      avatar: user.avatar,
+
+      role: user.role,
+
+      isBlocked: user.isBlocked,
+
+      token: generateToken(
+        user._id
+      ),
+    });
+
+  } catch (err) {
+    console.error(
+      "VERIFY LOGIN CODE ERROR:",
+      err
+    );
+
+    res.status(500).json({
+      message:
+        "Ошибка подтверждения кода",
+    });
+  }
+};
 
 
 

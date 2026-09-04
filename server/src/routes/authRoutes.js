@@ -2,7 +2,8 @@ import express from "express";
 import {
   register,
   login,
-  verifyEmail
+  verifyEmail,
+  verifyLoginCode
 } from "../controllers/authController.js";
 import { authMiddleware } from "../middleware/auth.js";
 import User from "../models/User.js";
@@ -19,6 +20,7 @@ router.get("/me", authMiddleware, async (req, res) => {
 router.post("/register", register);
 router.get("/verify/:token", verifyEmail);
 router.post("/login", login);
+router.post("/verify-login-code", verifyLoginCode);
 router.put("/profile", authMiddleware, async (req, res) => {
 
   try {

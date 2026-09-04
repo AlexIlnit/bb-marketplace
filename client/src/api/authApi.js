@@ -8,3 +8,6 @@ export const loginUser = (data) =>
 
 export const getMe = () =>
   api.get("/auth/me");
+
+export const verifyLoginCode = (data) =>
+  api.post("/auth/verify-login-code", data);

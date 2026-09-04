@@ -87,6 +87,26 @@ const userSchema = new mongoose.Schema(
       default: null,
     },
 
+    phoneVerified: {
+      type: Boolean,
+      default: false,
+    },
+
+    loginCodeHash: {
+      type: String,
+      default: null,
+    },
+
+    loginCodeExpires: {
+      type: Date,
+      default: null,
+    },
+
+    loginCodeAttempts: {
+      type: Number,
+      default: 0,
+    },
+
     emailVerified:{
       type:Boolean,
       default:false
