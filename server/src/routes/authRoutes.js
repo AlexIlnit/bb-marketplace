@@ -3,7 +3,8 @@ import {
   register,
   login,
   verifyEmail,
-  verifyLoginCode
+  verifyLoginCode,
+  resendLoginCode,
 } from "../controllers/authController.js";
 import { authMiddleware } from "../middleware/auth.js";
 import User from "../models/User.js";
@@ -21,6 +22,7 @@ router.post("/register", register);
 router.get("/verify/:token", verifyEmail);
 router.post("/login", login);
 router.post("/verify-login-code", verifyLoginCode);
+router.post( "/resend-login-code", resendLoginCode);
 router.put("/profile", authMiddleware, async (req, res) => {
 
   try {

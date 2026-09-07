@@ -11,7 +11,7 @@ import {
 
 import { authMiddleware } from "../middleware/auth.js";
 import { upload } from "../middleware/upload.js";
-import { uploadImage } from "../controllers/uploadController.js";
+
 
 const router = express.Router();
 
@@ -24,7 +24,7 @@ router.get("/:id", getListingById);
 // 🔒 auth
 // router.post("/", authMiddleware, createListing);
 router.delete("/:id", authMiddleware, deleteListing);
-router.put("/:id", authMiddleware, updateListing);
+router.put( "/:id", authMiddleware, upload.array("images", 5), updateListing);
 router.post("/", authMiddleware, upload.array("images", 5), createListing);
 
 export default router;

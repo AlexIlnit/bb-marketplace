@@ -10,12 +10,14 @@ export default function CreateListing() {
   const { categories, fetchCategories } = useCategoryStore();
 
   const [form, setForm] = useState({
-    title: "",
-    description: "",
-    price: "",
-    city: "",
-    category: ""
-  });
+  title: "",
+  description: "",
+  price: "",
+  city: "",
+  category: "",
+  showPhone: true,
+  allowChat: true,
+});
 
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -50,14 +52,21 @@ export default function CreateListing() {
   };
 
   const submit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (!imageUrl) {
-      alert("Сначала загрузите фото");
-      return;
-    }
+  if (!imageUrl) {
+    alert("Сначала загрузите фото");
+    return;
+  }
 
-    setLoading(true);
+  if (!form.showPhone && !form.allowChat) {
+    alert(
+      "Выберите хотя бы один способ связи с покупателями."
+    );
+    return;
+  }
+
+  setLoading(true);
 
     try {
       await createListing({
@@ -139,6 +148,134 @@ export default function CreateListing() {
             </option>
           ))}
         </select>
+
+        {/* CONTACT OPTIONS */}
+<div className="border p-4 rounded-xl space-y-3">
+
+  <div>
+    <h2 className="font-semibold text-lg">
+      Способы связи
+    </h2>
+
+    <p className="text-sm text-gray-500 mt-1">
+      Выберите, как покупатели смогут связаться с вами
+    </p>
+  </div>
+
+  {/* PHONE */}
+  <label
+    className={`
+      flex items-center justify-between gap-4
+      p-4 rounded-xl border cursor-pointer
+      transition
+      ${
+        form.showPhone
+          ? "border-blue-500 bg-blue-50"
+          : "border-gray-200 bg-gray-50"
+      }
+    `}
+  >
+    <div className="flex items-center gap-3">
+      <div
+        className={`
+          w-10 h-10 rounded-xl
+          flex items-center justify-center
+          text-lg
+          ${
+            form.showPhone
+              ? "bg-blue-100"
+              : "bg-white"
+          }
+        `}
+      >
+        📞
+      </div>
+
+      <div>
+        <div className="font-semibold text-gray-900">
+          Показывать телефон
+        </div>
+
+        <div className="text-sm text-gray-500">
+          Покупатели смогут увидеть ваш номер
+        </div>
+      </div>
+    </div>
+
+    <input
+      type="checkbox"
+      checked={form.showPhone}
+      onChange={(e) =>
+        setForm((prev) => ({
+          ...prev,
+          showPhone: e.target.checked,
+        }))
+      }
+      className="w-5 h-5 accent-blue-600 cursor-pointer"
+    />
+  </label>
+
+  {/* CHAT */}
+  <label
+    className={`
+      flex items-center justify-between gap-4
+      p-4 rounded-xl border cursor-pointer
+      transition
+      ${
+        form.allowChat
+          ? "border-blue-500 bg-blue-50"
+          : "border-gray-200 bg-gray-50"
+      }
+    `}
+  >
+    <div className="flex items-center gap-3">
+      <div
+        className={`
+          w-10 h-10 rounded-xl
+          flex items-center justify-center
+          text-lg
+          ${
+            form.allowChat
+              ? "bg-blue-100"
+              : "bg-white"
+          }
+        `}
+      >
+        💬
+      </div>
+
+      <div>
+        <div className="font-semibold text-gray-900">
+          Разрешить написать
+        </div>
+
+        <div className="text-sm text-gray-500">
+          Покупатели смогут написать вам через чат
+        </div>
+      </div>
+    </div>
+
+    <input
+      type="checkbox"
+      checked={form.allowChat}
+      onChange={(e) =>
+        setForm((prev) => ({
+          ...prev,
+          allowChat: e.target.checked,
+        }))
+      }
+      className="w-5 h-5 accent-blue-600 cursor-pointer"
+    />
+  </label>
+
+  {/* WARNING */}
+  {!form.showPhone && !form.allowChat && (
+    <div className="p-3 rounded-xl bg-red-50 border border-red-100 text-sm text-red-600">
+      Выберите хотя бы один способ связи с покупателями.
+    </div>
+  )}
+
+</div>
 
         {/* IMAGE UPLOAD */}
         <div className="space-y-3 border p-4 rounded-xl">

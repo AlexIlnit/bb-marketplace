@@ -66,7 +66,16 @@ const listingSchema = new mongoose.Schema(
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User"
-    }
+    },
+    showPhone: {
+      type: Boolean,
+      default: true,
+    },
+
+    allowChat: {
+      type: Boolean,
+      default: true,
+    },
   },
   {
     timestamps: true

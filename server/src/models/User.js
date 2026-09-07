@@ -107,6 +107,11 @@ const userSchema = new mongoose.Schema(
       default: 0,
     },
 
+    loginCodeSentAt: {
+      type: Date,
+      default: null,
+    },
+
     emailVerified:{
       type:Boolean,
       default:false

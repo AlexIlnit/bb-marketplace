@@ -1,6 +1,7 @@
 import Conversation from "../models/Conversation.js";
 import Message from "../models/Message.js";
 import Deal from "../models/Deal.js";
+import Listing from "../models/Listing.js";
 
 
 
@@ -208,14 +209,81 @@ export const getOrCreateConversation = async (req, res) => {
   try {
     const { userId, listingId } = req.body;
 
+    if (!userId || !listingId) {
+      return res.status(400).json({
+        message: "userId и listingId обязательны",
+      });
+    }
+
+    // =====================================
+    // Проверяем объявление
+    // =====================================
+
+    const listing = await Listing.findById(listingId);
+
+    if (!listing) {
+      return res.status(404).json({
+        message: "Объявление не найдено",
+      });
+    }
+
+    // =====================================
+    // Проверяем владельца объявления
+    // =====================================
+
+    if (
+      listing.user.toString() !==
+      userId.toString()
+    ) {
+      return res.status(400).json({
+        message: "Продавец не является владельцем объявления",
+      });
+    }
+
+    // =====================================
+    // Нельзя написать самому себе
+    // =====================================
+
+    if (
+      String(req.user._id) ===
+      String(userId)
+    ) {
+      return res.status(400).json({
+        message: "Нельзя написать самому себе",
+      });
+    }
+
+    // =====================================
+    // Проверяем разрешён ли чат
+    // =====================================
+
+    if (listing.allowChat === false) {
+      return res.status(403).json({
+        message: "Продавец отключил возможность написать ему",
+      });
+    }
+
+    // =====================================
+    // Ищем существующий диалог
+    // =====================================
+
     let conversation = await Conversation.findOne({
-      members: { $all: [req.user._id, userId] },
+      members: {
+        $all: [req.user._id, userId],
+      },
       listing: listingId,
     });
 
+    // =====================================
+    // Создаём новый
+    // =====================================
+
     if (!conversation) {
       conversation = await Conversation.create({
-        members: [req.user._id, userId],
+        members: [
+          req.user._id,
+          userId,
+        ],
         listing: listingId,
       });
 
@@ -228,7 +296,13 @@ export const getOrCreateConversation = async (req, res) => {
     }
 
     res.json(conversation);
+
   } catch (err) {
+    console.error(
+      "GET OR CREATE CONVERSATION ERROR:",
+      err
+    );
+
     res.status(500).json({
       message: err.message,
     });

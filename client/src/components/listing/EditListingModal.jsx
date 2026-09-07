@@ -27,16 +27,18 @@ export default function EditListingModal({
   const [loading, setLoading] = useState(false);
   const [currentImage, setCurrentImage] = useState(0);
 
-  const [form, setForm] = useState({
-    title: "",
-    description: "",
-    price: "",
-    region: "",
-    city: "",
-    category: "",
-    condition: "used",
-    sellerType: "private",
-  });
+ const [form, setForm] = useState({
+  title: "",
+  description: "",
+  price: "",
+  region: "",
+  city: "",
+  category: "",
+  condition: "used",
+  sellerType: "private",
+  showPhone: true,
+  allowChat: true,
+});
 
   /*
   |--------------------------------------------------------------------------
@@ -79,18 +81,22 @@ export default function EditListingModal({
     if (!listing) return;
 
     setForm({
-      title: listing.title || "",
-      description: listing.description || "",
-      price: listing.price ?? "",
-      region: listing.region || "",
-      city: listing.city || "",
-      category:
-        typeof listing.category === "object"
-          ? listing.category?._id || ""
-          : listing.category || "",
-      condition: listing.condition || "used",
-      sellerType: listing.sellerType || "private",
-    });
+  title: listing.title || "",
+  description: listing.description || "",
+  price: listing.price ?? "",
+  region: listing.region || "",
+  city: listing.city || "",
+  category:
+    typeof listing.category === "object"
+      ? listing.category?._id || ""
+      : listing.category || "",
+  condition: listing.condition || "used",
+  sellerType: listing.sellerType || "private",
+
+  // Для старых объявлений сохраняем старое поведение
+  showPhone: listing.showPhone !== false,
+  allowChat: listing.allowChat !== false,
+});
 
     const existingImages = (listing.images || []).map((url) => ({
       type: "existing",
@@ -288,6 +294,13 @@ export default function EditListingModal({
       return;
     }
 
+    if (!form.showPhone && !form.allowChat) {
+        alert(
+         "Выберите хотя бы один способ связи с покупателями."
+     );
+         return;
+    }
+
     setLoading(true);
 
     try {
@@ -332,6 +345,16 @@ export default function EditListingModal({
         "sellerType",
         form.sellerType
       );
+
+      formData.append(
+  "showPhone",
+  String(form.showPhone)
+);
+
+formData.append(
+  "allowChat",
+  String(form.allowChat)
+);
 
       /*
        * Передаём существующие фотографии
@@ -861,6 +884,268 @@ onClose();
               </div>
 
             </section>
+
+            {/* =====================================================
+    СПОСОБЫ СВЯЗИ
+===================================================== */}
+
+<section
+  className="
+    bg-white
+    border
+    border-gray-200
+    rounded-3xl
+    shadow-sm
+  "
+>
+  <div className="p-5 sm:p-7">
+
+    <div className="flex gap-4 mb-6">
+
+      <div
+        className="
+          w-10
+          h-10
+          rounded-xl
+          bg-blue-50
+          text-blue-600
+          flex
+          items-center
+          justify-center
+          shrink-0
+        "
+      >
+        💬
+      </div>
+
+      <div>
+        <h3 className="text-lg font-bold text-gray-900">
+          Способы связи
+        </h3>
+
+        <p className="text-sm text-gray-500 mt-1">
+          Выберите, как покупатели смогут связаться с вами
+        </p>
+      </div>
+
+    </div>
+
+    <div className="space-y-3">
+
+      {/* ================================================
+          ТЕЛЕФОН
+      ================================================= */}
+
+      <label
+        className={`
+          flex
+          items-center
+          justify-between
+          gap-4
+          p-4
+          rounded-2xl
+          border
+          cursor-pointer
+          transition-all
+          ${
+            form.showPhone
+              ? "border-blue-500 bg-blue-50"
+              : "border-gray-200 bg-gray-50 hover:border-gray-300"
+          }
+        `}
+      >
+
+        <div className="flex items-center gap-4 min-w-0">
+
+          <div
+            className={`
+              w-11
+              h-11
+              rounded-xl
+              flex
+              items-center
+              justify-center
+              text-xl
+              shrink-0
+              ${
+                form.showPhone
+                  ? "bg-blue-100"
+                  : "bg-white"
+              }
+            `}
+          >
+            📞
+          </div>
+
+          <div className="min-w-0">
+
+            <div className="font-semibold text-gray-900">
+              Показывать телефон
+            </div>
+
+            <div className="text-sm text-gray-500 mt-0.5">
+              Покупатели смогут увидеть ваш номер телефона
+            </div>
+
+          </div>
+
+        </div>
+
+        <input
+          type="checkbox"
+          checked={form.showPhone}
+          onChange={(e) =>
+            setForm((prev) => ({
+              ...prev,
+              showPhone: e.target.checked,
+            }))
+          }
+          className="
+            w-5
+            h-5
+            shrink-0
+            accent-blue-600
+            cursor-pointer
+          "
+        />
+
+      </label>
+
+
+      {/* ================================================
+          ЧАТ
+      ================================================= */}
+
+      <label
+        className={`
+          flex
+          items-center
+          justify-between
+          gap-4
+          p-4
+          rounded-2xl
+          border
+          cursor-pointer
+          transition-all
+          ${
+            form.allowChat
+              ? "border-blue-500 bg-blue-50"
+              : "border-gray-200 bg-gray-50 hover:border-gray-300"
+          }
+        `}
+      >
+
+        <div className="flex items-center gap-4 min-w-0">
+
+          <div
+            className={`
+              w-11
+              h-11
+              rounded-xl
+              flex
+              items-center
+              justify-center
+              text-xl
+              shrink-0
+              ${
+                form.allowChat
+                  ? "bg-blue-100"
+                  : "bg-white"
+              }
+            `}
+          >
+            💬
+          </div>
+
+          <div className="min-w-0">
+
+            <div className="font-semibold text-gray-900">
+              Разрешить написать
+            </div>
+
+            <div className="text-sm text-gray-500 mt-0.5">
+              Покупатели смогут написать вам через чат
+            </div>
+
+          </div>
+
+        </div>
+
+        <input
+          type="checkbox"
+          checked={form.allowChat}
+          onChange={(e) =>
+            setForm((prev) => ({
+              ...prev,
+              allowChat: e.target.checked,
+            }))
+          }
+          className="
+            w-5
+            h-5
+            shrink-0
+            accent-blue-600
+            cursor-pointer
+          "
+        />
+
+      </label>
+
+    </div>
+
+
+    {/* ================================================
+        ПОДСКАЗКА
+    ================================================= */}
+
+    <div
+      className="
+        mt-4
+        flex
+        items-start
+        gap-3
+        rounded-2xl
+        bg-gray-50
+        border
+        border-gray-100
+        p-4
+      "
+    >
+      <span className="text-lg">
+        💡
+      </span>
+
+      <p className="text-sm text-gray-600 leading-relaxed">
+        Можно выбрать оба способа связи одновременно.
+        Если хотите получать сообщения только через сайт,
+        отключите показ телефона.
+      </p>
+    </div>
+
+
+    {/* ================================================
+        ОШИБКА
+    ================================================= */}
+
+    {!form.showPhone && !form.allowChat && (
+      <div
+        className="
+          mt-4
+          rounded-2xl
+          bg-red-50
+          border
+          border-red-100
+          p-4
+          text-sm
+          text-red-600
+        "
+      >
+        Выберите хотя бы один способ связи с покупателями.
+      </div>
+    )}
+
+  </div>
+</section>
 
             {/* =====================================================
                 ОПИСАНИЕ

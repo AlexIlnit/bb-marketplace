@@ -191,6 +191,8 @@ export const login = async (req, res) => {
 
     user.loginCodeAttempts = 0;
 
+    user.loginCodeSentAt = new Date();
+
     await user.save();
 
     await sendSms(
@@ -252,6 +254,7 @@ export const verifyLoginCode = async (req, res) => {
       user.loginCodeHash = null;
       user.loginCodeExpires = null;
       user.loginCodeAttempts = 0;
+      user.loginCodeSentAt = null;
 
       await user.save();
 
@@ -401,4 +404,107 @@ res.status(500).send(
 
 }
 
+};
+
+// RESEND LOGIN CODE
+
+export const resendLoginCode = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({
+        message: "Email обязателен",
+      });
+    }
+
+    const user = await User.findOne({
+      email: email.toLowerCase().trim(),
+    });
+
+    if (!user) {
+      return res.json({
+        success: true,
+        message:
+          "Если аккаунт существует, код будет отправлен",
+      });
+    }
+
+    if (user.isBlocked) {
+      return res.status(403).json({
+        message: "Аккаунт заблокирован",
+      });
+    }
+
+    if (!user.phone) {
+      return res.status(400).json({
+        message:
+          "Номер телефона не указан",
+      });
+    }
+
+    if (user.loginCodeSentAt) {
+      const secondsPassed =
+        (Date.now() -
+          user.loginCodeSentAt.getTime()) /
+        1000;
+
+      if (secondsPassed < 60) {
+        const retryAfter = Math.ceil(
+          60 - secondsPassed
+        );
+
+        return res.status(429).json({
+          message:
+            `Повторно отправить код можно через ${retryAfter} сек.`,
+          retryAfter,
+        });
+      }
+    }
+
+    const code = crypto
+      .randomInt(100000, 1000000)
+      .toString();
+
+    const loginCodeHash = crypto
+      .createHash("sha256")
+      .update(code)
+      .digest("hex");
+
+    user.loginCodeHash = loginCodeHash;
+
+    user.loginCodeExpires =
+      new Date(
+        Date.now() + 5 * 60 * 1000
+      );
+
+    user.loginCodeAttempts = 0;
+
+    user.loginCodeSentAt = new Date();
+
+    await user.save();
+
+    await sendSms(
+      user.phone,
+      code
+    );
+
+    return res.json({
+      success: true,
+      message:
+        "Новый код отправлен на телефон",
+      retryAfter: 60,
+    });
+
+  } catch (err) {
+    console.error(
+      "RESEND LOGIN CODE ERROR:",
+      err
+    );
+
+    res.status(500).json({
+      message:
+        "Не удалось отправить код",
+    });
+  }
 };

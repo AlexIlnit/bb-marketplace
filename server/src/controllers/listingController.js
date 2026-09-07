@@ -13,7 +13,7 @@ if (user?.isBlocked) {
     message: "Ваш аккаунт заблокирован. Размещение объявлений недоступно."
   });
 }
-    const { title, description, price, region, city, category, condition, sellerType  } = req.body;
+    const { title, description, price, region, city, category, condition, sellerType, showPhone, allowChat  } = req.body;
 
     const imageUrls = [];
 
@@ -45,6 +45,8 @@ if (req.files?.length) {
   sellerType: sellerType || "private",
   user: req.user._id,
   status: "pending",
+  showPhone: showPhone !== "false",
+  allowChat: allowChat !== "false",
 });
 
 // =====================================
@@ -194,29 +196,49 @@ const total = await Listing.countDocuments(finalFilter);
 export const getListingById = async (req, res) => {
   try {
     const listing = await Listing.findById(req.params.id)
-      .populate("user", "name email avatar phone rating")
-      .populate("category")
+      .populate(
+        "user",
+        "name email avatar phone rating"
+      )
+      .populate("category");
 
     if (!listing) {
       return res.status(404).json({
-        message: "Объявление не найдено"
+        message: "Объявление не найдено",
       });
     }
 
     const sellerListingsCount =
       await Listing.countDocuments({
         user: listing.user._id,
-        status: "approved"
+        status: "approved",
       });
 
+    const listingData = listing.toObject();
+
+    // =====================================
+    // Скрываем телефон
+    // =====================================
+
+    if (listingData.showPhone === false) {
+      if (listingData.user) {
+        delete listingData.user.phone;
+      }
+    }
+
     res.json({
-      ...listing.toObject(),
-      sellerListingsCount
+      ...listingData,
+      sellerListingsCount,
     });
 
   } catch (error) {
+    console.error(
+      "GET LISTING BY ID ERROR:",
+      error
+    );
+
     res.status(500).json({
-      message: error.message
+      message: error.message,
     });
   }
 };
@@ -262,26 +284,126 @@ export const updateListing = async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
 
-if (user?.isBlocked) {
-  return res.status(403).json({
-    message: "Ваш аккаунт заблокирован."
-  });
-}
+    if (user?.isBlocked) {
+      return res.status(403).json({
+        message: "Ваш аккаунт заблокирован."
+      });
+    }
+
     const listing = await Listing.findById(req.params.id);
 
     if (!listing) {
-      return res.status(404).json({ message: "Не найдено" });
+      return res.status(404).json({
+        message: "Объявление не найдено"
+      });
     }
 
     if (listing.user.toString() !== req.user._id.toString()) {
-      return res.status(403).json({ message: "Нет доступа" });
+      return res.status(403).json({
+        message: "Нет доступа"
+      });
     }
 
-    // обновляем поля
-    Object.assign(listing, req.body);
+    const {
+      title,
+      description,
+      price,
+      region,
+      city,
+      category,
+      condition,
+      sellerType,
+      showPhone,
+      allowChat,
+      existingImages
+    } = req.body;
 
+    // Проверяем способы связи
+    const parsedShowPhone =
+      showPhone === undefined
+        ? listing.showPhone
+        : showPhone !== "false";
+
+    const parsedAllowChat =
+      allowChat === undefined
+        ? listing.allowChat
+        : allowChat !== "false";
+
+    if (!parsedShowPhone && !parsedAllowChat) {
+      return res.status(400).json({
+        message: "Выберите хотя бы один способ связи с покупателями."
+      });
+    }
+
+    // Существующие фотографии
+    let currentImages = [];
+
+    if (existingImages !== undefined) {
+      try {
+        currentImages = JSON.parse(existingImages);
+
+        if (!Array.isArray(currentImages)) {
+          currentImages = [];
+        }
+      } catch {
+        return res.status(400).json({
+          message: "Некорректный список фотографий"
+        });
+      }
+    }
+
+    // Загружаем новые фотографии
+    const newImageUrls = [];
+
+    if (req.files?.length) {
+      for (const file of req.files) {
+        const uploaded = await new Promise((resolve, reject) => {
+          cloudinary.uploader.upload_stream(
+            {
+              folder: "listings"
+            },
+            (err, result) => {
+              if (err) {
+                reject(err);
+              } else {
+                resolve(result);
+              }
+            }
+          ).end(file.buffer);
+        });
+
+        newImageUrls.push(uploaded.secure_url);
+      }
+    }
+
+    const finalImages = [
+      ...currentImages,
+      ...newImageUrls
+    ];
+
+    if (finalImages.length === 0) {
+      return res.status(400).json({
+        message: "Добавьте хотя бы одну фотографию"
+      });
+    }
+
+    // Обновляем только разрешённые поля
+    listing.title = title;
+    listing.description = description;
+    listing.price = price;
+    listing.region = region;
+    listing.city = city;
+    listing.category = category;
+    listing.condition = condition || "used";
+    listing.sellerType = sellerType || "private";
+
+    listing.showPhone = parsedShowPhone;
+    listing.allowChat = parsedAllowChat;
+
+    listing.images = finalImages;
+
+    // После изменения — снова на модерацию
     listing.status = "pending";
-
     listing.isTop = false;
     listing.topUntil = null;
 
@@ -296,7 +418,11 @@ if (user?.isBlocked) {
     res.json(listing);
 
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("UPDATE LISTING ERROR:", error);
+
+    res.status(500).json({
+      message: error.message
+    });
   }
 };
 export const getListingsCount = async (req, res) => {

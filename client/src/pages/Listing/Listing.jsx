@@ -330,37 +330,43 @@ const images = listing.images || [];
 
           </div>
 
-         <button
-  onClick={async () => {
-    try {
-      const { data } = await api.post("/chat/conversation", {
-  userId: listing.user._id,
-  listingId: listing._id,
-});
+         {/* СПОСОБЫ СВЯЗИ */}
 
-      navigate("/messages", {
-  state: {
-    conversationId: data._id,
-  },
-});
-    } catch (err) {
-      console.error(err);
-    }
-  }}
-  className="
-    mt-8
-    w-full
-    bg-blue-600
-     hover:bg-blue-700
-    text-white
-    py-3
-    rounded-xl
-    font-semibold
-  "
->
-  Написать продавцу
-</button>
-{listing.user?.phone && (
+{listing.allowChat !== false && (
+  <button
+    onClick={async () => {
+      try {
+        const { data } = await api.post("/chat/conversation", {
+          userId: listing.user._id,
+          listingId: listing._id,
+        });
+
+        navigate("/messages", {
+          state: {
+            conversationId: data._id,
+          },
+        });
+      } catch (err) {
+        console.error("Ошибка создания чата:", err);
+      }
+    }}
+    className="
+      mt-8
+      w-full
+      bg-blue-600
+      hover:bg-blue-700
+      text-white
+      py-3
+      rounded-xl
+      font-semibold
+      transition
+    "
+  >
+    💬 Написать продавцу
+  </button>
+)}
+
+{listing.showPhone !== false && listing.user?.phone && (
   <>
     {!showPhone ? (
       <button
@@ -402,6 +408,15 @@ const images = listing.images || [];
     )}
   </>
 )}
+
+{listing.allowChat === false &&
+  listing.showPhone === false && (
+    <div className="mt-8 p-4 rounded-xl bg-gray-50 border border-gray-200 text-center">
+      <div className="text-gray-500 text-sm">
+        Продавец не указал способы связи
+      </div>
+    </div>
+  )}
 <Link
   to={`/user/${listing.user?._id}`}
   className="

@@ -11,3 +11,10 @@ export const getMe = () =>
 
 export const verifyLoginCode = (data) =>
   api.post("/auth/verify-login-code", data);
+
+export const resendLoginCode = (data) => {
+  return api.post(
+    "/auth/resend-login-code",
+    data
+  );
+};
