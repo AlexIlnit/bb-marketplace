@@ -13,7 +13,7 @@ if (user?.isBlocked) {
     message: "Ваш аккаунт заблокирован. Размещение объявлений недоступно."
   });
 }
-    const { title, description, price, region, city, category, condition, sellerType, showPhone, allowChat  } = req.body;
+    const { title, description, price, region, city, category, condition, sellerType, showPhone, allowChat, characteristics  } = req.body;
 
     const imageUrls = [];
 
@@ -32,8 +32,22 @@ if (req.files?.length) {
     imageUrls.push(uploaded.secure_url);
   }
 }
+let parsedCharacteristics = {};
 
-    const listing = await Listing.create({
+if (characteristics) {
+  try {
+    parsedCharacteristics =
+      typeof characteristics === "string"
+        ? JSON.parse(characteristics)
+        : characteristics;
+  } catch (error) {
+    return res.status(400).json({
+      message: "Некорректные характеристики",
+    });
+  }
+}
+
+const listing = await Listing.create({
   title,
   description,
   price,
@@ -47,8 +61,13 @@ if (req.files?.length) {
   status: "pending",
   showPhone: showPhone !== "false",
   allowChat: allowChat !== "false",
+  characteristics: parsedCharacteristics,
 });
-
+console.log("AFTER SAVE:", listing.characteristics);
+console.log(
+  "AFTER SAVE JSON:",
+  JSON.stringify(listing.characteristics, null, 2)
+);
 // =====================================
 // Уведомление продавцу
 // =====================================
@@ -315,8 +334,24 @@ export const updateListing = async (req, res) => {
       sellerType,
       showPhone,
       allowChat,
-      existingImages
+      existingImages,
+      characteristics
     } = req.body;
+
+    let parsedCharacteristics = listing.characteristics || {};
+
+if (characteristics !== undefined) {
+  try {
+    parsedCharacteristics =
+      typeof characteristics === "string"
+        ? JSON.parse(characteristics)
+        : characteristics;
+  } catch (error) {
+    return res.status(400).json({
+      message: "Некорректные характеристики",
+    });
+  }
+}
 
     // Проверяем способы связи
     const parsedShowPhone =
@@ -406,7 +441,7 @@ export const updateListing = async (req, res) => {
     listing.status = "pending";
     listing.isTop = false;
     listing.topUntil = null;
-
+    listing.characteristics = parsedCharacteristics;
     await listing.save();
 
     await createNotification(

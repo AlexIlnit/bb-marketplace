@@ -8,6 +8,7 @@ import api from "../../api/axios";
 import { Heart } from "lucide-react";
 import { useFavoriteStore } from "../../store/favoriteStore";
 import { ImageOff } from "lucide-react";
+import { categoryCharacteristics } from "../../data/categoryCharacteristics";
 
 import SEO from "../../components/seo/Seo";
 
@@ -52,6 +53,8 @@ const favoritesCount = validFavorites.length;
   const loadListing = async () => {
     try {
       const { data } = await getListingById(id);
+
+       
       setListing(data);
     } catch (error) {
       console.error(error);
@@ -88,6 +91,53 @@ const url = window.location.href;
 
 const images = listing.images || [];
   const image = listing.images?.[0];
+
+  const rawCharacteristics = listing.characteristics || {};
+
+const characteristics =
+  rawCharacteristics instanceof Map
+    ? Object.fromEntries(rawCharacteristics)
+    : rawCharacteristics;
+
+const getCharacteristicType = (category) => {
+  if (!category?.name) return null;
+
+  const name = category.name.toLowerCase();
+
+  if (
+    name.includes("автомоб") ||
+    name.includes("машин") ||
+    name.includes("легков")
+  ) {
+    return "auto";
+  }
+
+  if (name.includes("квартир")) {
+    return "apartment";
+  }
+
+  if (
+    name.includes("дом") ||
+    name.includes("коттедж")
+  ) {
+    return "house";
+  }
+
+  if (
+    name.includes("телефон") ||
+    name.includes("смартфон")
+  ) {
+    return "phone";
+  }
+
+  return null;
+};
+
+const characteristicType = getCharacteristicType(listing.category);
+
+const characteristicConfig = characteristicType
+  ? categoryCharacteristics[characteristicType]
+  : null;
 
 
   return (
@@ -516,41 +566,247 @@ const images = listing.images || [];
       
 
       {/* Описание */}
-      <div className="mt-10 bg-white p-6 rounded-2xl border">
-
+      <div className="mt-10 bg-white rounded-2xl border border-gray-200 overflow-hidden">
+        <div className="px-6 py-5 border-b border-gray-200">
         <h2 className="text-2xl font-bold mb-4">
           Описание
         </h2>
-
+        </div>
+        <div className="px-6 py-5">
         <p className="leading-7 text-gray-700">
           {listing.description}
         </p>
+        </div>
 
       </div>
-            {/* Характеристики */}
-      <div className="mt-10 bg-white p-6 rounded-2xl border">
+        
+{/* Характеристики */}
+{characteristicConfig && (
+  <div className="mt-10 bg-white rounded-2xl border border-gray-200 overflow-hidden">
 
-        <h2 className="text-2xl font-bold mb-4">
-         Характеристики
-        </h2>
+    {/* Заголовок */}
+    <div className="px-6 py-5 border-b border-gray-200">
+      <h2 className="text-xl font-bold text-gray-900">
+        {characteristicConfig.title}
+      </h2>
+    </div>
 
-        <p className="leading-7 text-gray-700">
-          
+    {Object.keys(characteristics).length > 0 ? (
+      <div className="px-6">
+
+        {characteristicConfig.fields.map((field, index) => {
+          const value = characteristics[field.name];
+
+          if (
+            value === undefined ||
+            value === null ||
+            String(value).trim() === ""
+          ) {
+            return null;
+          }
+
+          return (
+            <div
+              key={field.name}
+              className={`
+                flex
+                items-center
+                min-h-13
+                gap-6
+                ${
+                  index !== characteristicConfig.fields.length - 1
+                    ? "border-b border-dashed border-gray-200"
+                    : ""
+                }
+              `}
+            >
+
+              {/* Название */}
+              <div className="w-1/2 text-sm text-gray-500">
+                {field.label}
+              </div>
+
+              {/* Значение */}
+              <div className="w-1/2 text-sm font-medium text-gray-900">
+                <span>
+                  {value}
+                </span>
+
+                {field.unit && (
+                  <span className="ml-1 text-gray-500 font-normal">
+                    {field.unit}
+                  </span>
+                )}
+              </div>
+
+            </div>
+          );
+        })}
+
+      </div>
+    ) : (
+      <div className="px-6 py-5">
+        <p className="text-sm text-gray-500">
+          Характеристики не указаны
         </p>
+      </div>
+    )}
+
+  </div>
+)}      
+    
+{/* О продавце */}
+<div className="mt-10 bg-white rounded-2xl border border-gray-200 overflow-hidden">
+
+  {/* Заголовок */}
+  <div className="px-6 py-5 border-b border-gray-200">
+    <h2 className="text-xl font-bold text-gray-900">
+      О продавце
+    </h2>
+  </div>
+
+  <div className="px-6 py-5">
+
+    {/* Профиль продавца */}
+    <div className="flex items-center gap-4 pb-5 border-b border-gray-100">
+
+      {/* Аватар */}
+      <div className="w-14 h-14 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center shrink-0">
+
+        {listing.user?.avatar ? (
+          <img
+            src={listing.user.avatar}
+            alt={listing.user.name || "Продавец"}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <span className="text-xl font-semibold text-gray-400">
+            {listing.user?.name?.charAt(0)?.toUpperCase() || "?"}
+          </span>
+        )}
 
       </div>
-      {/* О продавце */}
-      <div className="mt-10 bg-white p-6 rounded-2xl border">
 
-        <h2 className="text-2xl font-bold mb-4">
-         О продавце 
-        </h2>
+      {/* Имя + рейтинг */}
+      <div className="min-w-0">
 
-        <p className="leading-7 text-gray-700">
-          
-        </p>
+        <div className="font-semibold text-gray-900 truncate">
+          {listing.user?.name || "Продавец"}
+        </div>
+
+        {listing.user?.rating && (
+          <div className="flex items-center gap-2 mt-1">
+
+            <span className="text-yellow-500">
+              ★
+            </span>
+
+            <span className="text-sm font-medium text-gray-900">
+              {Number(
+                listing.user.rating.average || 0
+              ).toFixed(1)}
+            </span>
+
+            <span className="text-sm text-gray-500">
+              ({listing.user.rating.count || 0} отзывов)
+            </span>
+
+          </div>
+        )}
 
       </div>
+
+    </div>
+
+    {/* Информация */}
+    <div className="mt-2 max-w-xl">
+
+      {/* Тип продавца */}
+      <div className="flex items-center gap-6 py-3 border-b border-dashed border-gray-200">
+
+        <span className="w-44 shrink-0 text-sm text-gray-500">
+          Тип продавца
+        </span>
+
+        <span className="text-sm font-medium text-gray-900">
+          {listing.sellerType === "company"
+            ? "Компания"
+            : "Частное лицо"}
+        </span>
+
+      </div>
+
+      {/* Количество объявлений */}
+      <div className="flex items-center gap-6 py-3 border-b border-dashed border-gray-200">
+
+        <span className="w-44 shrink-0 text-sm text-gray-500">
+          Объявлений на сайте
+        </span>
+
+        <span className="text-sm font-medium text-gray-900">
+          {listing.sellerListingsCount ?? 0}
+        </span>
+
+      </div>
+
+      {/* Телефон */}
+      {listing.user?.phone && listing.showPhone !== false && (
+        <div className="flex items-center gap-6 py-3">
+
+          <span className="w-44 shrink-0 text-sm text-gray-500">
+            Телефон
+          </span>
+
+          <a
+            href={`tel:${listing.user.phone}`}
+            className="
+              text-sm
+              font-medium
+              text-gray-900
+              hover:text-blue-600
+              transition
+            "
+          >
+            {listing.user.phone}
+          </a>
+
+        </div>
+      )}
+
+    </div>
+
+    {/* Кнопка объявлений */}
+    <div className="mt-5">
+
+      
+<Link
+  to={`/user/${listing.user?._id}`}
+  className="
+    inline-flex
+    items-center
+    justify-center
+    px-5
+    py-2.5
+    rounded-xl
+    border
+    border-gray-300
+    text-sm
+    font-medium
+    text-gray-900
+    hover:bg-gray-50
+    hover:border-gray-400
+    transition
+  "
+>
+  Все объявления продавца
+</Link>
+
+
+
+    </div>
+
+  </div>
+</div>
 
     </div>
     </MainLayout>

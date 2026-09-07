@@ -1,6 +1,5 @@
 import { useEffect, useState, useRef } from "react";
 import { createListing } from "../../api/listingApi";
-// import { uploadImage } from "../../api/uploadApi";
 import { useNavigate } from "react-router-dom";
 import { useCategoryStore } from "../../store/categoryStore";
 import MainLayout from "../../layouts/MainLayout";
@@ -8,6 +7,7 @@ import { useAuthStore } from "../../store/authStore";
 import { regions } from "../../data/regions";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
+import { categoryCharacteristics } from "../../data/categoryCharacteristics";
 
 
 export default function CreateListing() {
@@ -34,6 +34,42 @@ export default function CreateListing() {
 
   });
 
+  const getCharacteristicType = (category) => {
+  if (!category?.name) return null;
+
+  const name = category.name.toLowerCase();
+
+  if (
+    name.includes("автомоб") ||
+    name.includes("машин") ||
+    name.includes("легков")
+  ) {
+    return "auto";
+  }
+
+  if (
+    name.includes("квартир")
+  ) {
+    return "apartment";
+  }
+
+  if (
+    name.includes("дом") ||
+    name.includes("коттедж")
+  ) {
+    return "house";
+  }
+
+  if (
+    name.includes("телефон") ||
+    name.includes("смартфон")
+  ) {
+    return "phone";
+  }
+
+  return null;
+};
+
   const { categories, fetchCategories } = useCategoryStore();
 
   const [loading, setLoading] = useState(false);
@@ -51,10 +87,18 @@ export default function CreateListing() {
 
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const selectedCategory = categories.find( (cat) => cat._id === form.category);
+  const characteristicType =
+  getCharacteristicType(selectedCategory);
+
+const characteristicConfig =
+  characteristicType
+    ? categoryCharacteristics[characteristicType]
+    : null;
   const [categoryPath, setCategoryPath] = useState([]);   
+  const [characteristics, setCharacteristics] = useState({});
   
 
-  const stepRefs = Array.from({ length: 9 }, () => useRef(null)); 
+  const stepRefs = Array.from({ length: 10 }, () => useRef(null)); 
 
   const [loadingImage, setLoadingImage] = useState(null);
 
@@ -121,6 +165,15 @@ useEffect(() => {
     });
   };
 
+  const handleCharacteristicChange = (e) => {
+  const { name, value } = e.target;
+
+  setCharacteristics((prev) => ({
+    ...prev,
+    [name]: value,
+  }));
+};
+
   const getParentId = (category) => {
   if (!category?.parent) return null;
 
@@ -144,19 +197,19 @@ const getSubcategories = (parentId) => {
 const openCategory = (category) => {
   const subcategories = getSubcategories(category._id);
 
-  // Если есть подкатегории — открываем их
   if (subcategories.length > 0) {
     setCategoryPath((prev) => [...prev, category]);
     return;
   }
 
-  // Если это конечная категория — выбираем её
   setForm((prev) => ({
     ...prev,
     category: category._id,
   }));
 
- 
+  // Сбрасываем характеристики старой категории
+  setCharacteristics({});
+
   setShowCategoryModal(false);
   setCategoryPath([]);
 };
@@ -232,6 +285,11 @@ const closeCategoryModal = () => {
     formData.append("showPhone", String(form.showPhone));
     formData.append("allowChat", String(form.allowChat));
 
+    formData.append(
+  "characteristics",
+  JSON.stringify(characteristics)
+);
+
     images.forEach((file) => {
       if (file) {
         formData.append("images", file);
@@ -264,6 +322,11 @@ const availableCities =
   const steps = [
   "Название объявления",
   "Категория",
+
+  ...(characteristicConfig
+    ? [characteristicConfig.title]
+    : []),
+
   "Состояние и продавец",
   "Описание",
   "Фотографии",
@@ -274,6 +337,56 @@ const availableCities =
 ];
 
 const isStepCompleted = (step) => {
+  // Если характеристики есть — шаг 3 это характеристики
+  if (characteristicConfig) {
+    switch (step) {
+      case 1:
+        return form.title.trim().length > 0;
+
+      case 2:
+        return !!form.category;
+
+      case 3:
+        // Если есть характеристики — проверяем их
+        return characteristicConfig.fields
+          .filter((field) => field.required)
+          .every((field) => {
+            const value = characteristics[field.name];
+
+            return (
+              value !== undefined &&
+              value !== null &&
+              String(value).trim() !== ""
+            );
+          });
+
+      case 4:
+        return !!form.condition && !!form.sellerType;
+
+      case 5:
+        return form.description.trim().length > 0;
+
+      case 6:
+        return images.length > 0 || noPhotos;
+
+      case 7:
+        return form.price !== "" && Number(form.price) >= 0;
+
+      case 8:
+        return !!region && !!city;
+
+      case 9:
+        return !!user?.name && !!user?.phone;
+
+      case 10:
+        return form.showPhone || form.allowChat;
+
+      default:
+        return false;
+    }
+  }
+
+  // Если у категории нет характеристик — всего 9 шагов
   switch (step) {
     case 1:
       return form.title.trim().length > 0;
@@ -300,7 +413,7 @@ const isStepCompleted = (step) => {
       return !!user?.name && !!user?.phone;
 
     case 9:
-      return form.showPhone || form.allowChat;  
+      return form.showPhone || form.allowChat;
 
     default:
       return false;
@@ -555,9 +668,159 @@ useEffect(() => {
 
             </div>
           </section>
-          {/* 3. СОСТОЯНИЕ И ПРОДАВЕЦ */}
+  
+  {/* =====================================================
+    ХАРАКТЕРИСТИКИ
+===================================================== */}
+
+{characteristicConfig && (
+  <section
+    ref={stepRefs[2]}
+    className="
+      bg-white
+      border
+      border-gray-200
+      rounded-3xl
+      shadow-sm
+    "
+  >
+    <div className="p-5 sm:p-7">
+
+      <div className="flex items-start gap-4 mb-6">
+
+        <div
+          className="
+            shrink-0
+            w-10
+            h-10
+            rounded-xl
+            bg-blue-50
+            text-blue-600
+            flex
+            items-center
+            justify-center
+            font-bold
+          "
+        >
+          3
+        </div>
+
+        <div>
+          <h2 className="text-lg font-bold text-gray-900">
+            {characteristicConfig.title}
+          </h2>
+
+          <p className="text-sm text-gray-500 mt-1">
+            Укажите основные характеристики
+          </p>
+        </div>
+
+      </div>
+
+      <div className="grid sm:grid-cols-2 gap-5">
+
+        {characteristicConfig.fields.map((field) => (
+
+          <div key={field.name}>
+
+            <label
+              className="
+                block
+                text-sm
+                font-medium
+                text-gray-700
+                mb-2
+              "
+            >
+              {field.label}
+
+{field.required && (
+  <span className="text-red-500 ml-1">*</span>
+)}
+            </label>
+
+            {field.type === "select" ? (
+
+              <select
+                name={field.name}
+                value={characteristics[field.name] || ""}
+                onChange={handleCharacteristicChange}
+                className="
+                  w-full
+                  h-14
+                  px-4
+                  rounded-2xl
+                  border
+                  border-gray-200
+                  bg-gray-50
+                  outline-none
+                  cursor-pointer
+                  transition
+                  focus:bg-white
+                  focus:border-blue-500
+                  focus:ring-4
+                  focus:ring-blue-500/10
+                "
+              >
+
+                <option value="">
+                  Выберите вариант
+                </option>
+
+                {field.options.map((option) => (
+                  <option
+                    key={option}
+                    value={option}
+                  >
+                    {option}
+                  </option>
+                ))}
+
+              </select>
+
+            ) : (
+
+              <input
+                type={field.type}
+                name={field.name}
+                required={field.required}
+                value={characteristics[field.name] || ""}
+                onChange={handleCharacteristicChange}
+                placeholder={field.placeholder}
+                min={field.min}
+                max={field.max}
+                className="
+                  w-full
+                  h-14
+                  px-4
+                  rounded-2xl
+                  border
+                  border-gray-200
+                  bg-gray-50
+                  text-gray-900
+                  outline-none
+                  transition
+                  focus:bg-white
+                  focus:border-blue-500
+                  focus:ring-4
+                  focus:ring-blue-500/10
+                "
+              />
+
+            )}
+
+          </div>
+
+        ))}
+
+      </div>
+
+    </div>
+  </section>
+)}
+          {/* 4. СОСТОЯНИЕ И ПРОДАВЕЦ */}
 <section 
-ref={stepRefs[2]}
+ref={stepRefs[3]}
 className="bg-white border border-gray-200 rounded-3xl shadow-sm">
   <div className="p-5 sm:p-7">
 
@@ -575,7 +838,7 @@ className="bg-white border border-gray-200 rounded-3xl shadow-sm">
         justify-center
         font-bold
       ">
-        3
+        4
       </div>
 
       <div>
@@ -674,9 +937,9 @@ className="bg-white border border-gray-200 rounded-3xl shadow-sm">
 </section>
 
 
-          {/* 4. ОПИСАНИЕ */}
+          {/* 5. ОПИСАНИЕ */}
           <section 
-          ref={stepRefs[3]}
+          ref={stepRefs[4]}
           className="bg-white border border-gray-200 rounded-3xl shadow-sm">
             <div className="p-5 sm:p-7">
 
@@ -694,7 +957,7 @@ className="bg-white border border-gray-200 rounded-3xl shadow-sm">
                   justify-center
                   font-bold
                 ">
-                  4
+                  5
                 </div>
 
                 <div>
@@ -748,9 +1011,9 @@ className="bg-white border border-gray-200 rounded-3xl shadow-sm">
           </section>
 
 
-          {/* 5. ФОТО */}
+          {/* 6. ФОТО */}
           <section 
-          ref={stepRefs[4]}
+          ref={stepRefs[5]}
           className="bg-white border border-gray-200 rounded-3xl shadow-sm">
             <div className="p-5 sm:p-7">
 
@@ -768,7 +1031,7 @@ className="bg-white border border-gray-200 rounded-3xl shadow-sm">
                   justify-center
                   font-bold
                 ">
-                  5
+                  6
                 </div>
 
                 <div>
@@ -994,9 +1257,9 @@ className="bg-white border border-gray-200 rounded-3xl shadow-sm">
           </section>
 
 
-          {/* 6. ЦЕНА */}
+          {/* 7. ЦЕНА */}
           <section 
-          ref={stepRefs[5]}
+          ref={stepRefs[6]}
           className="bg-white border border-gray-200 rounded-3xl shadow-sm">
             <div className="p-5 sm:p-7">
 
@@ -1014,7 +1277,7 @@ className="bg-white border border-gray-200 rounded-3xl shadow-sm">
                   justify-center
                   font-bold
                 ">
-                  6
+                  7
                 </div>
 
                 <div>
@@ -1077,9 +1340,9 @@ className="bg-white border border-gray-200 rounded-3xl shadow-sm">
           </section>
 
 
-          {/* 7. МЕСТОПОЛОЖЕНИЕ */}
+          {/* 8. МЕСТОПОЛОЖЕНИЕ */}
           <section 
-          ref={stepRefs[6]}
+          ref={stepRefs[7]}
           className="bg-white border border-gray-200 rounded-3xl shadow-sm">
             <div className="p-5 sm:p-7">
 
@@ -1097,7 +1360,7 @@ className="bg-white border border-gray-200 rounded-3xl shadow-sm">
                   justify-center
                   font-bold
                 ">
-                  7
+                  8
                 </div>
 
                 <div>
@@ -1210,9 +1473,9 @@ className="bg-white border border-gray-200 rounded-3xl shadow-sm">
           </section>
 
 
-          {/* 8. ПРОДАВЕЦ */}
+          {/* 9. ПРОДАВЕЦ */}
           <section 
-          ref={stepRefs[7]}
+          ref={stepRefs[8]}
           className="bg-white border border-gray-200 rounded-3xl shadow-sm">
             <div className="p-5 sm:p-7">
 
@@ -1230,7 +1493,7 @@ className="bg-white border border-gray-200 rounded-3xl shadow-sm">
                   justify-center
                   font-bold
                 ">
-                  8
+                  9
                 </div>
 
                 <div>
@@ -1300,9 +1563,9 @@ className="bg-white border border-gray-200 rounded-3xl shadow-sm">
             </div>
           </section>
 
-      {/* 9. СПОСОБЫ СВЯЗИ */}
+      {/* 10. СПОСОБЫ СВЯЗИ */}
 <section
-  ref={stepRefs[8]}
+  ref={stepRefs[9]}
   className="bg-white border border-gray-200 rounded-3xl shadow-sm"
 >
   <div className="p-5 sm:p-7">
@@ -1323,7 +1586,7 @@ className="bg-white border border-gray-200 rounded-3xl shadow-sm">
           font-bold
         "
       >
-        9
+        10
       </div>
 
       <div>

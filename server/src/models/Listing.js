@@ -76,6 +76,10 @@ const listingSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    characteristics: {
+      type: mongoose.Schema.Types.Mixed,
+      default: {},
+    },
   },
   {
     timestamps: true
