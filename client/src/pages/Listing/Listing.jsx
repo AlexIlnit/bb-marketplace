@@ -99,45 +99,10 @@ const characteristics =
     ? Object.fromEntries(rawCharacteristics)
     : rawCharacteristics;
 
-const getCharacteristicType = (category) => {
-  if (!category?.name) return null;
-
-  const name = category.name.toLowerCase();
-
-  if (
-    name.includes("автомоб") ||
-    name.includes("машин") ||
-    name.includes("легков")
-  ) {
-    return "auto";
-  }
-
-  if (name.includes("квартир")) {
-    return "apartment";
-  }
-
-  if (
-    name.includes("дом") ||
-    name.includes("коттедж")
-  ) {
-    return "house";
-  }
-
-  if (
-    name.includes("телефон") ||
-    name.includes("смартфон")
-  ) {
-    return "phone";
-  }
-
-  return null;
-};
-
-const characteristicType = getCharacteristicType(listing.category);
-
-const characteristicConfig = characteristicType
-  ? categoryCharacteristics[characteristicType]
-  : null;
+const characteristicConfig =
+  listing.category?.slug
+    ? categoryCharacteristics[listing.category.slug]
+    : null;
 
 
   return (
