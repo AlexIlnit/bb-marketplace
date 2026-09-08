@@ -8,12 +8,13 @@ import { regions } from "../../data/regions";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { categoryCharacteristics } from "../../data/categoryCharacteristics";
-
+import { carData } from "../../data/carData";
 
 export default function CreateListing() {
 
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
+  const { categories, fetchCategories } = useCategoryStore();
   useEffect(() => {
   if (user?.isBlocked) {
     navigate("/profile"); 
@@ -34,43 +35,20 @@ export default function CreateListing() {
 
   });
 
-  const getCharacteristicType = (category) => {
-  if (!category?.name) return null;
+  const selectedCategory = categories.find(
+  (cat) => String(cat._id) === String(form.category)
+);
 
-  const name = category.name.toLowerCase();
-
-  if (
-    name.includes("автомоб") ||
-    name.includes("машин") ||
-    name.includes("легков")
-  ) {
-    return "auto";
-  }
-
-  if (
-    name.includes("квартир")
-  ) {
-    return "apartment";
-  }
-
-  if (
-    name.includes("дом") ||
-    name.includes("коттедж")
-  ) {
-    return "house";
-  }
-
-  if (
-    name.includes("телефон") ||
-    name.includes("смартфон")
-  ) {
-    return "phone";
-  }
-
-  return null;
-};
-
-  const { categories, fetchCategories } = useCategoryStore();
+const characteristicConfig = selectedCategory?.slug
+  ? categoryCharacteristics[selectedCategory.slug]
+  : null;
+const [characteristics, setCharacteristics] = useState({});
+const carModels =
+  selectedCategory?.slug === "passenger-cars" &&
+  characteristics.brand
+    ? carData[characteristics.brand] || []
+    : [];
+ 
 
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -86,16 +64,9 @@ export default function CreateListing() {
   const [activeStep, setActiveStep] = useState(1);
 
   const [showCategoryModal, setShowCategoryModal] = useState(false);
-  const selectedCategory = categories.find( (cat) => cat._id === form.category);
-  const characteristicType =
-  getCharacteristicType(selectedCategory);
 
-const characteristicConfig =
-  characteristicType
-    ? categoryCharacteristics[characteristicType]
-    : null;
   const [categoryPath, setCategoryPath] = useState([]);   
-  const [characteristics, setCharacteristics] = useState({});
+  
   
 
   const stepRefs = Array.from({ length: 10 }, () => useRef(null)); 
@@ -165,13 +136,25 @@ useEffect(() => {
     });
   };
 
-  const handleCharacteristicChange = (e) => {
+const handleCharacteristicChange = (e) => {
   const { name, value } = e.target;
 
-  setCharacteristics((prev) => ({
-    ...prev,
-    [name]: value,
-  }));
+  setCharacteristics((prev) => {
+    const updated = {
+      ...prev,
+      [name]: value,
+    };
+
+    // При смене марки сбрасываем модель
+    if (
+      selectedCategory?.slug === "passenger-cars" &&
+      name === "brand"
+    ) {
+      updated.model = "";
+    }
+
+    return updated;
+  });
 };
 
   const getParentId = (category) => {
@@ -719,99 +702,59 @@ useEffect(() => {
 
       <div className="grid sm:grid-cols-2 gap-5">
 
-        {characteristicConfig.fields.map((field) => (
+        {characteristicConfig?.fields.map((field) => {
+  const isCarModel =
+    selectedCategory?.slug === "passenger-cars" &&
+    field.name === "model";
 
-          <div key={field.name}>
+  const options = isCarModel
+    ? carModels
+    : field.options || [];
 
-            <label
-              className="
-                block
-                text-sm
-                font-medium
-                text-gray-700
-                mb-2
-              "
-            >
-              {field.label}
+  return (
+    <div key={field.name} className="mb-4">
+      <label className="block mb-2 font-medium">
+        {field.label}
+        {field.required && (
+          <span className="text-red-500 ml-1">*</span>
+        )}
+      </label>
 
-{field.required && (
-  <span className="text-red-500 ml-1">*</span>
-)}
-            </label>
+      {field.type === "select" || isCarModel ? (
+        <select
+          name={field.name}
+          value={characteristics[field.name] || ""}
+          onChange={handleCharacteristicChange}
+          disabled={isCarModel && !characteristics.brand}
+          className="w-full rounded-xl border border-gray-300 px-4 py-3 bg-white"
+        >
+          <option value="">
+            {isCarModel && !characteristics.brand
+              ? "Сначала выберите марку"
+              : `Выберите ${field.label.toLowerCase()}`}
+          </option>
 
-            {field.type === "select" ? (
-
-              <select
-                name={field.name}
-                value={characteristics[field.name] || ""}
-                onChange={handleCharacteristicChange}
-                className="
-                  w-full
-                  h-14
-                  px-4
-                  rounded-2xl
-                  border
-                  border-gray-200
-                  bg-gray-50
-                  outline-none
-                  cursor-pointer
-                  transition
-                  focus:bg-white
-                  focus:border-blue-500
-                  focus:ring-4
-                  focus:ring-blue-500/10
-                "
-              >
-
-                <option value="">
-                  Выберите вариант
-                </option>
-
-                {field.options.map((option) => (
-                  <option
-                    key={option}
-                    value={option}
-                  >
-                    {option}
-                  </option>
-                ))}
-
-              </select>
-
-            ) : (
-
-              <input
-                type={field.type}
-                name={field.name}
-                required={field.required}
-                value={characteristics[field.name] || ""}
-                onChange={handleCharacteristicChange}
-                placeholder={field.placeholder}
-                min={field.min}
-                max={field.max}
-                className="
-                  w-full
-                  h-14
-                  px-4
-                  rounded-2xl
-                  border
-                  border-gray-200
-                  bg-gray-50
-                  text-gray-900
-                  outline-none
-                  transition
-                  focus:bg-white
-                  focus:border-blue-500
-                  focus:ring-4
-                  focus:ring-blue-500/10
-                "
-              />
-
-            )}
-
-          </div>
-
-        ))}
+          {options.map((option) => (
+            <option key={option} value={option}>
+              {option}
+            </option>
+          ))}
+        </select>
+      ) : (
+        <input
+          type={field.type || "text"}
+          name={field.name}
+          value={characteristics[field.name] || ""}
+          onChange={handleCharacteristicChange}
+          placeholder={field.placeholder || ""}
+          min={field.min}
+          max={field.max}
+          className="w-full rounded-xl border border-gray-300 px-4 py-3"
+        />
+      )}
+    </div>
+  );
+})}
 
       </div>
 

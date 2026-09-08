@@ -16,6 +16,7 @@ import {
 import { updateListing } from "../../api/listingApi";
 import { useCategoryStore } from "../../store/categoryStore";
 import { regions } from "../../data/regions";
+import { categoryCharacteristics } from "../../data/categoryCharacteristics";
 
 export default function EditListingModal({
   listing,
@@ -39,6 +40,8 @@ export default function EditListingModal({
   showPhone: true,
   allowChat: true,
 });
+
+const [characteristics, setCharacteristics] = useState({});
 
   /*
   |--------------------------------------------------------------------------
@@ -81,6 +84,7 @@ export default function EditListingModal({
     if (!listing) return;
 
     setForm({
+        
   title: listing.title || "",
   description: listing.description || "",
   price: listing.price ?? "",
@@ -97,6 +101,13 @@ export default function EditListingModal({
   showPhone: listing.showPhone !== false,
   allowChat: listing.allowChat !== false,
 });
+setCharacteristics(
+  listing.characteristics
+    ? Object.fromEntries(
+        Object.entries(listing.characteristics)
+      )
+    : {}
+);
 
     const existingImages = (listing.images || []).map((url) => ({
       type: "existing",
@@ -121,6 +132,15 @@ export default function EditListingModal({
       [name]: value,
     }));
   };
+
+  const handleCharacteristicChange = (e) => {
+  const { name, value } = e.target;
+
+  setCharacteristics((prev) => ({
+    ...prev,
+    [name]: value,
+  }));
+};
 
   /*
   |--------------------------------------------------------------------------
@@ -152,6 +172,48 @@ export default function EditListingModal({
     (cat) => cat._id === form.category
   );
 
+  const getCharacteristicType = (category) => {
+  if (!category?.name) return null;
+
+  const name = category.name.toLowerCase();
+
+  if (
+    name.includes("автомоб") ||
+    name.includes("машин") ||
+    name.includes("легков")
+  ) {
+    return "auto";
+  }
+
+  if (name.includes("квартир")) {
+    return "apartment";
+  }
+
+  if (
+    name.includes("дом") ||
+    name.includes("коттедж")
+  ) {
+    return "house";
+  }
+
+  if (
+    name.includes("телефон") ||
+    name.includes("смартфон")
+  ) {
+    return "phone";
+  }
+
+  return null;
+};
+
+const characteristicType =
+  getCharacteristicType(selectedCategory);
+
+const characteristicConfig =
+  characteristicType
+    ? categoryCharacteristics[characteristicType]
+    : null;
+
   const openCategory = (category) => {
     const subcategories = getSubcategories(category._id);
 
@@ -164,6 +226,7 @@ export default function EditListingModal({
       ...prev,
       category: category._id,
     }));
+    setCharacteristics({});
 
     setShowCategoryModal(false);
     setCategoryPath([]);
@@ -354,6 +417,11 @@ export default function EditListingModal({
 formData.append(
   "allowChat",
   String(form.allowChat)
+);
+
+formData.append(
+  "characteristics",
+  JSON.stringify(characteristics)
 );
 
       /*
@@ -753,6 +821,160 @@ onClose();
               </div>
 
             </section>
+
+{/* =====================================================
+    ХАРАКТЕРИСТИКИ
+===================================================== */}
+
+{characteristicConfig && (
+  <section
+    className="
+      bg-white
+      border
+      border-gray-200
+      rounded-3xl
+      shadow-sm
+      overflow-hidden
+    "
+  >
+    <div className="p-5 sm:p-7">
+
+      <div className="flex gap-4 mb-6">
+
+        <div
+          className="
+            w-10
+            h-10
+            rounded-xl
+            bg-purple-50
+            text-purple-600
+            flex
+            items-center
+            justify-center
+            shrink-0
+          "
+        >
+          ✨
+        </div>
+
+        <div>
+          <h3 className="text-lg font-bold text-gray-900">
+            {characteristicConfig.title}
+          </h3>
+
+          <p className="text-sm text-gray-500 mt-1">
+            Укажите характеристики товара
+          </p>
+        </div>
+
+      </div>
+
+      <div className="grid sm:grid-cols-2 gap-4">
+
+        {characteristicConfig.fields.map((field) => (
+          <div key={field.name}>
+
+            <label
+              className="
+                block
+                text-sm
+                font-semibold
+                text-gray-700
+                mb-2
+              "
+            >
+              {field.label}
+            </label>
+
+            {field.type === "select" ? (
+              <select
+                name={field.name}
+                value={characteristics[field.name] || ""}
+                onChange={handleCharacteristicChange}
+                className="
+                  w-full
+                  h-14
+                  px-4
+                  rounded-2xl
+                  border
+                  border-gray-200
+                  bg-gray-50
+                  outline-none
+                  transition
+                  focus:bg-white
+                  focus:border-blue-500
+                  focus:ring-4
+                  focus:ring-blue-500/10
+                "
+              >
+                <option value="">
+                  Выберите вариант
+                </option>
+
+                {field.options?.map((option) => (
+                  <option
+                    key={option}
+                    value={option}
+                  >
+                    {option}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <div className="relative">
+
+                <input
+                  type={field.type || "text"}
+                  name={field.name}
+                  value={characteristics[field.name] || ""}
+                  onChange={handleCharacteristicChange}
+                  placeholder={field.placeholder || ""}
+                  min={field.min}
+                  max={field.max}
+                  className="
+                    w-full
+                    h-14
+                    px-4
+                    rounded-2xl
+                    border
+                    border-gray-200
+                    bg-gray-50
+                    outline-none
+                    transition
+                    focus:bg-white
+                    focus:border-blue-500
+                    focus:ring-4
+                    focus:ring-blue-500/10
+                  "
+                />
+
+                {field.unit && (
+                  <span
+                    className="
+                      absolute
+                      right-4
+                      top-1/2
+                      -translate-y-1/2
+                      text-sm
+                      text-gray-400
+                      pointer-events-none
+                    "
+                  >
+                    {field.unit}
+                  </span>
+                )}
+
+              </div>
+            )}
+
+          </div>
+        ))}
+
+      </div>
+
+    </div>
+  </section>
+)}
 
             {/* =====================================================
                 СОСТОЯНИЕ
