@@ -10,6 +10,7 @@ import { Helmet } from "react-helmet-async";
 import { categoryCharacteristics } from "../../data/categoryCharacteristics";
 import { carData } from "../../data/carData";
 import { truckData  } from "../../data/truckData";
+import { motoData } from "../../data/motoData";
 
 export default function CreateListing() {
 
@@ -62,6 +63,12 @@ const carFieldMap = {
     brand: "brand",
     model: "model",
     data: truckData,
+  },
+
+  motorcycles: {
+    brand: "brand",
+    model: "model",
+    data: motoData,
   },
 
   "auto-accessories": {
@@ -792,116 +799,74 @@ useEffect(() => {
 
       <div className="grid sm:grid-cols-2 gap-5">
 
-        {characteristicConfig?.fields.map((field) => {
-  // =========================================
-  // ЗАПЧАСТИ
-  // =========================================
-
-  const isPartsType =
-    isPartsCategory &&
-    field.name === "vehicleType";
-
+       {characteristicConfig?.fields.map((field) => {
   const isPartsBrand =
-    isPartsCategory &&
-    field.name === "carBrand";
+    isPartsCategory && field.name === "carBrand";
 
   const isPartsModel =
-    isPartsCategory &&
-    field.name === "carModel";
+    isPartsCategory && field.name === "carModel";
 
-
-  // =========================================
-  // ОБЫЧНЫЕ АВТОКАТЕГОРИИ
-  // =========================================
+  const isCarBrand =
+    carFields &&
+    field.name === carFields.brand;
 
   const isCarModel =
     carFields &&
     field.name === carFields.model;
 
-
-  // =========================================
-  // OPTIONS
-  // =========================================
-
   let options = field.options || [];
 
-  // Запчасти → Марка
+  // Марки для запчастей
   if (isPartsBrand) {
     options = Object.keys(vehicleData);
   }
 
-  // Запчасти → Модель
+  // Модели для запчастей
   if (isPartsModel) {
     options = partsModels;
   }
 
-  // Обычные авто → Модель
+  // Марки автомобилей / грузовиков / мотоциклов
+  if (isCarBrand) {
+    options = Object.keys(carFields.data);
+  }
+
+  // Модели выбранной марки
   if (isCarModel) {
     options = carModels;
   }
-
-
-  // =========================================
-  // DISABLED
-  // =========================================
 
   const isDisabled =
     (isPartsBrand && !selectedVehicleType) ||
     (isPartsModel && !selectedPartsBrand) ||
     (isCarModel && !selectedCarBrand);
 
-
   return (
-    <div
-      key={field.name}
-      className="mb-4"
-    >
-      <label className="block mb-2 font-medium">
+    <div key={field.name}>
+      <label className="block mb-2 font-medium text-gray-700">
         {field.label}
-
         {field.required && (
-          <span className="text-red-500 ml-1">
-            *
-          </span>
+          <span className="text-red-500 ml-1">*</span>
         )}
       </label>
 
-
-      {field.type === "select" || isCarModel ? (
+      {field.type === "select" ? (
         <select
           name={field.name}
-          value={
-            characteristics[field.name] || ""
-          }
+          value={characteristics[field.name] || ""}
           onChange={handleCharacteristicChange}
           disabled={isDisabled}
-          className="
-            w-full
-            rounded-xl
-            border
-            border-gray-300
-            px-4
-            py-3
-            bg-white
-            disabled:bg-gray-100
-            disabled:text-gray-400
-            disabled:cursor-not-allowed
-          "
+          className="w-full border border-gray-300 rounded-xl px-4 py-3 bg-white"
         >
-
           <option value="">
-            {isPartsBrand &&
-            !selectedVehicleType
+            {isPartsBrand && !selectedVehicleType
               ? "Сначала выберите тип автомобиля"
-              : isPartsModel &&
-                !selectedPartsBrand
-                ? "Сначала выберите марку"
-                : isCarModel &&
-                  !selectedCarBrand
-                  ? "Сначала выберите марку"
-                  : `Выберите ${field.label.toLowerCase()}`}
+              : isPartsModel && !selectedPartsBrand
+              ? "Сначала выберите марку"
+              : isCarModel && !selectedCarBrand
+              ? "Сначала выберите марку"
+              : `Выберите ${field.label.toLowerCase()}`}
           </option>
-
 
           {options.map((option) => {
             const optionValue =
@@ -923,29 +888,15 @@ useEffect(() => {
               </option>
             );
           })}
-
         </select>
       ) : (
         <input
           type={field.type || "text"}
           name={field.name}
-          value={
-            characteristics[field.name] || ""
-          }
+          value={characteristics[field.name] || ""}
           onChange={handleCharacteristicChange}
-          placeholder={
-            field.placeholder || ""
-          }
-          min={field.min}
-          max={field.max}
-          className="
-            w-full
-            rounded-xl
-            border
-            border-gray-300
-            px-4
-            py-3
-          "
+          placeholder={field.placeholder || ""}
+          className="w-full border border-gray-300 rounded-xl px-4 py-3"
         />
       )}
     </div>

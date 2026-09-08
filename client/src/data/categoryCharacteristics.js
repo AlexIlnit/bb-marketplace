@@ -627,76 +627,27 @@ export const categoryCharacteristics = {
   ],
 },
 
-  motorcycles: {
-    title: "Характеристики мотоцикла",
-    fields: [
-      {
-        name: "brand",
-        label: "Марка",
-        type: "text",
-        placeholder: "Honda",
-        required: true,
-      },
-      {
-        name: "model",
-        label: "Модель",
-        type: "text",
-        placeholder: "CBR",
-        required: true,
-      },
-      {
-        name: "year",
-        label: "Год выпуска",
-        type: "number",
-        min: 1900,
-        max: new Date().getFullYear(),
-        required: true,
-      },
-      {
-        name: "engineVolume",
-        label: "Объём двигателя",
-        type: "number",
-        min: 0,
-        unit: "см³",
-      },
-      {
-        name: "mileage",
-        label: "Пробег",
-        type: "number",
-        min: 0,
-        unit: "км",
-      },
-      {
-        name: "motorcycleType",
-        label: "Тип мотоцикла",
-        type: "select",
-        options: [
-          "Спортбайк",
-          "Круизер",
-          "Эндуро",
-          "Туристический",
-          "Нейкед",
-          "Скутер",
-          "Мопед",
-        ],
-      },
-      {
-        name: "transmission",
-        label: "Коробка передач",
-        type: "select",
-        options: [
-          "Механика",
-          "Автомат",
-          "Вариатор",
-        ],
-      },
-      {
-        name: "color",
-        label: "Цвет",
-        type: "text",
-      },
-    ],
-  },
+  "motorcycles": {
+  title: "Мотоцикл",
+
+  fields: [
+    {
+      name: "brand",
+      label: "Марка",
+      type: "select",
+      required: true,
+      options: [],
+    },
+
+    {
+      name: "model",
+      label: "Модель",
+      type: "select",
+      required: true,
+      options: [],
+    },
+  ],
+},
 
   "auto-parts": {
   title: "Автомобиль",
