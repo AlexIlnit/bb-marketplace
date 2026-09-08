@@ -14,10 +14,13 @@ import ListingCard from "../../components/listing/ListingCard";
 import { useListingStore } from "../../store/listingStore";
 import { categoryData } from "../../data/categoryData";
 
+import CategoryFilters from "../../components/listing/CategoryFilters";
+
 export default function SubCategoryPage() {
   const { slug, subcategorySlug } = useParams();
   const navigate = useNavigate();
 
+ 
   const {
     listings,
     loading,
@@ -26,6 +29,9 @@ export default function SubCategoryPage() {
   } = useListingStore();
 
   const [search, setSearch] = useState("");
+
+  const [filters, setFilters] = useState({});
+const [filtersOpen, setFiltersOpen] = useState(false);
 
   const category = categoryData[slug];
 
@@ -38,12 +44,37 @@ export default function SubCategoryPage() {
   }, [category, subcategorySlug]);
 
   useEffect(() => {
-    if (!category || !subcategory) return;
+  if (!category || !subcategory) return;
 
-    fetchListings(1, {
-      category: subcategorySlug,
-    });
-  }, [category, subcategory, subcategorySlug]);
+  setFilters({});
+
+  fetchListings(1, {
+    category: subcategorySlug,
+    characteristics: {},
+  });
+}, [
+  category,
+  subcategory,
+  subcategorySlug,
+]);
+
+const applyFilters = () => {
+  fetchListings(1, {
+    category: subcategorySlug,
+    characteristics: filters,
+  });
+
+  setFiltersOpen(false);
+};
+
+const resetFilters = () => {
+  setFilters({});
+
+  fetchListings(1, {
+    category: subcategorySlug,
+    characteristics: {},
+  });
+};
 
   const filteredListings = useMemo(() => {
     if (!search.trim()) return listings;
@@ -140,32 +171,38 @@ export default function SubCategoryPage() {
           </div>
         </div>
 
-        {/* Search / filters */}
+      {/* Search */}
 
-        <div className="mb-8 flex flex-col gap-3 md:flex-row">
-          <div className="relative flex-1">
-            <Search
-              size={19}
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
-            />
+<div className="mb-5">
+  <div className="relative">
+    <Search
+      size={19}
+      className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+    />
 
-            <input
-              type="text"
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-              placeholder={`Поиск в категории «${subcategory.name}»`}
-              className="w-full rounded-2xl border border-gray-200 bg-white py-3.5 pl-11 pr-4 text-sm outline-none transition focus:border-gray-400"
-            />
-          </div>
+    <input
+      type="text"
+      value={search}
+      onChange={(event) =>
+        setSearch(event.target.value)
+      }
+      placeholder={`Поиск в категории «${subcategory.name}»`}
+      className="w-full rounded-2xl border border-gray-200 bg-white py-3.5 pl-11 pr-4 text-sm outline-none transition focus:border-gray-400"
+    />
+  </div>
+</div>
 
-          <button
-            type="button"
-            className="inline-flex items-center justify-center gap-2 rounded-2xl border border-gray-200 bg-white px-5 py-3.5 text-sm font-medium text-gray-700 transition hover:border-gray-300 hover:bg-gray-50"
-          >
-            <SlidersHorizontal size={18} />
-            Фильтры
-          </button>
-        </div>
+{/* Category filters */}
+
+<div className="mb-8">
+  <CategoryFilters
+    categorySlug={subcategorySlug}
+    filters={filters}
+    onChange={setFilters}
+    onApply={applyFilters}
+    onReset={resetFilters}
+  />
+</div>
 
         {/* Listings header */}
 
@@ -216,7 +253,14 @@ export default function SubCategoryPage() {
         {/* Listings */}
 
         {!loading && filteredListings.length > 0 && (
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+          <div className="
+              grid
+              grid-cols-1
+              sm:grid-cols-2
+              lg:grid-cols-3
+              xl:grid-cols-4
+              gap-5
+            ">
             {filteredListings.map((listing) => (
               <ListingCard
                 key={listing._id}

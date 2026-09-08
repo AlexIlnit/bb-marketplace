@@ -11,6 +11,9 @@ export const useListingStore = create((set, get) => ({
   condition: "",
   sellerType: "",
 
+  // Динамические характеристики категории
+  characteristics: {},
+
   region: localStorage.getItem("region") || "",
   city: localStorage.getItem("city") || "",
 
@@ -33,74 +36,101 @@ export const useListingStore = create((set, get) => ({
 
   setSellerType: (value) => set({ sellerType: value }),
 
- fetchListings: async (page = 1, overrides = {}) => {
-  set({ loading: true });
+  setCharacteristics: (value) =>
+    set({ characteristics: value }),
 
-  try {
-    const state = get();
+  clearCharacteristics: () =>
+    set({ characteristics: {} }),
 
-    const params = {
-      page,
+  fetchListings: async (page = 1, overrides = {}) => {
+    set({ loading: true });
 
-      search:
-        overrides.search !== undefined
-          ? overrides.search
-          : state.search,
+    try {
+      const state = get();
 
-      category:
-        overrides.category !== undefined
-          ? overrides.category
-          : state.category,
+      const characteristics =
+        overrides.characteristics !== undefined
+          ? overrides.characteristics
+          : state.characteristics;
 
-      region:
-        overrides.region !== undefined
-          ? overrides.region
-          : state.region,
+      const params = {
+        page,
 
-      city:
-        overrides.city !== undefined
-          ? overrides.city
-          : state.city,
+        search:
+          overrides.search !== undefined
+            ? overrides.search
+            : state.search,
 
-      priceFrom:
-        overrides.priceFrom !== undefined
-          ? overrides.priceFrom
-          : state.priceFrom,
+        category:
+          overrides.category !== undefined
+            ? overrides.category
+            : state.category,
 
-      priceTo:
-        overrides.priceTo !== undefined
-          ? overrides.priceTo
-          : state.priceTo,
+        region:
+          overrides.region !== undefined
+            ? overrides.region
+            : state.region,
 
-      condition:
-        overrides.condition !== undefined
-          ? overrides.condition
-          : state.condition,
+        city:
+          overrides.city !== undefined
+            ? overrides.city
+            : state.city,
 
-      sellerType:
-        overrides.sellerType !== undefined
-          ? overrides.sellerType
-          : state.sellerType,
-    };
+        priceFrom:
+          overrides.priceFrom !== undefined
+            ? overrides.priceFrom
+            : state.priceFrom,
 
-    const { data } = await getListings(params);
+        priceTo:
+          overrides.priceTo !== undefined
+            ? overrides.priceTo
+            : state.priceTo,
 
-    set({
-      listings: data.listings || [],
-      totalPages: data.totalPages || 1,
-    });
-  } catch (error) {
-    console.error(
-      "FETCH LISTINGS ERROR:",
-      error.response?.data || error.message
-    );
+        condition:
+          overrides.condition !== undefined
+            ? overrides.condition
+            : state.condition,
 
-    set({
-      listings: [],
-      totalPages: 1,
-    });
-  } finally {
-    set({ loading: false });
-  }
-},
+        sellerType:
+          overrides.sellerType !== undefined
+            ? overrides.sellerType
+            : state.sellerType,
+
+        // Передаём динамические характеристики
+        characteristics,
+      };
+
+      // Убираем пустые значения характеристик
+      if (params.characteristics) {
+        params.characteristics = Object.fromEntries(
+          Object.entries(params.characteristics).filter(
+            ([, value]) =>
+              value !== "" &&
+              value !== null &&
+              value !== undefined
+          )
+        );
+      }
+
+      const { data } = await getListings(params);
+
+      set({
+        listings: data.listings || [],
+        totalPages: data.totalPages || 1,
+        characteristics,
+      });
+    } catch (error) {
+      console.error(
+        "FETCH LISTINGS ERROR:",
+        error.response?.data || error.message
+      );
+
+      set({
+        listings: [],
+        totalPages: 1,
+      });
+    } finally {
+      set({ loading: false });
+    }
+  },
 }));

@@ -1,17 +1,45 @@
 import api from "./axios";
 
-export const getListings = (params) => {
-  const cleanParams = Object.fromEntries(
-    Object.entries(params).filter(
-      ([_, v]) => v !== "" && v !== null && v !== undefined
-    )
-  );
+// export const getListings = (params) => {
+//   const cleanParams = Object.fromEntries(
+//     Object.entries(params).filter(
+//       ([_, v]) => v !== "" && v !== null && v !== undefined
+//     )
+//   );
+
+//   return api.get("/listings", {
+//     params: cleanParams
+//   });
+// };
+export const getListings = (params = {}) => {
+  const {
+    characteristics,
+    ...regularParams
+  } = params;
+
+  const queryParams = {
+    ...regularParams,
+  };
+
+  if (characteristics) {
+    Object.entries(characteristics).forEach(
+      ([key, value]) => {
+        if (
+          value !== "" &&
+          value !== null &&
+          value !== undefined
+        ) {
+          queryParams[`characteristics_${key}`] =
+            value;
+        }
+      }
+    );
+  }
 
   return api.get("/listings", {
-    params: cleanParams
+    params: queryParams,
   });
 };
-
 // получить ВСЕ объявления (для админки)
 export const getAllListings = () => {
   return api.get("/listings");

@@ -3,6 +3,40 @@ import { createNotification } from "../utils/createNotification.js";
 import User from "../models/User.js";
 import cloudinary from "../config/cloudinary.js";
 import Category from "../models/Category.js";
+
+
+// =====================================
+// Получить категорию и все её подкатегории
+// =====================================
+
+const getCategoryTreeIds = async (categoryId) => {
+  const categories = await Category.find({})
+    .select("_id parent")
+    .lean();
+
+  const ids = [categoryId.toString()];
+  const queue = [categoryId.toString()];
+
+  while (queue.length) {
+    const parentId = queue.shift();
+
+    for (const category of categories) {
+      if (
+        category.parent &&
+        category.parent.toString() === parentId
+      ) {
+        const childId = category._id.toString();
+
+        if (!ids.includes(childId)) {
+          ids.push(childId);
+          queue.push(childId);
+        }
+      }
+    }
+  }
+
+  return ids;
+};
 // CREATE LISTING
 export const createListing = async (req, res) => {
   try {
@@ -104,6 +138,9 @@ await Promise.all(
     });
   }
 };
+const escapeRegex = (value = "") =>
+  value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
 export const getListings = async (req, res) => {
   try {
     const page = Number(req.query.page) || 1;
@@ -121,9 +158,8 @@ export const getListings = async (req, res) => {
     if (req.query.category) {
   const category = await Category.findOne({
     slug: req.query.category,
-  });
-// console.log("CATEGORY SLUG:", req.query.category);
-//       console.log("CATEGORY FOUND:", category);
+  }).lean();
+
   if (!category) {
     return res.json({
       listings: [],
@@ -131,12 +167,14 @@ export const getListings = async (req, res) => {
     });
   }
 
-  filter.category = category._id;
-  // console.log("CATEGORY ID:", category._id);
-}
- 
-  // console.log("FILTER BEFORE TOP:", filter);
+  const categoryIds = await getCategoryTreeIds(
+    category._id
+  );
 
+  filter.category = {
+    $in: categoryIds,
+  };
+}
     
     // 🔥 ПРЯМАЯ ФИЛЬТРАЦИЯ ПО ОБЛАСТЯМ И ГОРОДАМ
     if (city && city !== "Вся Беларусь" && city !== "Все города" && city !== "Все области") {
@@ -167,13 +205,88 @@ export const getListings = async (req, res) => {
       }
     }
 
-    if (req.query.search) {
-      filter.title = {
-        $regex: req.query.search,
-        $options: "i"
+   if (req.query.search) {
+  filter.title = {
+    $regex: escapeRegex(req.query.search),
+    $options: "i",
+  };
+}
+// =====================================
+// ДИНАМИЧЕСКИЕ ХАРАКТЕРИСТИКИ
+// =====================================
+//
+// Формат:
+// characteristics_brand=BMW
+// characteristics_model=3 Series
+// characteristics_engine=Бензин
+//
+// В MongoDB:
+// characteristics.brand
+// characteristics.model
+// characteristics.engine
+// =====================================
+
+for (const [key, value] of Object.entries(req.query)) {
+  if (!key.startsWith("characteristics_")) {
+    continue;
+  }
+
+  if (
+    value === undefined ||
+    value === null ||
+    value === ""
+  ) {
+    continue;
+  }
+
+  const characteristicName =
+    key.replace("characteristics_", "");
+
+  const fieldPath =
+    `characteristics.${characteristicName}`;
+
+  // Числовые значения
+  //
+  // В CreateListing значения из FormData
+  // могут сохраняться как строки.
+  //
+  // Поэтому допускаем и число, и строку.
+  if (
+    [
+      "year",
+      "mileage",
+      "engineVolume",
+      "loadCapacity",
+      "ram",
+      "storage",
+      "rooms",
+      "area",
+      "livingArea",
+      "kitchenArea",
+      "floor",
+      "floors",
+      "yearBuilt",
+      "age",
+      "weight",
+      "screenSize",
+    ].includes(characteristicName)
+  ) {
+    const numericValue = Number(value);
+
+    if (!Number.isNaN(numericValue)) {
+      filter[fieldPath] = {
+        $in: [numericValue, String(value)],
       };
+    } else {
+      filter[fieldPath] = String(value);
     }
 
+    continue;
+  }
+
+  // Обычные select/text характеристики
+  filter[fieldPath] = String(value);
+}
     // console.log("FINAL FILTER 👉", filter);
 
   const now = new Date();
