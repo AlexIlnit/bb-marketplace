@@ -29,16 +29,16 @@ export default function CategoryFilters({
   };
 
   const getOptions = (field) => {
-    // =========================
-    // МОДЕЛИ АВТО
-    // =========================
+  if (field.name === "model" && filters.brand) {
+    return carData[filters.brand] || [];
+  }
 
-    if (field.name === "model" && filters.brand) {
-      return carData[filters.brand] || [];
-    }
+  if (field.name === "carModel" && filters.carBrand) {
+    return carData[filters.carBrand] || [];
+  }
 
-    return field.options || [];
-  };
+  return field.options || [];
+};
 
   return (
     <div className="rounded-2xl border border-gray-200 bg-white">

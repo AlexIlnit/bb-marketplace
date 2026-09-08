@@ -9,6 +9,7 @@ import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { categoryCharacteristics } from "../../data/categoryCharacteristics";
 import { carData } from "../../data/carData";
+import { truckData  } from "../../data/truckData";
 
 export default function CreateListing() {
 
@@ -35,22 +36,87 @@ export default function CreateListing() {
 
   });
 
-  const selectedCategory = categories.find(
+ const [characteristics, setCharacteristics] = useState({});
+
+const selectedCategory = categories.find(
   (cat) => String(cat._id) === String(form.category)
 );
 
 const characteristicConfig = selectedCategory?.slug
   ? categoryCharacteristics[selectedCategory.slug]
   : null;
-const [characteristics, setCharacteristics] = useState({});
-const carModels =
-  selectedCategory?.slug === "passenger-cars" &&
-  characteristics.brand
-    ? carData[characteristics.brand] || []
-    : [];
- 
 
-  const [loading, setLoading] = useState(false);
+
+// =====================================================
+// АВТОМОБИЛИ / ГРУЗОВИКИ
+// =====================================================
+
+const carFieldMap = {
+  "passenger-cars": {
+    brand: "brand",
+    model: "model",
+    data: carData,
+  },
+
+  trucks: {
+    brand: "brand",
+    model: "model",
+    data: truckData,
+  },
+
+  "auto-accessories": {
+    brand: "carBrand",
+    model: "carModel",
+    data: carData,
+  },
+};
+
+const carFields =
+  carFieldMap[selectedCategory?.slug];
+
+
+// =====================================================
+// ЗАПЧАСТИ
+// =====================================================
+
+const isPartsCategory =
+  selectedCategory?.slug === "auto-parts";
+
+const partsVehicleData = {
+  passenger: carData,
+  truck: truckData,
+};
+
+const selectedVehicleType =
+  characteristics.vehicleType || "";
+
+const vehicleData =
+  partsVehicleData[selectedVehicleType] || {};
+
+const selectedPartsBrand =
+  characteristics.carBrand || "";
+
+const partsModels =
+  selectedPartsBrand
+    ? vehicleData[selectedPartsBrand] || []
+    : [];
+
+
+// =====================================================
+// ОБЫЧНЫЕ АВТОКАТЕГОРИИ
+// =====================================================
+
+const selectedCarBrand = carFields
+  ? characteristics[carFields.brand] || ""
+  : "";
+
+const carModels =
+  carFields && selectedCarBrand
+    ? carFields.data[selectedCarBrand] || []
+    : [];
+
+
+const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
 
   const [region, setRegion] = useState("");
@@ -145,12 +211,36 @@ const handleCharacteristicChange = (e) => {
       [name]: value,
     };
 
-    // При смене марки сбрасываем модель
+    // =========================================
+    // ЗАПЧАСТИ
+    // =========================================
+
+    // Поменяли Легковой / Грузовой
     if (
-      selectedCategory?.slug === "passenger-cars" &&
-      name === "brand"
+      isPartsCategory &&
+      name === "vehicleType"
     ) {
-      updated.model = "";
+      updated.carBrand = "";
+      updated.carModel = "";
+    }
+
+    // Поменяли марку
+    if (
+      isPartsCategory &&
+      name === "carBrand"
+    ) {
+      updated.carModel = "";
+    }
+
+    // =========================================
+    // АВТО / ГРУЗОВИКИ / АКСЕССУАРЫ
+    // =========================================
+
+    if (
+      carFields &&
+      name === carFields.brand
+    ) {
+      updated[carFields.model] = "";
     }
 
     return updated;
@@ -703,53 +793,159 @@ useEffect(() => {
       <div className="grid sm:grid-cols-2 gap-5">
 
         {characteristicConfig?.fields.map((field) => {
-  const isCarModel =
-    selectedCategory?.slug === "passenger-cars" &&
-    field.name === "model";
+  // =========================================
+  // ЗАПЧАСТИ
+  // =========================================
 
-  const options = isCarModel
-    ? carModels
-    : field.options || [];
+  const isPartsType =
+    isPartsCategory &&
+    field.name === "vehicleType";
+
+  const isPartsBrand =
+    isPartsCategory &&
+    field.name === "carBrand";
+
+  const isPartsModel =
+    isPartsCategory &&
+    field.name === "carModel";
+
+
+  // =========================================
+  // ОБЫЧНЫЕ АВТОКАТЕГОРИИ
+  // =========================================
+
+  const isCarModel =
+    carFields &&
+    field.name === carFields.model;
+
+
+  // =========================================
+  // OPTIONS
+  // =========================================
+
+  let options = field.options || [];
+
+  // Запчасти → Марка
+  if (isPartsBrand) {
+    options = Object.keys(vehicleData);
+  }
+
+  // Запчасти → Модель
+  if (isPartsModel) {
+    options = partsModels;
+  }
+
+  // Обычные авто → Модель
+  if (isCarModel) {
+    options = carModels;
+  }
+
+
+  // =========================================
+  // DISABLED
+  // =========================================
+
+  const isDisabled =
+    (isPartsBrand && !selectedVehicleType) ||
+    (isPartsModel && !selectedPartsBrand) ||
+    (isCarModel && !selectedCarBrand);
+
 
   return (
-    <div key={field.name} className="mb-4">
+    <div
+      key={field.name}
+      className="mb-4"
+    >
       <label className="block mb-2 font-medium">
         {field.label}
+
         {field.required && (
-          <span className="text-red-500 ml-1">*</span>
+          <span className="text-red-500 ml-1">
+            *
+          </span>
         )}
       </label>
+
 
       {field.type === "select" || isCarModel ? (
         <select
           name={field.name}
-          value={characteristics[field.name] || ""}
+          value={
+            characteristics[field.name] || ""
+          }
           onChange={handleCharacteristicChange}
-          disabled={isCarModel && !characteristics.brand}
-          className="w-full rounded-xl border border-gray-300 px-4 py-3 bg-white"
+          disabled={isDisabled}
+          className="
+            w-full
+            rounded-xl
+            border
+            border-gray-300
+            px-4
+            py-3
+            bg-white
+            disabled:bg-gray-100
+            disabled:text-gray-400
+            disabled:cursor-not-allowed
+          "
         >
+
           <option value="">
-            {isCarModel && !characteristics.brand
-              ? "Сначала выберите марку"
-              : `Выберите ${field.label.toLowerCase()}`}
+            {isPartsBrand &&
+            !selectedVehicleType
+              ? "Сначала выберите тип автомобиля"
+              : isPartsModel &&
+                !selectedPartsBrand
+                ? "Сначала выберите марку"
+                : isCarModel &&
+                  !selectedCarBrand
+                  ? "Сначала выберите марку"
+                  : `Выберите ${field.label.toLowerCase()}`}
           </option>
 
-          {options.map((option) => (
-            <option key={option} value={option}>
-              {option}
-            </option>
-          ))}
+
+          {options.map((option) => {
+            const optionValue =
+              typeof option === "object"
+                ? option.value
+                : option;
+
+            const optionLabel =
+              typeof option === "object"
+                ? option.label
+                : option;
+
+            return (
+              <option
+                key={optionValue}
+                value={optionValue}
+              >
+                {optionLabel}
+              </option>
+            );
+          })}
+
         </select>
       ) : (
         <input
           type={field.type || "text"}
           name={field.name}
-          value={characteristics[field.name] || ""}
+          value={
+            characteristics[field.name] || ""
+          }
           onChange={handleCharacteristicChange}
-          placeholder={field.placeholder || ""}
+          placeholder={
+            field.placeholder || ""
+          }
           min={field.min}
           max={field.max}
-          className="w-full rounded-xl border border-gray-300 px-4 py-3"
+          className="
+            w-full
+            rounded-xl
+            border
+            border-gray-300
+            px-4
+            py-3
+          "
         />
       )}
     </div>

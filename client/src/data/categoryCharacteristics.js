@@ -1,4 +1,5 @@
-import { carData } from "./carData";
+import { carData} from "./carData";
+import { truckData} from "./truckData";
 export const categoryCharacteristics = {
   // =========================================================
   // НЕДВИЖИМОСТЬ
@@ -533,89 +534,98 @@ export const categoryCharacteristics = {
     ],
   },
 
-  trucks: {
-    title: "Характеристики грузового автомобиля",
-    fields: [
-      {
-        name: "brand",
-        label: "Марка",
-        type: "text",
-        placeholder: "MAN",
-        required: true,
-      },
-      {
-        name: "model",
-        label: "Модель",
-        type: "text",
-        placeholder: "Например, TGX",
-        required: true,
-      },
-      {
-        name: "year",
-        label: "Год выпуска",
-        type: "number",
-        min: 1900,
-        max: new Date().getFullYear(),
-        required: true,
-      },
-      {
-        name: "mileage",
-        label: "Пробег",
-        type: "number",
-        min: 0,
-        unit: "км",
-      },
-      {
-        name: "engine",
-        label: "Тип двигателя",
-        type: "select",
-        options: [
-          "Дизель",
-          "Бензин",
-          "Газ",
-          "Гибрид",
-          "Электро",
-        ],
-      },
-      {
-        name: "engineVolume",
-        label: "Объём двигателя",
-        type: "text",
-        placeholder: "6.7 л",
-      },
-      {
-        name: "loadCapacity",
-        label: "Грузоподъёмность",
-        type: "number",
-        min: 0,
-        unit: "т",
-      },
-      {
-        name: "bodyType",
-        label: "Тип кузова",
-        type: "select",
-        options: [
-          "Бортовой",
-          "Тент",
-          "Фургон",
-          "Самосвал",
-          "Рефрижератор",
-          "Цистерна",
-          "Седельный тягач",
-        ],
-      },
-      {
-        name: "transmission",
-        label: "Коробка передач",
-        type: "select",
-        options: [
-          "Механика",
-          "Автомат",
-          "Робот",
-        ],
-      },
-    ],
-  },
+  "trucks": {
+  title: "Характеристики грузового автомобиля",
+
+  fields: [
+    {
+      name: "brand",
+      label: "Марка",
+      type: "select",
+      options: Object.keys(truckData),
+      required: true,
+    },
+
+    {
+      name: "model",
+      label: "Модель",
+      type: "select",
+      options: [],
+      required: true,
+    },
+
+    {
+      name: "year",
+      label: "Год выпуска",
+      type: "number",
+      min: 1900,
+      max: new Date().getFullYear(),
+      required: true,
+    },
+
+    {
+      name: "mileage",
+      label: "Пробег",
+      type: "number",
+      min: 0,
+      unit: "км",
+    },
+
+    {
+      name: "engine",
+      label: "Тип двигателя",
+      type: "select",
+      options: [
+        "Дизель",
+        "Бензин",
+        "Газ",
+        "Гибрид",
+        "Электро",
+      ],
+    },
+
+    {
+      name: "engineVolume",
+      label: "Объём двигателя",
+      type: "text",
+      placeholder: "6.7 л",
+    },
+
+    {
+      name: "loadCapacity",
+      label: "Грузоподъёмность",
+      type: "number",
+      min: 0,
+      unit: "т",
+    },
+
+    {
+      name: "bodyType",
+      label: "Тип кузова",
+      type: "select",
+      options: [
+        "Бортовой",
+        "Тент",
+        "Фургон",
+        "Самосвал",
+        "Рефрижератор",
+        "Цистерна",
+        "Седельный тягач",
+      ],
+    },
+
+    {
+      name: "transmission",
+      label: "Коробка передач",
+      type: "select",
+      options: [
+        "Механика",
+        "Автомат",
+        "Робот",
+      ],
+    },
+  ],
+},
 
   motorcycles: {
     title: "Характеристики мотоцикла",
@@ -689,101 +699,93 @@ export const categoryCharacteristics = {
   },
 
   "auto-parts": {
-    title: "Характеристики автозапчасти",
-    fields: [
-      {
-        name: "partName",
-        label: "Название детали",
-        type: "text",
-        placeholder: "Например, бампер",
-        required: true,
-      },
-      {
-        name: "brand",
-        label: "Производитель",
-        type: "text",
-      },
-      {
-        name: "partNumber",
-        label: "Артикул",
-        type: "text",
-      },
-      {
-        name: "carBrand",
-        label: "Марка автомобиля",
-        type: "text",
-      },
-      {
-        name: "carModel",
-        label: "Модель автомобиля",
-        type: "text",
-      },
-      {
-        name: "yearFrom",
-        label: "Год от",
-        type: "number",
-        min: 1900,
-      },
-      {
-        name: "yearTo",
-        label: "Год до",
-        type: "number",
-        min: 1900,
-      },
-      {
-        name: "condition",
-        label: "Состояние",
-        type: "select",
-        options: [
-          "Новое",
-          "Б/у",
-          "Восстановленное",
-        ],
-      },
-    ],
-  },
+  title: "Автомобиль",
+  fields: [
+    {
+      name: "vehicleType",
+      label: "Тип автомобиля",
+      type: "select",
+      required: true,
+      options: [
+        {
+          value: "passenger",
+          label: "Легковой",
+        },
+        {
+          value: "truck",
+          label: "Грузовой",
+        },
+      ],
+    },
+
+    {
+      name: "carBrand",
+      label: "Марка",
+      type: "select",
+      required: true,
+      options: [],
+    },
+
+    {
+      name: "carModel",
+      label: "Модель",
+      type: "select",
+      required: true,
+      options: [],
+    },
+  ],
+},
 
   "auto-accessories": {
-    title: "Характеристики автоаксессуара",
-    fields: [
-      {
-        name: "accessoryType",
-        label: "Тип аксессуара",
-        type: "text",
-        placeholder: "Например, автобагажник",
-        required: true,
-      },
-      {
-        name: "brand",
-        label: "Бренд",
-        type: "text",
-      },
-      {
-        name: "carBrand",
-        label: "Марка автомобиля",
-        type: "text",
-      },
-      {
-        name: "carModel",
-        label: "Модель автомобиля",
-        type: "text",
-      },
-      {
-        name: "material",
-        label: "Материал",
-        type: "text",
-      },
-      {
-        name: "condition",
-        label: "Состояние",
-        type: "select",
-        options: [
-          "Новое",
-          "Б/у",
-        ],
-      },
-    ],
-  },
+  title: "Характеристики автоаксессуара",
+  fields: [
+    {
+      name: "accessoryType",
+      label: "Тип аксессуара",
+      type: "text",
+      placeholder: "Например, автобагажник",
+      required: true,
+    },
+
+    {
+      name: "brand",
+      label: "Бренд",
+      type: "text",
+    },
+
+    // Марка автомобиля
+    {
+      name: "carBrand",
+      label: "Марка автомобиля",
+      type: "select",
+      options: Object.keys(carData),
+    },
+
+    // Модель автомобиля
+    {
+      name: "carModel",
+      label: "Модель автомобиля",
+      type: "select",
+      options: [],
+    },
+
+    {
+      name: "material",
+      label: "Материал",
+      type: "text",
+    },
+
+    {
+      name: "condition",
+      label: "Состояние",
+      type: "select",
+      options: [
+        "Новое",
+        "Б/у",
+      ],
+    },
+  ],
+},
 
   "tires-wheels": {
     title: "Характеристики шин и дисков",

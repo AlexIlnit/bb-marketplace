@@ -119,197 +119,327 @@ const characteristicConfig =
 
       <div className="grid md:grid-cols-2 gap-8">
 
-        {/* Фото */}
-<div className="aspect-3/2 relative overflow-hidden rounded-xl bg-gray-100">
+{/* Фото */}
+<div className="w-full min-w-0">
 
-  {/* Избранное */}
-  <button
-    aria-label={
-      isFavorite
-        ? "Убрать из избранного"
-        : "Добавить в избранное"
-    }
-    onClick={(e) => {
-      e.stopPropagation();
-      toggleFavorite(listing._id);
-    }}
+  {/* Основное фото */}
+  <div
     className="
-      absolute
-      top-4
-      right-4
-      bg-white
-      p-2
-      rounded-full
-      shadow-lg
-      z-20
-      hover:scale-105
-      transition
+      relative
+      w-full
+      aspect-4/3
+      sm:aspect-3/2
+      overflow-hidden
+      rounded-xl
+      bg-gray-100
     "
   >
-    <Heart
-      size={22}
-      fill={isFavorite ? "red" : "none"}
-      color={isFavorite ? "red" : "#374151"}
-    />
-  </button>
 
-  {/* Если есть фотографии */}
-  {images.length > 0 ? (
-    <>
-      <img
-        src={images[currentImage]}
-        alt={listing.title}
-        className="
-          absolute
-          inset-0
-          w-full
-          h-full
-          object-cover
-          rounded-xl
-        "
+    {/* Избранное */}
+    <button
+      type="button"
+      aria-label={
+        isFavorite
+          ? "Убрать из избранного"
+          : "Добавить в избранное"
+      }
+      onClick={(e) => {
+        e.stopPropagation();
+        toggleFavorite(listing._id);
+      }}
+      className="
+        absolute
+        top-3
+        right-3
+        sm:top-4
+        sm:right-4
+        bg-white
+        p-2
+        sm:p-2.5
+        rounded-full
+        shadow-lg
+        z-20
+        hover:scale-105
+        active:scale-95
+        transition
+      "
+    >
+      <Heart
+        size={20}
+        className="sm:w-5.5 sm:h-5.5"
+        fill={isFavorite ? "red" : "none"}
+        color={isFavorite ? "red" : "#374151"}
       />
+    </button>
 
-      {/* Переключатели */}
-      {images.length > 1 && (
-        <>
+    {images.length > 0 ? (
+      <>
+        {/* Основное изображение */}
+        <img
+          src={images[currentImage]}
+          alt={`${listing.title} — фото ${currentImage + 1}`}
+          className="
+            absolute
+            inset-0
+            w-full
+            h-full
+            object-cover
+          "
+        />
+
+        {/* Стрелка назад */}
+        {images.length > 1 && (
           <button
             type="button"
+            aria-label="Предыдущее фото"
             onClick={(e) => {
               e.stopPropagation();
+
               setCurrentImage((prev) =>
                 prev === 0 ? images.length - 1 : prev - 1
               );
             }}
             className="
               absolute
-              left-3
+              left-2
+              sm:left-3
               top-1/2
               -translate-y-1/2
-              w-10
-              h-10
+              w-8
+              h-8
+              sm:w-10
+              sm:h-10
               rounded-full
               bg-white/90
               shadow-md
               flex
               items-center
               justify-center
-              text-2xl
+              text-xl
+              sm:text-2xl
               text-gray-700
               hover:bg-white
+              active:scale-95
               transition
               z-10
             "
           >
             ‹
           </button>
+        )}
 
+        {/* Стрелка вперед */}
+        {images.length > 1 && (
           <button
             type="button"
+            aria-label="Следующее фото"
             onClick={(e) => {
               e.stopPropagation();
+
               setCurrentImage((prev) =>
                 prev === images.length - 1 ? 0 : prev + 1
               );
             }}
             className="
               absolute
-              right-3
+              right-2
+              sm:right-3
               top-1/2
               -translate-y-1/2
-              w-10
-              h-10
+              w-8
+              h-8
+              sm:w-10
+              sm:h-10
               rounded-full
               bg-white/90
               shadow-md
               flex
               items-center
               justify-center
-              text-2xl
+              text-xl
+              sm:text-2xl
               text-gray-700
               hover:bg-white
+              active:scale-95
               transition
               z-10
             "
           >
             ›
           </button>
-        </>
-      )}
+        )}
 
-      {/* Точки */}
-      {images.length > 1 && (
-        <div className="
+        {/* Индикатор количества фото */}
+        {images.length > 1 && (
+          <div
+            className="
+              absolute
+              bottom-3
+              left-1/2
+              -translate-x-1/2
+              px-2.5
+              py-1
+              rounded-full
+              bg-black/50
+              text-white
+              text-xs
+              font-medium
+              z-10
+              sm:hidden
+            "
+          >
+            {currentImage + 1} / {images.length}
+          </div>
+        )}
+
+        {/* Точки — только на десктопе */}
+        {images.length > 1 && (
+          <div
+            className="
+              hidden
+              sm:flex
+              absolute
+              bottom-3
+              left-1/2
+              -translate-x-1/2
+              gap-1.5
+              z-10
+            "
+          >
+            {images.map((_, index) => (
+              <div
+                key={index}
+                className={`
+                  w-2
+                  h-2
+                  rounded-full
+                  transition
+                  ${
+                    currentImage === index
+                      ? "bg-white scale-110"
+                      : "bg-white/50"
+                  }
+                `}
+              />
+            ))}
+          </div>
+        )}
+      </>
+    ) : (
+      /* Заглушка без фотографии */
+      <div
+        className="
           absolute
-          bottom-3
-          left-1/2
-          -translate-x-1/2
+          inset-0
           flex
-          gap-1.5
-          z-10
-        ">
-          {images.map((_, index) => (
-            <div
-              key={index}
-              className={`
-                w-2
-                h-2
-                rounded-full
-                transition
-                ${
-                  currentImage === index
-                    ? "bg-white scale-110"
-                    : "bg-white/50"
-                }
-              `}
-            />
-          ))}
+          flex-col
+          items-center
+          justify-center
+          bg-linear-to-br
+          from-gray-100
+          via-gray-50
+          to-gray-200
+          text-gray-400
+          px-4
+          text-center
+        "
+      >
+        <div
+          className="
+            w-16
+            h-16
+            sm:w-20
+            sm:h-20
+            rounded-3xl
+            bg-white
+            shadow-sm
+            flex
+            items-center
+            justify-center
+            mb-3
+            sm:mb-4
+          "
+        >
+          <ImageOff
+            size={32}
+            className="sm:w-9.5 sm:h-9.5 text-gray-300"
+            strokeWidth={1.5}
+          />
         </div>
-      )}
-    </>
-  ) : (
 
-    /* Заглушка без фотографии */
-    <div className="
-      absolute
-      inset-0
-      flex
-      flex-col
-      items-center
-      justify-center
-      bg-linear-to-br
-      from-gray-100
-      via-gray-50
-      to-gray-200
-      text-gray-400
-    ">
-      <div className="
-        w-20
-        h-20
-        rounded-3xl
-        bg-white
-        shadow-sm
-        flex
-        items-center
-        justify-center
-        mb-4
-      ">
-        <ImageOff
-          size={38}
-          strokeWidth={1.5}
-          className="text-gray-300"
-        />
+        <span className="text-sm font-medium text-gray-400">
+          Фото отсутствует
+        </span>
+
+        <span className="text-xs text-gray-300 mt-1">
+          Продавец не добавил фотографию
+        </span>
       </div>
+    )}
+  </div>
 
-      <span className="text-sm font-medium text-gray-400">
-        Фото отсутствует
-      </span>
+  {/* Превью */}
+  {images.length > 1 && (
+    <div
+      className="
+        mt-2
+        sm:mt-3
+        flex
+        gap-2
+        overflow-x-auto
+        pb-1
+        scrollbar-thin
+        snap-x
+        snap-mandatory
+      "
+      style={{
+        WebkitOverflowScrolling: "touch",
+      }}
+    >
+      {images.map((img, index) => (
+        <button
+          key={index}
+          type="button"
+          aria-label={`Показать фото ${index + 1}`}
+          onClick={() => setCurrentImage(index)}
+          className={`
+            relative
+            shrink-0
+            snap-start
+            w-14
+            h-14
+            sm:w-16
+            sm:h-16
+            rounded-lg
+            overflow-hidden
+            border-2
+            transition
+            active:scale-95
+            ${
+              currentImage === index
+                ? "border-blue-600"
+                : "border-transparent hover:border-gray-300"
+            }
+          `}
+        >
+          <img
+            src={img}
+            alt=""
+            loading="lazy"
+            className="
+              w-full
+              h-full
+              object-cover
+            "
+          />
 
-      <span className="text-xs text-gray-300 mt-1">
-        Продавец не добавил фотографию
-      </span>
+          {currentImage !== index && (
+            <div className="absolute inset-0 bg-black/10" />
+          )}
+        </button>
+      ))}
     </div>
   )}
-
 </div>
 
         {/* Информация */}
