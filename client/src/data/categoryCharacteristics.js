@@ -2431,21 +2431,21 @@ export const categoryCharacteristics = {
     title: "Характеристики бытовой техники",
     fields: [
       {
-        name: "type",
+        name: "applianceType",
         label: "Тип техники",
-        type: "text",
+        type: "select",
         placeholder: "Холодильник, стиральная машина...",
         required: true,
       },
       {
         name: "brand",
         label: "Бренд",
-        type: "text",
+        type: "select",
       },
       {
         name: "model",
         label: "Модель",
-        type: "text",
+        type: "select",
       },
       {
         name: "energyClass",

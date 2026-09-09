@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 
 import { categoryCharacteristics } from "../../data/categoryCharacteristics";
+
 import { carData } from "../../data/carData";
 import { truckData } from "../../data/truckData";
 import { motoData } from "../../data/motoData";
@@ -16,7 +17,7 @@ import { photoVideoData } from "../../data/photoVideoData";
 import { tvData } from "../../data/tvData";
 import { computerData } from "../../data/computerData";
 import { audioData } from "../../data/audioData";
-
+import { homeApplianceData } from "../../data/homeApplianceData";
 
 export default function CategoryFilters({
   categorySlug,
@@ -31,160 +32,231 @@ export default function CategoryFilters({
 
   if (!config) return null;
 
-  const isPartsCategory = categorySlug === "auto-parts";
+  // ==========================================
+  // КАТЕГОРИИ
+  // ==========================================
+
+  const isPartsCategory =
+    categorySlug === "auto-parts";
+
+  const isPhotoVideoCategory =
+    categorySlug === "photo-video";
+
+  const isAudioCategory =
+    categorySlug === "audio";
+
+  const isHomeApplianceCategory =
+    categorySlug === "home-appliances";
 
   // ==========================================
-  // Данные автомобилей
+  // БЫТОВАЯ ТЕХНИКА
+  // Тип → Бренд → Модель
   // ==========================================
-const dataMap = {
-  "passenger-cars": carData,
-  trucks: truckData,
-  motorcycles: motoData,
-  phones: phoneData,
-  tablet: tabletData,
-  laptop: laptopData,
-  photoVideo: photoVideoData,
-  tv: tvData,
-};
 
- // ==========================================
-// Данные для категории
-// ==========================================
+  const selectedApplianceType =
+    filters.applianceType || "";
 
-const isPhotoVideoCategory =
-  categorySlug === "photo-video";
+  const selectedApplianceBrand =
+    filters.brand || "";
 
-const selectedPhotoVideoType =
-  filters.photoVideoType || "";
+  const applianceTypeData =
+    isHomeApplianceCategory
+      ? homeApplianceData[selectedApplianceType] || {}
+      : {};
 
-const selectedPhotoVideoBrand =
-  filters.brand || "";
+  const applianceBrands =
+    isHomeApplianceCategory
+      ? Object.keys(applianceTypeData)
+      : [];
 
-const photoVideoTypeData =
-  isPhotoVideoCategory
-    ? photoVideoData[selectedPhotoVideoType] || {}
-    : {};
+  const applianceModels =
+    isHomeApplianceCategory &&
+    selectedApplianceBrand
+      ? applianceTypeData[selectedApplianceBrand] || []
+      : [];
 
-const photoVideoBrands =
-  isPhotoVideoCategory
-    ? Object.keys(photoVideoTypeData)
-    : [];
+  // ==========================================
+  // ФОТО И ВИДЕО
+  // Тип → Бренд → Модель
+  // ==========================================
 
-const photoVideoModels =
-  isPhotoVideoCategory &&
-  selectedPhotoVideoBrand
-    ? photoVideoTypeData[selectedPhotoVideoBrand] || []
-    : [];
+  const selectedPhotoVideoType =
+    filters.photoVideoType || "";
 
-const isAudioCategory =
-  categorySlug === "audio";
+  const selectedPhotoVideoBrand =
+    filters.brand || "";
 
-const selectedAudioType =
-  filters.audioType || "";
+  const photoVideoTypeData =
+    isPhotoVideoCategory
+      ? photoVideoData[selectedPhotoVideoType] || {}
+      : {};
 
-const selectedAudioBrand =
-  filters.brand || "";
+  const photoVideoBrands =
+    isPhotoVideoCategory
+      ? Object.keys(photoVideoTypeData)
+      : [];
 
-const audioTypeData =
-  isAudioCategory
-    ? audioData[selectedAudioType] || {}
-    : {};
+  const photoVideoModels =
+    isPhotoVideoCategory &&
+    selectedPhotoVideoBrand
+      ? photoVideoTypeData[selectedPhotoVideoBrand] || []
+      : [];
 
-const audioBrands =
-  isAudioCategory
-    ? Object.keys(audioTypeData)
-    : [];
+  // ==========================================
+  // АУДИО
+  // Тип → Бренд → Модель
+  // ==========================================
 
-const audioModels =
-  isAudioCategory &&
-  selectedAudioBrand
-    ? audioTypeData[selectedAudioBrand] || []
-    : [];    
+  const selectedAudioType =
+    filters.audioType || "";
 
-const vehicleData = isPartsCategory
-  ? filters.vehicleType === "truck"
-    ? truckData
-    : filters.vehicleType === "passenger"
+  const selectedAudioBrand =
+    filters.brand || "";
+
+  const audioTypeData =
+    isAudioCategory
+      ? audioData[selectedAudioType] || {}
+      : {};
+
+  const audioBrands =
+    isAudioCategory
+      ? Object.keys(audioTypeData)
+      : [];
+
+  const audioModels =
+    isAudioCategory &&
+    selectedAudioBrand
+      ? audioTypeData[selectedAudioBrand] || []
+      : [];
+
+  // ==========================================
+  // ДАННЫЕ АВТОЗАПЧАСТЕЙ
+  // ==========================================
+
+  const vehicleData = isPartsCategory
+    ? filters.vehicleType === "truck"
+      ? truckData
+      : filters.vehicleType === "passenger"
+        ? carData
+        : {}
+    : categorySlug === "passenger-cars"
       ? carData
-      : {}
-  : categorySlug === "trucks"
-    ? truckData
-    : categorySlug === "motorcycles"
-      ? motoData
-      : categorySlug === "phones"
-        ? phoneData
-        : categorySlug === "tablets"
-          ? tabletData
-          : categorySlug === "laptops"
-            ? laptopData
-            : categorySlug === "tv"
-            ? tvData
-            : categorySlug === "computers"
-              ? computerData
-              : carData;
-
-      
+      : categorySlug === "trucks"
+        ? truckData
+        : categorySlug === "motorcycles"
+          ? motoData
+          : categorySlug === "phones"
+            ? phoneData
+            : categorySlug === "tablets"
+              ? tabletData
+              : categorySlug === "laptops"
+                ? laptopData
+                : categorySlug === "tv"
+                  ? tvData
+                  : categorySlug === "computers"
+                    ? computerData
+                    : {};
 
   // ==========================================
   // CHANGE
   // ==========================================
 
   const handleChange = (name, value) => {
-  const updatedFilters = {
-    ...filters,
-    [name]: value,
+    const updatedFilters = {
+      ...filters,
+      [name]: value,
+    };
+
+    // ========================================
+    // БЫТОВАЯ ТЕХНИКА
+    // ========================================
+
+    if (
+      isHomeApplianceCategory &&
+      name === "applianceType"
+    ) {
+      updatedFilters.brand = "";
+      updatedFilters.model = "";
+    }
+
+    if (
+      isHomeApplianceCategory &&
+      name === "brand"
+    ) {
+      updatedFilters.model = "";
+    }
+
+    // ========================================
+    // ФОТО И ВИДЕО
+    // ========================================
+
+    if (
+      isPhotoVideoCategory &&
+      name === "photoVideoType"
+    ) {
+      updatedFilters.brand = "";
+      updatedFilters.model = "";
+    }
+
+    if (
+      isPhotoVideoCategory &&
+      name === "brand"
+    ) {
+      updatedFilters.model = "";
+    }
+
+    // ========================================
+    // АУДИО
+    // ========================================
+
+    if (
+      isAudioCategory &&
+      name === "audioType"
+    ) {
+      updatedFilters.brand = "";
+      updatedFilters.model = "";
+    }
+
+    if (
+      isAudioCategory &&
+      name === "brand"
+    ) {
+      updatedFilters.model = "";
+    }
+
+    // ========================================
+    // АВТОЗАПЧАСТИ
+    // ========================================
+
+    if (isPartsCategory) {
+      if (name === "vehicleType") {
+        updatedFilters.carBrand = "";
+        updatedFilters.carModel = "";
+      }
+
+      if (name === "carBrand") {
+        updatedFilters.carModel = "";
+      }
+    }
+
+    // ========================================
+    // ОБЫЧНЫЕ КАТЕГОРИИ
+    // Авто / телефоны / планшеты /
+    // ноутбуки / ТВ / компьютеры
+    // ========================================
+
+    if (
+      !isPartsCategory &&
+      !isHomeApplianceCategory &&
+      !isPhotoVideoCategory &&
+      !isAudioCategory &&
+      name === "brand"
+    ) {
+      updatedFilters.model = "";
+    }
+
+    onChange(updatedFilters);
   };
-
-  // ========================================
-  // Легковые / грузовые / мотоциклы
-  // ========================================
-
-  if (
-    !isPartsCategory &&
-    (name === "brand" || name === "carBrand")
-  ) {
-    const modelField =
-      name === "carBrand"
-        ? "carModel"
-        : "model";
-
-    updatedFilters[modelField] = "";
-  }
-// ========================================
-// Фото и видео техника
-// ========================================
-
-if (
-  isPhotoVideoCategory &&
-  name === "photoVideoType"
-) {
-  updatedFilters.brand = "";
-  updatedFilters.model = "";
-}
-
-if (
-  isPhotoVideoCategory &&
-  name === "brand"
-) {
-  updatedFilters.model = "";
-}
-  // ========================================
-  // Автозапчасти
-  // ========================================
-
-  if (isPartsCategory) {
-    if (name === "vehicleType") {
-      updatedFilters.carBrand = "";
-      updatedFilters.carModel = "";
-    }
-
-    if (name === "carBrand") {
-      updatedFilters.carModel = "";
-    }
-  }
-
-  onChange(updatedFilters);
-};
 
   // ==========================================
   // RESET
@@ -198,98 +270,150 @@ if (
   // OPTIONS
   // ==========================================
 
-const getOptions = (field) => {
-  // ========================================
-  // Фото и видео техника
-  // ========================================
-if (isAudioCategory) {
-  if (field.name === "audioType") {
-    return Object.keys(audioData);
-  }
+  const getOptions = (field) => {
+    // ========================================
+    // БЫТОВАЯ ТЕХНИКА
+    // ========================================
 
-  if (field.name === "brand") {
-    return audioBrands;
-  }
+    if (isHomeApplianceCategory) {
+      // Тип техники
+      if (field.name === "applianceType") {
+        return Object.keys(homeApplianceData);
+      }
 
-  if (
-    field.name === "model" &&
-    filters.brand
-  ) {
-    return audioModels;
-  }
+      // Бренд
+      if (field.name === "brand") {
+        return applianceBrands;
+      }
 
-  return field.options || [];
-}
-  if (isPhotoVideoCategory) {
-    // Тип техники
-    if (field.name === "photoVideoType") {
-      return Object.keys(photoVideoData);
+      // Модель
+      if (
+        field.name === "model" &&
+        filters.brand
+      ) {
+        return applianceModels;
+      }
+
+      return field.options || [];
     }
 
-    // Бренд
-    if (field.name === "brand") {
-      return photoVideoBrands;
+    // ========================================
+    // АУДИО
+    // ========================================
+
+    if (isAudioCategory) {
+      // Тип техники
+      if (field.name === "audioType") {
+        return Object.keys(audioData);
+      }
+
+      // Бренд
+      if (field.name === "brand") {
+        return audioBrands;
+      }
+
+      // Модель
+      if (
+        field.name === "model" &&
+        filters.brand
+      ) {
+        return audioModels;
+      }
+
+      return field.options || [];
     }
 
-    // Модель
+    // ========================================
+    // ФОТО И ВИДЕО
+    // ========================================
+
+    if (isPhotoVideoCategory) {
+      // Тип техники
+      if (field.name === "photoVideoType") {
+        return Object.keys(photoVideoData);
+      }
+
+      // Бренд
+      if (field.name === "brand") {
+        return photoVideoBrands;
+      }
+
+      // Модель
+      if (
+        field.name === "model" &&
+        filters.brand
+      ) {
+        return photoVideoModels;
+      }
+
+      return field.options || [];
+    }
+
+    // ========================================
+    // АВТОЗАПЧАСТИ
+    // ========================================
+
+    if (isPartsCategory) {
+      // Марка автомобиля
+      if (field.name === "carBrand") {
+        return Object.keys(vehicleData);
+      }
+
+      // Модель автомобиля
+      if (
+        field.name === "carModel" &&
+        filters.carBrand
+      ) {
+        return (
+          vehicleData[filters.carBrand] || []
+        );
+      }
+
+      return field.options || [];
+    }
+
+    // ========================================
+    // АВТОАКСЕССУАРЫ
+    // ========================================
+
     if (
-      field.name === "model" &&
-      filters.brand
+      field.name === "carBrand" &&
+      categorySlug === "auto-accessories"
     ) {
-      return photoVideoModels;
-    }
-
-    return field.options || [];
-  }
-
-  // ========================================
-  // Автозапчасти
-  // ========================================
-
-  if (isPartsCategory) {
-    if (field.name === "carBrand") {
-      return Object.keys(vehicleData);
+      return Object.keys(carData);
     }
 
     if (
       field.name === "carModel" &&
+      categorySlug === "auto-accessories" &&
       filters.carBrand
     ) {
-      return vehicleData[filters.carBrand] || [];
+      return (
+        carData[filters.carBrand] || []
+      );
+    }
+
+    // ========================================
+    // ОБЫЧНЫЕ КАТЕГОРИИ
+    // Авто / телефоны / планшеты /
+    // ноутбуки / ТВ / компьютеры
+    // ========================================
+
+    if (field.name === "brand") {
+      return Object.keys(vehicleData);
+    }
+
+    if (
+      field.name === "model" &&
+      filters.brand
+    ) {
+      return (
+        vehicleData[filters.brand] || []
+      );
     }
 
     return field.options || [];
-  }
-
-  // ========================================
-  // Мотоциклы / легковые / грузовые /
-  // телефоны / планшеты / ноутбуки
-  // ========================================
-
-  if (field.name === "brand") {
-    return Object.keys(vehicleData);
-  }
-
-  if (
-    field.name === "model" &&
-    filters.brand
-  ) {
-    return vehicleData[filters.brand] || [];
-  }
-
-  // ========================================
-  // Автоаксессуары
-  // ========================================
-
-  if (
-    field.name === "carModel" &&
-    filters.carBrand
-  ) {
-    return vehicleData[filters.carBrand] || [];
-  }
-
-  return field.options || [];
-};
+  };
 
   // ==========================================
   // RENDER
@@ -332,63 +456,116 @@ if (isAudioCategory) {
               const options = getOptions(field);
 
               // ====================================
+              // SPECIAL FLAGS
+              // ====================================
+
+              const isApplianceType =
+                isHomeApplianceCategory &&
+                field.name === "applianceType";
+
+              const isApplianceBrand =
+                isHomeApplianceCategory &&
+                field.name === "brand";
+
+              const isApplianceModel =
+                isHomeApplianceCategory &&
+                field.name === "model";
+
+              // ====================================
               // DISABLED
               // ====================================
 
               let disabled = false;
+
+              // ------------------------------------
+              // Бытовая техника
+              // ------------------------------------
+
               if (
-  isAudioCategory &&
-  field.name === "brand" &&
-  !filters.audioType
-) {
-  disabled = true;
-}
+                isApplianceBrand &&
+                !filters.applianceType
+              ) {
+                disabled = true;
+              }
 
-if (
-  isAudioCategory &&
-  field.name === "model" &&
-  !filters.brand
-) {
-  disabled = true;
-}
-
-              // Фото и видео: бренд
-if (
-  isPhotoVideoCategory &&
-  field.name === "brand" &&
-  !filters.photoVideoType
-) {
-  disabled = true;
-}
-
-// Фото и видео: модель
-if (
-  isPhotoVideoCategory &&
-  field.name === "model" &&
-  !filters.brand
-) {
-  disabled = true;
-}
-
-              // Обычные автомобили
               if (
-                !isPartsCategory &&
+                isApplianceModel &&
+                !filters.brand
+              ) {
+                disabled = true;
+              }
+
+              // ------------------------------------
+              // Аудио
+              // ------------------------------------
+
+              if (
+                isAudioCategory &&
+                field.name === "brand" &&
+                !filters.audioType
+              ) {
+                disabled = true;
+              }
+
+              if (
+                isAudioCategory &&
                 field.name === "model" &&
                 !filters.brand
               ) {
                 disabled = true;
               }
 
-              // Аксессуары
+              // ------------------------------------
+              // Фото и видео
+              // ------------------------------------
+
+              if (
+                isPhotoVideoCategory &&
+                field.name === "brand" &&
+                !filters.photoVideoType
+              ) {
+                disabled = true;
+              }
+
+              if (
+                isPhotoVideoCategory &&
+                field.name === "model" &&
+                !filters.brand
+              ) {
+                disabled = true;
+              }
+
+              // ------------------------------------
+              // Обычные категории
+              // ------------------------------------
+
               if (
                 !isPartsCategory &&
+                !isHomeApplianceCategory &&
+                !isPhotoVideoCategory &&
+                !isAudioCategory &&
+                field.name === "model" &&
+                !filters.brand
+              ) {
+                disabled = true;
+              }
+
+              // ------------------------------------
+              // Автоаксессуары
+              // ------------------------------------
+
+              if (
+                categorySlug === "auto-accessories" &&
                 field.name === "carModel" &&
                 !filters.carBrand
               ) {
                 disabled = true;
               }
 
+              // ------------------------------------
               // Запчасти: марка
+              // ------------------------------------
+
               if (
                 isPartsCategory &&
                 field.name === "carBrand" &&
@@ -397,7 +574,10 @@ if (
                 disabled = true;
               }
 
+              // ------------------------------------
               // Запчасти: модель
+              // ------------------------------------
+
               if (
                 isPartsCategory &&
                 field.name === "carModel" &&
@@ -446,36 +626,56 @@ if (
                         disabled:text-gray-400
                       "
                     >
-  <option value="">
-  {disabled
-    ? isPartsCategory &&
-      field.name === "carBrand" &&
-      !filters.vehicleType
-      ? "Сначала выберите тип автомобиля"
 
-      : isPhotoVideoCategory &&
-        field.name === "brand" &&
-        !filters.photoVideoType
-      ? "Сначала выберите тип техники"
+                      <option value="">
+                        {disabled
+                          ? isApplianceBrand &&
+                            !filters.applianceType
+                            ? "Сначала выберите тип техники"
 
-      : isPhotoVideoCategory &&
-        field.name === "model" &&
-        !filters.brand
-      ? "Сначала выберите бренд"
+                          : isApplianceModel &&
+                            !filters.brand
+                            ? "Сначала выберите бренд"
 
-      : isAudioCategory &&
-        field.name === "brand" &&
-        !filters.audioType
-      ? "Сначала выберите тип техники"
+                          : isPartsCategory &&
+                            field.name === "carBrand" &&
+                            !filters.vehicleType
+                            ? "Сначала выберите тип автомобиля"
 
-      : isAudioCategory &&
-        field.name === "model" &&
-        !filters.brand
-      ? "Сначала выберите бренд"
+                          : isPartsCategory &&
+                            field.name === "carModel" &&
+                            !filters.carBrand
+                            ? "Сначала выберите марку"
 
-      : "Сначала выберите марку"
-    : "Любое"}
-</option>
+                          : isPhotoVideoCategory &&
+                            field.name === "brand" &&
+                            !filters.photoVideoType
+                            ? "Сначала выберите тип техники"
+
+                          : isPhotoVideoCategory &&
+                            field.name === "model" &&
+                            !filters.brand
+                            ? "Сначала выберите бренд"
+
+                          : isAudioCategory &&
+                            field.name === "brand" &&
+                            !filters.audioType
+                            ? "Сначала выберите тип техники"
+
+                          : isAudioCategory &&
+                            field.name === "model" &&
+                            !filters.brand
+                            ? "Сначала выберите бренд"
+
+                          : categorySlug === "auto-accessories" &&
+                            field.name === "carModel" &&
+                            !filters.carBrand
+                            ? "Сначала выберите марку"
+
+                          : "Сначала выберите марку"
+
+                          : "Любое"}
+                      </option>
 
                       {options.map((option) => {
                         const value =
