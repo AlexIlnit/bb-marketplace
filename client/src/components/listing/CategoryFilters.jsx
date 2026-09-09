@@ -9,6 +9,7 @@ import { categoryCharacteristics } from "../../data/categoryCharacteristics";
 import { carData } from "../../data/carData";
 import { truckData } from "../../data/truckData";
 import { motoData } from "../../data/motoData";
+import { phoneData } from "../../data/phoneData";
 
 export default function CategoryFilters({
   categorySlug,
@@ -28,6 +29,12 @@ export default function CategoryFilters({
   // ==========================================
   // Данные автомобилей
   // ==========================================
+const dataMap = {
+  "passenger-cars": carData,
+  trucks: truckData,
+  motorcycles: motoData,
+  phones: phoneData,
+};
 
   const vehicleData = isPartsCategory
   ? filters.vehicleType === "truck"
@@ -35,11 +42,9 @@ export default function CategoryFilters({
     : filters.vehicleType === "passenger"
       ? carData
       : {}
-  : categorySlug === "trucks"
-    ? truckData
-    : categorySlug === "motorcycles"
-      ? motoData
-      : carData;
+  : dataMap[categorySlug] || carData;
+
+      
 
   // ==========================================
   // CHANGE

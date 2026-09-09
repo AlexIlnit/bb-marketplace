@@ -11,6 +11,8 @@ import { categoryCharacteristics } from "../../data/categoryCharacteristics";
 import { carData } from "../../data/carData";
 import { truckData  } from "../../data/truckData";
 import { motoData } from "../../data/motoData";
+import { phoneData } from "../../data/phoneData";
+
 
 export default function CreateListing() {
 
@@ -52,7 +54,7 @@ const characteristicConfig = selectedCategory?.slug
 // АВТОМОБИЛИ / ГРУЗОВИКИ
 // =====================================================
 
-const carFieldMap = {
+const vehicleFieldMap = {
   "passenger-cars": {
     brand: "brand",
     model: "model",
@@ -71,6 +73,12 @@ const carFieldMap = {
     data: motoData,
   },
 
+  phones: {
+    brand: "brand",
+    model: "model",
+    data: phoneData,
+  },
+
   "auto-accessories": {
     brand: "carBrand",
     model: "carModel",
@@ -78,8 +86,8 @@ const carFieldMap = {
   },
 };
 
-const carFields =
-  carFieldMap[selectedCategory?.slug];
+const vehicleFields =
+  vehicleFieldMap[selectedCategory?.slug];
 
 
 // =====================================================
@@ -113,13 +121,13 @@ const partsModels =
 // ОБЫЧНЫЕ АВТОКАТЕГОРИИ
 // =====================================================
 
-const selectedCarBrand = carFields
-  ? characteristics[carFields.brand] || ""
+const selectedVehicleBrand = vehicleFields
+  ? characteristics[vehicleFields.brand] || ""
   : "";
 
-const carModels =
-  carFields && selectedCarBrand
-    ? carFields.data[selectedCarBrand] || []
+const vehicleModels =
+  vehicleFields && selectedVehicleBrand
+    ? vehicleFields.data[selectedVehicleBrand] || []
     : [];
 
 
@@ -244,11 +252,11 @@ const handleCharacteristicChange = (e) => {
     // =========================================
 
     if (
-      carFields &&
-      name === carFields.brand
-    ) {
-      updated[carFields.model] = "";
-    }
+  vehicleFields &&
+  name === vehicleFields.brand
+) {
+  updated[vehicleFields.model] = "";
+}
 
     return updated;
   });
@@ -806,13 +814,13 @@ useEffect(() => {
   const isPartsModel =
     isPartsCategory && field.name === "carModel";
 
-  const isCarBrand =
-    carFields &&
-    field.name === carFields.brand;
+  const isVehicleBrand =
+  vehicleFields &&
+  field.name === vehicleFields.brand;
 
-  const isCarModel =
-    carFields &&
-    field.name === carFields.model;
+const isVehicleModel =
+  vehicleFields &&
+  field.name === vehicleFields.model;
 
   let options = field.options || [];
 
@@ -827,19 +835,18 @@ useEffect(() => {
   }
 
   // Марки автомобилей / грузовиков / мотоциклов
-  if (isCarBrand) {
-    options = Object.keys(carFields.data);
-  }
+  if (isVehicleBrand) {
+  options = Object.keys(vehicleFields.data);
+}
 
-  // Модели выбранной марки
-  if (isCarModel) {
-    options = carModels;
-  }
+if (isVehicleModel) {
+  options = vehicleModels;
+}
 
   const isDisabled =
-    (isPartsBrand && !selectedVehicleType) ||
-    (isPartsModel && !selectedPartsBrand) ||
-    (isCarModel && !selectedCarBrand);
+  (isPartsBrand && !selectedVehicleType) ||
+  (isPartsModel && !selectedPartsBrand) ||
+  (isVehicleModel && !selectedVehicleBrand);
 
   return (
     <div key={field.name}>
@@ -863,7 +870,7 @@ useEffect(() => {
               ? "Сначала выберите тип автомобиля"
               : isPartsModel && !selectedPartsBrand
               ? "Сначала выберите марку"
-              : isCarModel && !selectedCarBrand
+              : isVehicleModel && !selectedVehicleBrand
               ? "Сначала выберите марку"
               : `Выберите ${field.label.toLowerCase()}`}
           </option>

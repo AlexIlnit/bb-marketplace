@@ -1,5 +1,6 @@
 import { carData} from "./carData";
 import { truckData} from "./truckData";
+import { phoneData} from "./phoneData";
 export const categoryCharacteristics = {
   // =========================================================
   // НЕДВИЖИМОСТЬ
@@ -824,16 +825,18 @@ export const categoryCharacteristics = {
       {
         name: "brand",
         label: "Бренд",
-        type: "text",
+        type: "select",
         placeholder: "Apple",
         required: true,
+        options: [],
       },
       {
         name: "model",
         label: "Модель",
-        type: "text",
+        type: "select",
         placeholder: "iPhone 15 Pro",
         required: true,
+        options: [],
       },
       {
         name: "storage",
