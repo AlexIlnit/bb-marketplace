@@ -15,6 +15,7 @@ import { laptopData } from "../../data/laptopData";
 import { photoVideoData } from "../../data/photoVideoData";
 import { tvData } from "../../data/tvData";
 import { computerData } from "../../data/computerData";
+import { audioData } from "../../data/audioData";
 
 
 export default function CategoryFilters({
@@ -74,6 +75,31 @@ const photoVideoModels =
   selectedPhotoVideoBrand
     ? photoVideoTypeData[selectedPhotoVideoBrand] || []
     : [];
+
+const isAudioCategory =
+  categorySlug === "audio";
+
+const selectedAudioType =
+  filters.audioType || "";
+
+const selectedAudioBrand =
+  filters.brand || "";
+
+const audioTypeData =
+  isAudioCategory
+    ? audioData[selectedAudioType] || {}
+    : {};
+
+const audioBrands =
+  isAudioCategory
+    ? Object.keys(audioTypeData)
+    : [];
+
+const audioModels =
+  isAudioCategory &&
+  selectedAudioBrand
+    ? audioTypeData[selectedAudioBrand] || []
+    : [];    
 
 const vehicleData = isPartsCategory
   ? filters.vehicleType === "truck"
@@ -176,7 +202,24 @@ const getOptions = (field) => {
   // ========================================
   // Фото и видео техника
   // ========================================
+if (isAudioCategory) {
+  if (field.name === "audioType") {
+    return Object.keys(audioData);
+  }
 
+  if (field.name === "brand") {
+    return audioBrands;
+  }
+
+  if (
+    field.name === "model" &&
+    filters.brand
+  ) {
+    return audioModels;
+  }
+
+  return field.options || [];
+}
   if (isPhotoVideoCategory) {
     // Тип техники
     if (field.name === "photoVideoType") {
@@ -293,6 +336,21 @@ const getOptions = (field) => {
               // ====================================
 
               let disabled = false;
+              if (
+  isAudioCategory &&
+  field.name === "brand" &&
+  !filters.audioType
+) {
+  disabled = true;
+}
+
+if (
+  isAudioCategory &&
+  field.name === "model" &&
+  !filters.brand
+) {
+  disabled = true;
+}
 
               // Фото и видео: бренд
 if (
@@ -388,21 +446,33 @@ if (
                         disabled:text-gray-400
                       "
                     >
-
-                      <option value="">
+  <option value="">
   {disabled
     ? isPartsCategory &&
       field.name === "carBrand" &&
       !filters.vehicleType
       ? "Сначала выберите тип автомобиля"
+
       : isPhotoVideoCategory &&
         field.name === "brand" &&
         !filters.photoVideoType
       ? "Сначала выберите тип техники"
+
       : isPhotoVideoCategory &&
         field.name === "model" &&
         !filters.brand
       ? "Сначала выберите бренд"
+
+      : isAudioCategory &&
+        field.name === "brand" &&
+        !filters.audioType
+      ? "Сначала выберите тип техники"
+
+      : isAudioCategory &&
+        field.name === "model" &&
+        !filters.brand
+      ? "Сначала выберите бренд"
+
       : "Сначала выберите марку"
     : "Любое"}
 </option>

@@ -17,6 +17,7 @@ import { laptopData } from "../../data/laptopData";
 import { photoVideoData } from "../../data/photoVideoData";
 import { tvData } from "../../data/tvData";
 import { computerData } from "../../data/computerData";
+import { audioData } from "../../data/audioData";
 
 
 export default function CreateListing() {
@@ -141,7 +142,30 @@ const photoVideoModels =
 const vehicleFields =
   vehicleFieldMap[selectedCategory?.slug];
 
+const isAudioCategory =
+  selectedCategory?.slug === "audio";
 
+const selectedAudioType =
+  characteristics.audioType || "";
+
+const selectedAudioBrand =
+  characteristics.brand || "";
+
+const audioTypeData =
+  isAudioCategory
+    ? audioData[selectedAudioType] || {}
+    : {};
+
+const audioBrands =
+  isAudioCategory
+    ? Object.keys(audioTypeData)
+    : [];
+
+const audioModels =
+  isAudioCategory &&
+  selectedAudioBrand
+    ? audioTypeData[selectedAudioBrand] || []
+    : [];
 // =====================================================
 // ЗАПЧАСТИ
 // =====================================================
@@ -324,6 +348,24 @@ if (
 
 if (
   isPhotoVideoCategory &&
+  name === "brand"
+) {
+  updated.model = "";
+}
+// =========================================
+//Аудио
+// =========================================
+
+if (
+  isAudioCategory &&
+  name === "audioType"
+) {
+  updated.brand = "";
+  updated.model = "";
+}
+
+if (
+  isAudioCategory &&
   name === "brand"
 ) {
   updated.model = "";
@@ -904,6 +946,20 @@ const isVehicleModel =
   vehicleFields &&
   field.name === vehicleFields.model;
 
+  const isAudioType =
+  isAudioCategory &&
+  field.name === "audioType";
+
+const isAudioBrand =
+  isAudioCategory &&
+  field.name === "brand";
+
+const isAudioModel =
+  isAudioCategory &&
+  field.name === "model";
+
+
+
   let options = field.options || [];
 
   // =========================================
@@ -920,6 +976,18 @@ if (isPhotoVideoBrand) {
 
 if (isPhotoVideoModel) {
   options = photoVideoModels;
+}
+
+if (isAudioType) {
+  options = Object.keys(audioData);
+}
+
+if (isAudioBrand) {
+  options = audioBrands;
+}
+
+if (isAudioModel) {
+  options = audioModels;
 }
 
   // Марки для запчастей
@@ -946,7 +1014,10 @@ if (isVehicleModel) {
   (isPartsModel && !selectedPartsBrand) ||
   (isVehicleModel && !selectedVehicleBrand) ||
   (isPhotoVideoBrand && !selectedPhotoVideoType) ||
-  (isPhotoVideoModel && !selectedPhotoVideoBrand);
+  (isPhotoVideoModel && !selectedPhotoVideoBrand) ||
+  (isAudioBrand && !selectedAudioType) ||
+  (isAudioModel && !selectedAudioBrand);
+  
 
   return (
     <div key={field.name}>
