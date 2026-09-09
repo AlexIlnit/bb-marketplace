@@ -993,15 +993,17 @@ export const categoryCharacteristics = {
     fields: [
       {
         name: "brand",
-        label: "Производитель",
-        type: "text",
-      },
-      {
-        name: "processor",
-        label: "Процессор",
-        type: "text",
+        label: "Бренд",
+        type: "select",
         required: true,
       },
+      {
+      name: "model",
+      label: "Модель",
+      type: "select",
+      required: true,
+      },
+      
       {
         name: "ram",
         label: "Оперативная память",

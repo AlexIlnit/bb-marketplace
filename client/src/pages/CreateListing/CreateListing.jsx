@@ -16,6 +16,7 @@ import { tabletData } from "../../data/tabletData";
 import { laptopData } from "../../data/laptopData";
 import { photoVideoData } from "../../data/photoVideoData";
 import { tvData } from "../../data/tvData";
+import { computerData } from "../../data/computerData";
 
 
 export default function CreateListing() {
@@ -99,6 +100,12 @@ const vehicleFieldMap = {
   brand: "brand",
   model: "model",
   data: tvData,
+  },
+
+  computers: {
+  brand: "brand",
+  model: "model",
+  data: computerData ,
   },
 
   "auto-accessories": {

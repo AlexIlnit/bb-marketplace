@@ -14,6 +14,7 @@ import { tabletData } from "../../data/tabletData";
 import { laptopData } from "../../data/laptopData";
 import { photoVideoData } from "../../data/photoVideoData";
 import { tvData } from "../../data/tvData";
+import { computerData } from "../../data/computerData";
 
 
 export default function CategoryFilters({
@@ -92,7 +93,9 @@ const vehicleData = isPartsCategory
             ? laptopData
             : categorySlug === "tv"
             ? tvData
-            : carData;
+            : categorySlug === "computers"
+              ? computerData
+              : carData;
 
       
 
