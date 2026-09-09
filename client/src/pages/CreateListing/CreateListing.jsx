@@ -13,6 +13,9 @@ import { truckData  } from "../../data/truckData";
 import { motoData } from "../../data/motoData";
 import { phoneData } from "../../data/phoneData";
 import { tabletData } from "../../data/tabletData";
+import { laptopData } from "../../data/laptopData";
+import { photoVideoData } from "../../data/photoVideoData";
+import { tvData } from "../../data/tvData";
 
 
 export default function CreateListing() {
@@ -86,12 +89,47 @@ const vehicleFieldMap = {
   data: tabletData,
   },
 
+  laptops: {
+  brand: "brand",
+  model: "model",
+  data: laptopData,
+  },
+
+  tv: {
+  brand: "brand",
+  model: "model",
+  data: tvData,
+  },
+
   "auto-accessories": {
     brand: "carBrand",
     model: "carModel",
     data: carData,
   },
 };
+
+const isPhotoVideoCategory =
+  selectedCategory?.slug === "photo-video";
+
+const selectedPhotoVideoType =
+  characteristics.photoVideoType || "";
+
+const selectedPhotoVideoBrand =
+  characteristics.brand || "";
+
+const photoVideoBrands =
+  selectedPhotoVideoType
+    ? Object.keys(
+        photoVideoData[selectedPhotoVideoType] || {}
+      )
+    : [];
+
+const photoVideoModels =
+  selectedPhotoVideoType && selectedPhotoVideoBrand
+    ? photoVideoData[selectedPhotoVideoType]?.[
+        selectedPhotoVideoBrand
+      ] || []
+    : [];
 
 const vehicleFields =
   vehicleFieldMap[selectedCategory?.slug];
@@ -263,6 +301,25 @@ const handleCharacteristicChange = (e) => {
   name === vehicleFields.brand
 ) {
   updated[vehicleFields.model] = "";
+}
+
+// =========================================
+// ФОТО И ВИДЕО
+// =========================================
+
+if (
+  isPhotoVideoCategory &&
+  name === "photoVideoType"
+) {
+  updated.brand = "";
+  updated.model = "";
+}
+
+if (
+  isPhotoVideoCategory &&
+  name === "brand"
+) {
+  updated.model = "";
 }
 
     return updated;
@@ -815,6 +872,17 @@ useEffect(() => {
       <div className="grid sm:grid-cols-2 gap-5">
 
        {characteristicConfig?.fields.map((field) => {
+        const isPhotoVideoType =
+  isPhotoVideoCategory &&
+  field.name === "photoVideoType";
+
+const isPhotoVideoBrand =
+  isPhotoVideoCategory &&
+  field.name === "brand";
+
+const isPhotoVideoModel =
+  isPhotoVideoCategory &&
+  field.name === "model";
   const isPartsBrand =
     isPartsCategory && field.name === "carBrand";
 
@@ -830,6 +898,22 @@ const isVehicleModel =
   field.name === vehicleFields.model;
 
   let options = field.options || [];
+
+  // =========================================
+// ФОТО И ВИДЕО
+// =========================================
+
+if (isPhotoVideoType) {
+  options = Object.keys(photoVideoData);
+}
+
+if (isPhotoVideoBrand) {
+  options = photoVideoBrands;
+}
+
+if (isPhotoVideoModel) {
+  options = photoVideoModels;
+}
 
   // Марки для запчастей
   if (isPartsBrand) {
@@ -853,7 +937,9 @@ if (isVehicleModel) {
   const isDisabled =
   (isPartsBrand && !selectedVehicleType) ||
   (isPartsModel && !selectedPartsBrand) ||
-  (isVehicleModel && !selectedVehicleBrand);
+  (isVehicleModel && !selectedVehicleBrand) ||
+  (isPhotoVideoBrand && !selectedPhotoVideoType) ||
+  (isPhotoVideoModel && !selectedPhotoVideoBrand);
 
   return (
     <div key={field.name}>
@@ -873,14 +959,18 @@ if (isVehicleModel) {
           className="w-full border border-gray-300 rounded-xl px-4 py-3 bg-white"
         >
           <option value="">
-            {isPartsBrand && !selectedVehicleType
-              ? "Сначала выберите тип автомобиля"
-              : isPartsModel && !selectedPartsBrand
-              ? "Сначала выберите марку"
-              : isVehicleModel && !selectedVehicleBrand
-              ? "Сначала выберите марку"
-              : `Выберите ${field.label.toLowerCase()}`}
-          </option>
+  {isPartsBrand && !selectedVehicleType
+    ? "Сначала выберите тип автомобиля"
+    : isPartsModel && !selectedPartsBrand
+    ? "Сначала выберите марку"
+    : isVehicleModel && !selectedVehicleBrand
+    ? "Сначала выберите марку"
+    : isPhotoVideoBrand && !selectedPhotoVideoType
+    ? "Сначала выберите тип техники"
+    : isPhotoVideoModel && !selectedPhotoVideoBrand
+    ? "Сначала выберите бренд"
+    : `Выберите ${field.label.toLowerCase()}`}
+</option>
 
           {options.map((option) => {
             const optionValue =

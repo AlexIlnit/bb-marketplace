@@ -11,6 +11,10 @@ import { truckData } from "../../data/truckData";
 import { motoData } from "../../data/motoData";
 import { phoneData } from "../../data/phoneData";
 import { tabletData } from "../../data/tabletData";
+import { laptopData } from "../../data/laptopData";
+import { photoVideoData } from "../../data/photoVideoData";
+import { tvData } from "../../data/tvData";
+
 
 export default function CategoryFilters({
   categorySlug,
@@ -35,10 +39,42 @@ const dataMap = {
   trucks: truckData,
   motorcycles: motoData,
   phones: phoneData,
-  tablet: tabletData
+  tablet: tabletData,
+  laptop: laptopData,
+  photoVideo: photoVideoData,
+  tv: tvData,
 };
 
-  const vehicleData = isPartsCategory
+ // ==========================================
+// Данные для категории
+// ==========================================
+
+const isPhotoVideoCategory =
+  categorySlug === "photo-video";
+
+const selectedPhotoVideoType =
+  filters.photoVideoType || "";
+
+const selectedPhotoVideoBrand =
+  filters.brand || "";
+
+const photoVideoTypeData =
+  isPhotoVideoCategory
+    ? photoVideoData[selectedPhotoVideoType] || {}
+    : {};
+
+const photoVideoBrands =
+  isPhotoVideoCategory
+    ? Object.keys(photoVideoTypeData)
+    : [];
+
+const photoVideoModels =
+  isPhotoVideoCategory &&
+  selectedPhotoVideoBrand
+    ? photoVideoTypeData[selectedPhotoVideoBrand] || []
+    : [];
+
+const vehicleData = isPartsCategory
   ? filters.vehicleType === "truck"
     ? truckData
     : filters.vehicleType === "passenger"
@@ -52,7 +88,11 @@ const dataMap = {
         ? phoneData
         : categorySlug === "tablets"
           ? tabletData
-          : carData;
+          : categorySlug === "laptops"
+            ? laptopData
+            : categorySlug === "tv"
+            ? tvData
+            : carData;
 
       
 
@@ -81,7 +121,24 @@ const dataMap = {
 
     updatedFilters[modelField] = "";
   }
+// ========================================
+// Фото и видео техника
+// ========================================
 
+if (
+  isPhotoVideoCategory &&
+  name === "photoVideoType"
+) {
+  updatedFilters.brand = "";
+  updatedFilters.model = "";
+}
+
+if (
+  isPhotoVideoCategory &&
+  name === "brand"
+) {
+  updatedFilters.model = "";
+}
   // ========================================
   // Автозапчасти
   // ========================================
@@ -112,7 +169,33 @@ const dataMap = {
   // OPTIONS
   // ==========================================
 
-  const getOptions = (field) => {
+const getOptions = (field) => {
+  // ========================================
+  // Фото и видео техника
+  // ========================================
+
+  if (isPhotoVideoCategory) {
+    // Тип техники
+    if (field.name === "photoVideoType") {
+      return Object.keys(photoVideoData);
+    }
+
+    // Бренд
+    if (field.name === "brand") {
+      return photoVideoBrands;
+    }
+
+    // Модель
+    if (
+      field.name === "model" &&
+      filters.brand
+    ) {
+      return photoVideoModels;
+    }
+
+    return field.options || [];
+  }
+
   // ========================================
   // Автозапчасти
   // ========================================
@@ -133,7 +216,8 @@ const dataMap = {
   }
 
   // ========================================
-  // Мотоциклы / легковые / грузовые
+  // Мотоциклы / легковые / грузовые /
+  // телефоны / планшеты / ноутбуки
   // ========================================
 
   if (field.name === "brand") {
@@ -155,9 +239,7 @@ const dataMap = {
     field.name === "carModel" &&
     filters.carBrand
   ) {
-    return (
-      vehicleData[filters.carBrand] || []
-    );
+    return vehicleData[filters.carBrand] || [];
   }
 
   return field.options || [];
@@ -208,6 +290,24 @@ const dataMap = {
               // ====================================
 
               let disabled = false;
+
+              // Фото и видео: бренд
+if (
+  isPhotoVideoCategory &&
+  field.name === "brand" &&
+  !filters.photoVideoType
+) {
+  disabled = true;
+}
+
+// Фото и видео: модель
+if (
+  isPhotoVideoCategory &&
+  field.name === "model" &&
+  !filters.brand
+) {
+  disabled = true;
+}
 
               // Обычные автомобили
               if (
@@ -287,14 +387,22 @@ const dataMap = {
                     >
 
                       <option value="">
-                        {disabled
-                          ? isPartsCategory &&
-                            field.name === "carBrand" &&
-                            !filters.vehicleType
-                            ? "Сначала выберите тип автомобиля"
-                            : "Сначала выберите марку"
-                          : "Любое"}
-                      </option>
+  {disabled
+    ? isPartsCategory &&
+      field.name === "carBrand" &&
+      !filters.vehicleType
+      ? "Сначала выберите тип автомобиля"
+      : isPhotoVideoCategory &&
+        field.name === "brand" &&
+        !filters.photoVideoType
+      ? "Сначала выберите тип техники"
+      : isPhotoVideoCategory &&
+        field.name === "model" &&
+        !filters.brand
+      ? "Сначала выберите бренд"
+      : "Сначала выберите марку"
+    : "Любое"}
+</option>
 
                       {options.map((option) => {
                         const value =
