@@ -1,6 +1,7 @@
 export const categoryData = {
   avto: {
     title: "Авто",
+     slug: "avto",
     shortTitle: "Автомобили и транспорт на BB",
     description:
       "Автомобили, мотоциклы, запчасти и аксессуары. Найдите транспорт рядом с вами.",
@@ -77,6 +78,7 @@ export const categoryData = {
 
   nedvizhimost: {
     title: "Недвижимость",
+    slug: "nedvizhimost",
     shortTitle: "Недвижимость на BB",
     description:
       "Квартиры, дома, комнаты, участки и коммерческая недвижимость.",
@@ -157,6 +159,7 @@ export const categoryData = {
 
   elektronika: {
     title: "Электроника",
+    slug: "elektronika",
     shortTitle: "Электроника и техника на BB",
     description:
       "Смартфоны, компьютеры, бытовая техника, гаджеты и электроника.",
@@ -246,6 +249,7 @@ export const categoryData = {
 
   rabota: {
     title: "Работа",
+    slug: "rabota",
     shortTitle: "Вакансии и работа на BB",
     description:
       "Вакансии и предложения работы от компаний и частных работодателей.",
@@ -319,6 +323,7 @@ export const categoryData = {
 
   zhivotnye: {
     title: "Животные",
+    slug: "zhivotnye",
     shortTitle: "Животные и товары для питомцев на BB",
     description:
       "Домашние животные, питомцы, товары и услуги для животных.",
@@ -396,6 +401,7 @@ export const categoryData = {
 
   odezhda: {
     title: "Одежда",
+    slug: "odezhda",
     shortTitle: "Одежда, обувь и аксессуары на BB",
     description:
       "Одежда, обувь, аксессуары и стильные вещи для всей семьи.",
@@ -472,6 +478,7 @@ export const categoryData = {
 
   "dom-i-sad": {
     title: "Дом и сад",
+    slug: "dom-i-sad",
     shortTitle: "Товары для дома, ремонта и сада на BB",
     description:
       "Мебель, инструменты, товары для дома, ремонта, дачи и сада.",
@@ -552,6 +559,7 @@ export const categoryData = {
 
   uslugi: {
     title: "Услуги",
+    slug: "uslugi",
     shortTitle: "Услуги специалистов на BB",
     description:
       "Найдите специалистов для ремонта, перевозок, обучения и других задач.",
