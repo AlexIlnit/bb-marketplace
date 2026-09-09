@@ -1053,14 +1053,16 @@ export const categoryCharacteristics = {
       {
         name: "brand",
         label: "Бренд",
-        type: "text",
+        type: "select",
         required: true,
+        options: [],
       },
       {
         name: "model",
         label: "Модель",
-        type: "text",
+        type: "select",
         required: true,
+        options: [],
       },
       {
         name: "storage",

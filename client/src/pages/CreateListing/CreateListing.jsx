@@ -12,6 +12,7 @@ import { carData } from "../../data/carData";
 import { truckData  } from "../../data/truckData";
 import { motoData } from "../../data/motoData";
 import { phoneData } from "../../data/phoneData";
+import { tabletData } from "../../data/tabletData";
 
 
 export default function CreateListing() {
@@ -77,6 +78,12 @@ const vehicleFieldMap = {
     brand: "brand",
     model: "model",
     data: phoneData,
+  },
+
+  tablets: {
+  brand: "brand",
+  model: "model",
+  data: tabletData,
   },
 
   "auto-accessories": {

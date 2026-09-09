@@ -10,6 +10,7 @@ import { carData } from "../../data/carData";
 import { truckData } from "../../data/truckData";
 import { motoData } from "../../data/motoData";
 import { phoneData } from "../../data/phoneData";
+import { tabletData } from "../../data/tabletData";
 
 export default function CategoryFilters({
   categorySlug,
@@ -34,6 +35,7 @@ const dataMap = {
   trucks: truckData,
   motorcycles: motoData,
   phones: phoneData,
+  tablet: tabletData
 };
 
   const vehicleData = isPartsCategory
@@ -42,7 +44,15 @@ const dataMap = {
     : filters.vehicleType === "passenger"
       ? carData
       : {}
-  : dataMap[categorySlug] || carData;
+  : categorySlug === "trucks"
+    ? truckData
+    : categorySlug === "motorcycles"
+      ? motoData
+      : categorySlug === "phones"
+        ? phoneData
+        : categorySlug === "tablets"
+          ? tabletData
+          : carData;
 
       
 
