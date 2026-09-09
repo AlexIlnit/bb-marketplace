@@ -30,13 +30,15 @@ export default function CategoryFilters({
   // ==========================================
 
   const vehicleData = isPartsCategory
-    ? filters.vehicleType === "truck"
-      ? truckData
-      : filters.vehicleType === "passenger"
-        ? carData
-        : {}
-    : categorySlug === "trucks"
-      ? truckData
+  ? filters.vehicleType === "truck"
+    ? truckData
+    : filters.vehicleType === "passenger"
+      ? carData
+      : {}
+  : categorySlug === "trucks"
+    ? truckData
+    : categorySlug === "motorcycles"
+      ? motoData
       : carData;
 
   // ==========================================
@@ -44,44 +46,44 @@ export default function CategoryFilters({
   // ==========================================
 
   const handleChange = (name, value) => {
-    const updatedFilters = {
-      ...filters,
-      [name]: value,
-    };
-
-    // ========================================
-    // Грузовые / легковые / аксессуары
-    // ========================================
-
-    if (
-      !isPartsCategory &&
-      (name === "brand" || name === "carBrand")
-    ) {
-      const modelField =
-        name === "carBrand" ? "carModel" : "model";
-
-      updatedFilters[modelField] = "";
-    }
-
-    // ========================================
-    // Автозапчасти
-    // ========================================
-
-    if (isPartsCategory) {
-      // Сменили тип автомобиля
-      if (name === "vehicleType") {
-        updatedFilters.carBrand = "";
-        updatedFilters.carModel = "";
-      }
-
-      // Сменили марку
-      if (name === "carBrand") {
-        updatedFilters.carModel = "";
-      }
-    }
-
-    onChange(updatedFilters);
+  const updatedFilters = {
+    ...filters,
+    [name]: value,
   };
+
+  // ========================================
+  // Легковые / грузовые / мотоциклы
+  // ========================================
+
+  if (
+    !isPartsCategory &&
+    (name === "brand" || name === "carBrand")
+  ) {
+    const modelField =
+      name === "carBrand"
+        ? "carModel"
+        : "model";
+
+    updatedFilters[modelField] = "";
+  }
+
+  // ========================================
+  // Автозапчасти
+  // ========================================
+
+  if (isPartsCategory) {
+    if (name === "vehicleType") {
+      updatedFilters.carBrand = "";
+      updatedFilters.carModel = "";
+    }
+
+    if (name === "carBrand") {
+      updatedFilters.carModel = "";
+    }
+  }
+
+  onChange(updatedFilters);
+};
 
   // ==========================================
   // RESET
@@ -96,55 +98,55 @@ export default function CategoryFilters({
   // ==========================================
 
   const getOptions = (field) => {
-    // ----------------------------------------
-    // Автозапчасти
-    // ----------------------------------------
+  // ========================================
+  // Автозапчасти
+  // ========================================
 
-    if (isPartsCategory) {
-      // Марка
-      if (field.name === "carBrand") {
-        return Object.keys(vehicleData);
-      }
-
-      // Модель
-      if (
-        field.name === "carModel" &&
-        filters.carBrand
-      ) {
-        return (
-          vehicleData[filters.carBrand] || []
-        );
-      }
-
-      return field.options || [];
+  if (isPartsCategory) {
+    if (field.name === "carBrand") {
+      return Object.keys(vehicleData);
     }
-
-    // ----------------------------------------
-    // Обычные автомобили
-    // ----------------------------------------
-
-    if (
-      field.name === "model" &&
-      filters.brand
-    ) {
-      return vehicleData[filters.brand] || [];
-    }
-
-    // ----------------------------------------
-    // Автоаксессуары
-    // ----------------------------------------
 
     if (
       field.name === "carModel" &&
       filters.carBrand
     ) {
-      return (
-        vehicleData[filters.carBrand] || []
-      );
+      return vehicleData[filters.carBrand] || [];
     }
 
     return field.options || [];
-  };
+  }
+
+  // ========================================
+  // Мотоциклы / легковые / грузовые
+  // ========================================
+
+  if (field.name === "brand") {
+    return Object.keys(vehicleData);
+  }
+
+  if (
+    field.name === "model" &&
+    filters.brand
+  ) {
+    return vehicleData[filters.brand] || [];
+  }
+
+  // ========================================
+  // Автоаксессуары
+  // ========================================
+
+  if (
+    field.name === "carModel" &&
+    filters.carBrand
+  ) {
+    return (
+      vehicleData[filters.carBrand] || []
+    );
+  }
+
+  return field.options || [];
+};
 
   // ==========================================
   // RENDER
