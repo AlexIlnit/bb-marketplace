@@ -10,9 +10,11 @@ import {
   SlidersHorizontal,
 } from "lucide-react";
 
+
 import MainLayout from "../../layouts/MainLayout";
 import ListingCard from "../../components/listing/ListingCard";
 import { useListingStore } from "../../store/listingStore";
+import { useCategoryStore } from "../../store/categoryStore";
 import { categoryData } from "../../data/categoryData";
 import { categoryImages } from "../../data/categoryImages";
 
@@ -23,7 +25,14 @@ export default function CategoryPage() {
   const [sort, setSort] = useState("new");
   const [categorySearch, setCategorySearch] = useState("");
   const [showFilters, setShowFilters] = useState(false);
+
   const listingSectionRef = useRef(null);
+
+  const {
+    categories,
+    fetchCategories,
+    loading: categoriesLoading,
+  } = useCategoryStore();
 
   const {
     listings,
@@ -33,25 +42,233 @@ export default function CategoryPage() {
 
   /*
    * ==========================================
-   * ТЕКУЩАЯ КАТЕГОРИЯ
+   * ЗАГРУЗКА КАТЕГОРИЙ ИЗ MONGODB
    * ==========================================
    */
 
-  const currentCategory = categoryData[slug] || null;
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
 
   /*
-   * ВАЖНО:
-   * slug берём напрямую из URL.
+   * ==========================================
+   * СТАТИЧЕСКИЕ ДАННЫЕ
    *
-   * Например:
-   * /category/avto
-   * slug = "avto"
-   *
-   * /category/elektronika
-   * slug = "elektronika"
+   * Используются для старых категорий:
+   * SEO, описание, советы, FAQ и т.д.
+   * ==========================================
    */
 
-  const categoryImage = categoryImages[slug];
+  const staticCategory = categoryData[slug] || null;
+
+  /*
+   * ==========================================
+   * ТЕКУЩАЯ КАТЕГОРИЯ ИЗ MONGODB
+   * ==========================================
+   */
+
+  const mongoCategory = useMemo(() => {
+    return categories.find(
+      (category) =>
+        String(category.slug || "").toLowerCase() ===
+        String(slug || "").toLowerCase()
+    );
+  }, [categories, slug]);
+
+  /*
+   * ==========================================
+   * ПОДКАТЕГОРИИ ИЗ MONGODB
+   * ==========================================
+   */
+
+  const mongoSubcategories = useMemo(() => {
+    if (!mongoCategory?._id) return [];
+
+    return categories.filter((category) => {
+      const parentId =
+        category.parent?._id ||
+        category.parent;
+
+      return (
+        parentId &&
+        String(parentId) === String(mongoCategory._id)
+      );
+    });
+  }, [categories, mongoCategory]);
+
+  /*
+   * ==========================================
+   * ФИНАЛЬНАЯ КАТЕГОРИЯ
+   *
+   * MongoDB имеет приоритет.
+   * categoryData используется как дополнение
+   * для старых категорий.
+   * ==========================================
+   */
+
+  const currentCategory = useMemo(() => {
+    /*
+     * Если категории нет ни в MongoDB,
+     * ни в categoryData — действительно не существует.
+     */
+    if (!mongoCategory && !staticCategory) {
+      return null;
+    }
+
+    /*
+     * Если категория есть в MongoDB —
+     * берём её как основную.
+     */
+    if (mongoCategory) {
+      return {
+        ...staticCategory,
+
+        /*
+         * Данные MongoDB
+         */
+        ...mongoCategory,
+
+        /*
+         * Унифицированные названия
+         */
+        title:
+          mongoCategory.name ||
+          staticCategory?.title ||
+          slug,
+
+        shortTitle:
+          staticCategory?.shortTitle ||
+          mongoCategory.name ||
+          slug,
+
+        description:
+          staticCategory?.description ||
+          `Объявления в категории «${mongoCategory.name}».`,
+
+        seoTitle:
+          staticCategory?.seoTitle ||
+          `${mongoCategory.name} — объявления на BB`,
+
+        seoDescription:
+          staticCategory?.seoDescription ||
+          `Объявления в категории «${mongoCategory.name}» на BB. Покупайте и продавайте товары и услуги.`,
+
+        seoText:
+          staticCategory?.seoText ||
+          `На BB вы можете найти объявления в категории «${mongoCategory.name}». Просматривайте предложения, сравнивайте цены и связывайтесь с продавцами напрямую.`,
+
+        gradient:
+          staticCategory?.gradient ||
+          "from-blue-600 via-indigo-600 to-violet-700",
+
+        icon:
+          mongoCategory.icon ||
+          staticCategory?.icon ||
+          "📦",
+
+        /*
+         * Картинка MongoDB имеет приоритет.
+         */
+        image:
+          mongoCategory.image ||
+          categoryImages[slug] ||
+          null,
+
+        /*
+         * Для старых категорий сохраняем советы и FAQ.
+         */
+        tips:
+          staticCategory?.tips || [],
+
+        sellerTips:
+          staticCategory?.sellerTips || [],
+
+        faq:
+          staticCategory?.faq || [],
+
+        /*
+         * Подкатегории теперь берём из MongoDB.
+         */
+        subcategories:
+          mongoSubcategories.length > 0
+            ? mongoSubcategories
+            : staticCategory?.subcategories || [],
+      };
+    }
+
+    /*
+     * ==========================================
+     * FALLBACK ДЛЯ СТАРЫХ СТАТИЧЕСКИХ КАТЕГОРИЙ
+     * ==========================================
+     */
+
+    return {
+      ...staticCategory,
+      title:
+        staticCategory.title || slug,
+
+      shortTitle:
+        staticCategory.shortTitle ||
+        staticCategory.title ||
+        slug,
+
+      description:
+        staticCategory.description ||
+        `Объявления в категории «${slug}».`,
+
+      seoTitle:
+        staticCategory.seoTitle ||
+        `${staticCategory.title || slug} — BB`,
+
+      seoDescription:
+        staticCategory.seoDescription ||
+        `Объявления в категории «${staticCategory.title || slug}» на BB.`,
+
+      seoText:
+        staticCategory.seoText ||
+        `Объявления в категории «${staticCategory.title || slug}» на BB.`,
+
+      gradient:
+        staticCategory.gradient ||
+        "from-blue-600 via-indigo-600 to-violet-700",
+
+      icon:
+        staticCategory.icon ||
+        "📦",
+
+      image:
+        categoryImages[slug] ||
+        null,
+
+      subcategories:
+        staticCategory.subcategories || [],
+
+      tips:
+        staticCategory.tips || [],
+
+      sellerTips:
+        staticCategory.sellerTips || [],
+
+      faq:
+        staticCategory.faq || [],
+    };
+  }, [
+    mongoCategory,
+    staticCategory,
+    mongoSubcategories,
+    slug,
+  ]);
+
+  /*
+   * ==========================================
+   * КАРТИНКА КАТЕГОРИИ
+   * ==========================================
+   */
+
+  const categoryImage =
+    currentCategory?.image ||
+    categoryImages[slug] ||
+    null;
 
   /*
    * ==========================================
@@ -64,7 +281,12 @@ export default function CategoryPage() {
 
     setCategory(slug);
     fetchListings(1);
-  }, [slug, currentCategory, setCategory, fetchListings]);
+  }, [
+    slug,
+    currentCategory,
+    setCategory,
+    fetchListings,
+  ]);
 
   /*
    * ==========================================
@@ -76,10 +298,13 @@ export default function CategoryPage() {
     let result = [...listings];
 
     if (categorySearch.trim()) {
-      const query = categorySearch.trim().toLowerCase();
+      const query =
+        categorySearch.trim().toLowerCase();
 
       result = result.filter((listing) =>
-        listing.title?.toLowerCase().includes(query)
+        listing.title
+          ?.toLowerCase()
+          .includes(query)
       );
     }
 
@@ -100,7 +325,40 @@ export default function CategoryPage() {
     }
 
     return result;
-  }, [listings, categorySearch, sort]);
+  }, [
+    listings,
+    categorySearch,
+    sort,
+  ]);
+
+  /*
+   * ==========================================
+   * ЗАГРУЗКА
+   * ==========================================
+   */
+
+  if (
+    categoriesLoading &&
+    categories.length === 0
+  ) {
+    return (
+      <MainLayout>
+        <div className="py-20 text-center">
+          <div className="text-4xl animate-pulse">
+            📂
+          </div>
+
+          <h1 className="mt-4 text-xl font-bold text-slate-800">
+            Загружаем категорию...
+          </h1>
+
+          <p className="mt-2 text-sm text-slate-500">
+            Подготавливаем объявления и разделы
+          </p>
+        </div>
+      </MainLayout>
+    );
+  }
 
   /*
    * ==========================================
@@ -115,7 +373,9 @@ export default function CategoryPage() {
     return (
       <>
         <Helmet>
-          <title>Категория не найдена — BB</title>
+          <title>
+            Категория не найдена — BB
+          </title>
 
           <meta
             name="description"
@@ -174,12 +434,13 @@ export default function CategoryPage() {
 
           <meta
             name="twitter:description"
-            content="Запрашиваемая категория не найдена. Перейдите на главную страницу BB."
+            content="Запрашиваемая категория не найдена."
           />
         </Helmet>
 
         <MainLayout>
           <div className="py-20 text-center">
+
             <div className="text-6xl">
               🔎
             </div>
@@ -213,6 +474,7 @@ export default function CategoryPage() {
               <ArrowLeft size={18} />
               Вернуться на главную
             </button>
+
           </div>
         </MainLayout>
       </>
@@ -231,6 +493,7 @@ export default function CategoryPage() {
   return (
     <>
       <Helmet>
+
         <title>
           {currentCategory.seoTitle}
         </title>
@@ -289,6 +552,7 @@ export default function CategoryPage() {
           name="twitter:description"
           content={currentCategory.seoDescription}
         />
+
       </Helmet>
 
       <MainLayout>
@@ -322,432 +586,400 @@ export default function CategoryPage() {
         </div>
 
 
-{/* ==========================================
-    HERO CATEGORY
-========================================== */}
+        {/* ==========================================
+            HERO CATEGORY
+        ========================================== */}
 
-<section
-  className="
-    relative
-    min-h-105
-    overflow-hidden
-    rounded-3xl
-    bg-slate-900
-    text-white
-    shadow-xl
-    md:min-h-115
-  "
->
-  {/* ==========================================
-      ФОНОВОЕ ИЗОБРАЖЕНИЕ
-  ========================================== */}
-
-  {categoryImage ? (
-    <img
-      src={categoryImage}
-      alt=""
-      aria-hidden="true"
-      className="
-        absolute
-        inset-0
-        h-full
-        w-full
-        object-cover
-        scale-105
-        transition-transform
-        duration-700
-      "
-      loading="eager"
-    />
-  ) : (
-    <div
-      className={`
-        absolute
-        inset-0
-        bg-linear-to-br
-        ${currentCategory.gradient}
-      `}
-    />
-  )}
-
-  {/* ==========================================
-      ГРАДИЕНТ ПОВЕРХ ФОТО
-  ========================================== */}
-
-  <div
-  className="
-    absolute
-    inset-0
-    bg-linear-to-r
-    from-slate-950/65
-    via-slate-950/35
-    to-transparent
-  "
-/>
-
-  {/* Нижнее затемнение */}
-  <div
-    className="
-      absolute
-      inset-x-0
-      bottom-0
-      h-56
-      bg-linear-to-t
-      from-slate-950/45
-      to-transparent
-    "
-  />
-
-  {/* ==========================================
-      ДЕКОР
-  ========================================== */}
-
-  <div
-    className="
-      absolute
-      -right-24
-      -top-24
-      h-80
-      w-80
-      rounded-full
-      bg-white/10
-      blur-3xl
-    "
-  />
-
-  <div
-    className="
-      absolute
-      bottom-0
-      left-1/3
-      h-64
-      w-64
-      rounded-full
-      bg-blue-400/10
-      blur-3xl
-    "
-  />
-
-  {/* ==========================================
-      КОНТЕНТ
-  ========================================== */}
-
-  <div
-    className="
-      relative
-      z-10
-      flex
-      min-h-105
-      flex-col
-      justify-center
-      px-6
-      py-10
-      md:min-h-115
-      md:px-10
-      md:py-12
-    "
-  >
-
-    <div className="max-w-3xl">
-
-      {/* ==========================================
-          БЕЙДЖ КАТЕГОРИИ
-      ========================================== */}
-
-      <div
-        className="
-          inline-flex
-          items-center
-          gap-3
-          rounded-full
-          border
-          border-white/20
-          bg-white/10
-          px-3
-          py-2
-          text-sm
-          font-medium
-          shadow-lg
-          backdrop-blur-md
-        "
-      >
-
-        <span
+        <section
           className="
-            flex
-            h-11
-            w-11
-            shrink-0
-            items-center
-            justify-center
-            rounded-2xl
-            border
-            border-white/20
-            bg-white/15
-            text-2xl
-            shadow-inner
-            backdrop-blur
-          "
-        >
-          {currentCategory.icon}
-        </span>
-
-        <span className="pr-2">
-          Категория
-        </span>
-
-      </div>
-
-
-      {/* ==========================================
-          ЗАГОЛОВОК
-      ========================================== */}
-
-      <h1
-        className="
-          mt-5
-          text-4xl
-          font-extrabold
-          leading-tight
-          tracking-tight
-          drop-shadow-xl
-          sm:text-5xl
-          md:text-6xl
-        "
-      >
-        {currentCategory.title}
-      </h1>
-
-
-      {/* ==========================================
-          ОПИСАНИЕ
-      ========================================== */}
-
-      <p
-        className="
-          mt-4
-          max-w-2xl
-          text-sm
-          leading-6
-          text-white/85
-          drop-shadow-md
-          sm:text-base
-          md:text-lg
-          md:leading-7
-        "
-      >
-        {currentCategory.description}
-      </p>
-
-
-      {/* ==========================================
-          СТАТИСТИКА
-      ========================================== */}
-
-      <div
-        className="
-          mt-5
-          flex
-          flex-wrap
-          items-center
-          gap-3
-        "
-      >
-
-        <div
-          className="
-            inline-flex
-            items-center
-            gap-3
-            rounded-2xl
-            border
-            border-white/15
-            bg-black/25
-            px-4
-            py-2.5
-            backdrop-blur-md
+            relative
+            min-h-105
+            overflow-hidden
+            rounded-3xl
+            bg-slate-900
+            text-white
+            shadow-xl
+            md:min-h-115
           "
         >
 
-          <span
+          {/* ФОТО */}
+
+          {categoryImage ? (
+            <img
+              src={categoryImage}
+              alt=""
+              aria-hidden="true"
+              className="
+                absolute
+                inset-0
+                h-full
+                w-full
+                object-cover
+                scale-105
+                transition-transform
+                duration-700
+              "
+              loading="eager"
+            />
+          ) : (
+            <div
+              className={`
+                absolute
+                inset-0
+                bg-linear-to-br
+                ${currentCategory.gradient}
+              `}
+            />
+          )}
+
+          {/* ГРАДИЕНТ */}
+
+          <div
             className="
+              absolute
+              inset-0
+              bg-linear-to-r
+              from-slate-950/65
+              via-slate-950/35
+              to-transparent
+            "
+          />
+
+          {/* НИЖНЕЕ ЗАТЕМНЕНИЕ */}
+
+          <div
+            className="
+              absolute
+              inset-x-0
+              bottom-0
+              h-56
+              bg-linear-to-t
+              from-slate-950/45
+              to-transparent
+            "
+          />
+
+          {/* ДЕКОР */}
+
+          <div
+            className="
+              absolute
+              -right-24
+              -top-24
+              h-80
+              w-80
+              rounded-full
+              bg-white/10
+              blur-3xl
+            "
+          />
+
+          <div
+            className="
+              absolute
+              bottom-0
+              left-1/3
+              h-64
+              w-64
+              rounded-full
+              bg-blue-400/10
+              blur-3xl
+            "
+          />
+
+          {/* КОНТЕНТ */}
+
+          <div
+            className="
+              relative
+              z-10
               flex
-              h-8
-              w-8
-              items-center
+              min-h-105
+              flex-col
               justify-center
-              rounded-lg
-              bg-white/15
-              text-sm
+              px-6
+              py-10
+              md:min-h-115
+              md:px-10
+              md:py-12
             "
           >
-            📋
-          </span>
 
-          <div>
-            <div className="text-sm font-bold">
-              {filteredListings.length}
+            <div className="max-w-3xl">
+
+              {/* БЕЙДЖ */}
+
+              <div
+                className="
+                  inline-flex
+                  items-center
+                  gap-3
+                  rounded-full
+                  border
+                  border-white/20
+                  bg-white/10
+                  px-3
+                  py-2
+                  text-sm
+                  font-medium
+                  shadow-lg
+                  backdrop-blur-md
+                "
+              >
+
+                {/* <span
+                  className="
+                    flex
+                    h-11
+                    w-11
+                    shrink-0
+                    items-center
+                    justify-center
+                    rounded-2xl
+                    border
+                    border-white/20
+                    bg-white/15
+                    text-2xl
+                    shadow-inner
+                    backdrop-blur
+                  "
+                >
+                  {currentCategory.icon}
+                </span> */}
+
+                <span className="pr-2">
+                  Категория
+                </span>
+
+              </div>
+
+
+              {/* ЗАГОЛОВОК */}
+
+              <h1
+                className="
+                  mt-5
+                  text-4xl
+                  font-extrabold
+                  leading-tight
+                  tracking-tight
+                  drop-shadow-xl
+                  sm:text-5xl
+                  md:text-6xl
+                "
+              >
+                {currentCategory.title}
+              </h1>
+
+
+              {/* ОПИСАНИЕ */}
+
+              <p
+                className="
+                  mt-4
+                  max-w-2xl
+                  text-sm
+                  leading-6
+                  text-white/85
+                  drop-shadow-md
+                  sm:text-base
+                  md:text-lg
+                  md:leading-7
+                "
+              >
+                {currentCategory.description}
+              </p>
+
+
+              {/* СТАТИСТИКА */}
+
+              <div
+                className="
+                  mt-5
+                  flex
+                  flex-wrap
+                  items-center
+                  gap-3
+                "
+              >
+
+                <div
+                  className="
+                    inline-flex
+                    items-center
+                    gap-3
+                    rounded-2xl
+                    border
+                    border-white/15
+                    bg-black/25
+                    px-4
+                    py-2.5
+                    backdrop-blur-md
+                  "
+                >
+
+                  <span
+                    className="
+                      flex
+                      h-8
+                      w-8
+                      items-center
+                      justify-center
+                      rounded-lg
+                      bg-white/15
+                      text-sm
+                    "
+                  >
+                    📋
+                  </span>
+
+                  <div>
+
+                    <div className="text-sm font-bold">
+                      {filteredListings.length}
+                    </div>
+
+                    <div className="text-[11px] text-white/60">
+                      объявлений
+                    </div>
+
+                  </div>
+
+                </div>
+
+
+                <div
+                  className="
+                    inline-flex
+                    items-center
+                    gap-2
+                    rounded-xl
+                    border
+                    border-white/15
+                    bg-black/20
+                    px-4
+                    py-2.5
+                    text-sm
+                    font-medium
+                    backdrop-blur-md
+                  "
+                >
+                  📍 Рядом с вами
+                </div>
+
+
+                <div
+                  className="
+                    inline-flex
+                    items-center
+                    gap-2
+                    rounded-xl
+                    border
+                    border-white/15
+                    bg-black/20
+                    px-4
+                    py-2.5
+                    text-sm
+                    font-medium
+                    backdrop-blur-md
+                  "
+                >
+                  🔥 Новые объявления
+                </div>
+
+              </div>
+
+
+              {/* КНОПКИ */}
+
+              <div
+                className="
+                  mt-7
+                  flex
+                  flex-col
+                  gap-3
+                  sm:flex-row
+                "
+              >
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    listingSectionRef.current?.scrollIntoView({
+                      behavior: "smooth",
+                      block: "start",
+                    });
+                  }}
+                  className="
+                    inline-flex
+                    h-12
+                    items-center
+                    justify-center
+                    gap-2
+                    rounded-xl
+                    bg-white
+                    px-6
+                    font-bold
+                    text-slate-900
+                    shadow-xl
+                    transition-all
+                    hover:-translate-y-0.5
+                    hover:bg-blue-50
+                    hover:shadow-2xl
+                  "
+                >
+                  Смотреть объявления
+
+                  <ArrowRight size={18} />
+                </button>
+
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    navigate("/create-listing")
+                  }
+                  className="
+                    inline-flex
+                    h-12
+                    items-center
+                    justify-center
+                    gap-2
+                    rounded-xl
+                    border
+                    border-white/25
+                    bg-white/10
+                    px-6
+                    font-bold
+                    text-white
+                    backdrop-blur-md
+                    transition-all
+                    hover:-translate-y-0.5
+                    hover:bg-white/20
+                  "
+                >
+                  <Plus size={18} />
+                  Разместить объявление
+                </button>
+
+              </div>
+
             </div>
 
-            <div className="text-[11px] text-white/60">
-              объявлений
-            </div>
           </div>
 
-        </div>
-
-
-        <div
-          className="
-            inline-flex
-            items-center
-            gap-2
-            rounded-xl
-            border
-            border-white/15
-            bg-black/20
-            px-4
-            py-2.5
-            text-sm
-            font-medium
-            backdrop-blur-md
-          "
-        >
-          📍 Рядом с вами
-        </div>
-
-
-        <div
-          className="
-            inline-flex
-            items-center
-            gap-2
-            rounded-xl
-            border
-            border-white/15
-            bg-black/20
-            px-4
-            py-2.5
-            text-sm
-            font-medium
-            backdrop-blur-md
-          "
-        >
-          🔥 Новые объявления
-        </div>
-
-      </div>
-
-
-      {/* ==========================================
-          КНОПКИ
-      ========================================== */}
-
-      <div
-        className="
-          mt-7
-          flex
-          flex-col
-          gap-3
-          sm:flex-row
-        "
-      >
-
-        {/* Смотреть объявления */}
-
-        <button
-          type="button"
-          onClick={() => {
-            listingSectionRef.current?.scrollIntoView({
-              behavior: "smooth",
-              block: "start",
-            });
-          }}
-          className="
-            inline-flex
-            h-12
-            items-center
-            justify-center
-            gap-2
-            rounded-xl
-            bg-white
-            px-6
-            font-bold
-            text-slate-900
-            shadow-xl
-            transition-all
-            hover:-translate-y-0.5
-            hover:bg-blue-50
-            hover:shadow-2xl
-          "
-        >
-          Смотреть объявления
-
-          <ArrowRight
-            size={18}
-          />
-        </button>
-
-
-        {/* Разместить объявление */}
-
-        <button
-          type="button"
-          onClick={() =>
-            navigate("/create-listing")
-          }
-          className="
-            inline-flex
-            h-12
-            items-center
-            justify-center
-            gap-2
-            rounded-xl
-            border
-            border-white/25
-            bg-white/10
-            px-6
-            font-bold
-            text-white
-            backdrop-blur-md
-            transition-all
-            hover:-translate-y-0.5
-            hover:bg-white/20
-          "
-        >
-          <Plus size={18} />
-
-          Разместить объявление
-        </button>
-
-      </div>
-
-    </div>
-
-  </div>
-
-</section>
-
-
-
+        </section>
 
 
         {/* ==========================================
             ПОДКАТЕГОРИИ
         ========================================== */}
 
-        <section className="mt-6">
+        {currentCategory.subcategories?.length > 0 && (
+          <section className="mt-6">
 
-          <div
-            className="
-              mb-4
-              flex
-              items-center
-              justify-between
-            "
-          >
-
-            <div>
+            <div className="mb-4">
 
               <h2
                 className="
@@ -766,296 +998,410 @@ export default function CategoryPage() {
 
             </div>
 
-          </div>
 
+            <div
+              className="
+                grid
+                grid-cols-2
+                gap-3
+                sm:grid-cols-3
+                lg:grid-cols-5
+              "
+            >
 
-          <div
-            className="
-              grid
-              grid-cols-2
-              gap-3
-              sm:grid-cols-3
-              lg:grid-cols-5
-            "
-          >
+              {currentCategory.subcategories.map(
+                (subcategory, index) => {
 
-            {currentCategory.subcategories?.map(
-              (subcategory, index) => (
-                <button
-                  key={subcategory.slug}
-                  type="button"
-                  onClick={() =>
-                    navigate(
-                      `/category/${slug}/${subcategory.slug}`
-                    )
-                  }
-                  className="
-                    group
-                    flex
-                    items-center
-                    justify-between
-                    gap-2
-                    rounded-2xl
-                    border
-                    border-slate-100
-                    bg-white
-                    px-4
-                    py-4
-                    text-left
-                    shadow-sm
-                    transition-all
-                    hover:-translate-y-1
-                    hover:border-blue-200
-                    hover:shadow-md
-                  "
-                >
+                  /*
+                   * Сначала картинка из MongoDB,
+                   * потом локальная картинка.
+                   */
 
-                  <div>
+                  const subcategoryImage =
+                    subcategory.image ||
+                    categoryImages[subcategory.slug] ||
+                    null;
 
-                    <div
+                  return (
+                    <button
+                      key={
+                        subcategory._id ||
+                        subcategory.slug
+                      }
+                      type="button"
+                      onClick={() =>
+                        navigate(
+                          `/category/${slug}/${subcategory.slug}`
+                        )
+                      }
                       className="
-                        mb-1
-                        text-xs
-                        text-slate-400
+                        group
+                        relative
+                        min-h-36
+                        overflow-hidden
+                        rounded-2xl
+                        border
+                        border-slate-100
+                        bg-slate-900
+                        text-left
+                        shadow-sm
+                        transition-all
+                        duration-300
+                        hover:-translate-y-1
+                        hover:shadow-lg
                       "
                     >
-                      {String(index + 1).padStart(2, "0")}
-                    </div>
 
-                    <div
-                      className="
-                        text-sm
-                        font-semibold
-                        text-slate-700
-                        transition
-                        group-hover:text-blue-600
-                      "
-                    >
-                      {subcategory.name}
-                    </div>
+                      {/* ФОТО */}
 
-                  </div>
+                      {subcategoryImage ? (
+                        <img
+                          src={subcategoryImage}
+                          alt={subcategory.name}
+                          className="
+                            absolute
+                            inset-0
+                            h-full
+                            w-full
+                            object-cover
+                            transition-transform
+                            duration-500
+                            group-hover:scale-110
+                          "
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div
+                          className="
+                            absolute
+                            inset-0
+                            bg-linear-to-br
+                            from-blue-600
+                            to-indigo-700
+                          "
+                        />
+                      )}
 
 
-                  <ArrowRight
-                    size={17}
-                    className="
-                      shrink-0
-                      text-slate-300
-                      transition
-                      group-hover:translate-x-1
-                      group-hover:text-blue-500
-                    "
-                  />
+                      {/* ЗАТЕМНЕНИЕ */}
 
-                </button>
-              )
-            )}
+                      <div
+                        className="
+                          absolute
+                          inset-0
+                          bg-linear-to-t
+                          from-black/75
+                          via-black/30
+                          to-black/10
+                        "
+                      />
 
-          </div>
 
-        </section>
+                      {/* КОНТЕНТ */}
+
+                      <div
+                        className="
+                          relative
+                          z-10
+                          flex
+                          min-h-36
+                          flex-col
+                          justify-between
+                          p-4
+                        "
+                      >
+
+                        <div
+                          className="
+                            flex
+                            h-8
+                            w-8
+                            items-center
+                            justify-center
+                            rounded-lg
+                            bg-white/15
+                            text-xs
+                            font-bold
+                            text-white
+                            backdrop-blur-md
+                            ring-1
+                            ring-white/20
+                          "
+                        >
+                          {String(index + 1).padStart(2, "0")}
+                        </div>
+
+
+                        <div
+                          className="
+                            flex
+                            items-end
+                            justify-between
+                            gap-2
+                          "
+                        >
+
+                          <div
+                            className="
+                              text-sm
+                              font-bold
+                              leading-5
+                              text-white
+                              drop-shadow-lg
+                            "
+                          >
+                            {subcategory.name}
+                          </div>
+
+                          <div
+                            className="
+                              flex
+                              h-8
+                              w-8
+                              shrink-0
+                              items-center
+                              justify-center
+                              rounded-lg
+                              bg-white/15
+                              text-white
+                              backdrop-blur-md
+                              transition-all
+                              duration-300
+                              group-hover:bg-white/25
+                            "
+                          >
+                            <ArrowRight
+                              size={16}
+                              className="
+                                transition-transform
+                                duration-300
+                                group-hover:translate-x-1
+                              "
+                            />
+                          </div>
+
+                        </div>
+
+                      </div>
+
+                    </button>
+                  );
+                }
+              )}
+
+            </div>
+
+          </section>
+        )}
 
 
         {/* ==========================================
             ПОЛЕЗНАЯ ИНФОРМАЦИЯ
         ========================================== */}
 
-        <section className="mt-8">
+        {(currentCategory.tips?.length > 0 ||
+          currentCategory.sellerTips?.length > 0) && (
 
-          <div
-            className="
-              grid
-              grid-cols-1
-              gap-5
-              lg:grid-cols-2
-            "
-          >
-
-            {/* Покупателю */}
+          <section className="mt-8">
 
             <div
               className="
-                rounded-3xl
-                border
-                border-slate-100
-                bg-white
-                p-6
-                shadow-sm
+                grid
+                grid-cols-1
+                gap-5
+                lg:grid-cols-2
               "
             >
 
-              <div className="flex items-center gap-3">
+              {/* ПОКУПАТЕЛЮ */}
 
+              {currentCategory.tips?.length > 0 && (
                 <div
                   className="
-                    flex
-                    h-11
-                    w-11
-                    items-center
-                    justify-center
-                    rounded-xl
-                    bg-blue-50
-                    text-xl
-                    text-blue-600
+                    rounded-3xl
+                    border
+                    border-slate-100
+                    bg-white
+                    p-6
+                    shadow-sm
                   "
                 >
-                  🛡️
-                </div>
 
-                <div>
+                  <div className="flex items-center gap-3">
 
-                  <h2 className="text-lg font-bold text-slate-800">
-                    Советы покупателю
-                  </h2>
-
-                  <p className="mt-0.5 text-xs text-slate-500">
-                    Как сделать покупку безопаснее
-                  </p>
-
-                </div>
-
-              </div>
-
-
-              <div className="mt-5 space-y-3">
-
-                {currentCategory.tips?.map(
-                  (tip, index) => (
                     <div
-                      key={tip}
                       className="
                         flex
-                        items-start
-                        gap-3
-                        text-sm
-                        text-slate-600
+                        h-11
+                        w-11
+                        items-center
+                        justify-center
+                        rounded-xl
+                        bg-blue-50
+                        text-xl
+                        text-blue-600
                       "
                     >
+                      🛡️
+                    </div>
 
-                      <span
-                        className="
-                          mt-0.5
-                          flex
-                          h-6
-                          w-6
-                          shrink-0
-                          items-center
-                          justify-center
-                          rounded-full
-                          bg-blue-50
-                          text-xs
-                          font-bold
-                          text-blue-600
-                        "
-                      >
-                        {index + 1}
-                      </span>
+                    <div>
 
-                      <span>
-                        {tip}
-                      </span>
+                      <h2 className="text-lg font-bold text-slate-800">
+                        Советы покупателю
+                      </h2>
+
+                      <p className="mt-0.5 text-xs text-slate-500">
+                        Как сделать покупку безопаснее
+                      </p>
 
                     </div>
-                  )
-                )}
 
-              </div>
+                  </div>
+
+
+                  <div className="mt-5 space-y-3">
+
+                    {currentCategory.tips.map(
+                      (tip, index) => (
+                        <div
+                          key={`${tip}-${index}`}
+                          className="
+                            flex
+                            items-start
+                            gap-3
+                            text-sm
+                            text-slate-600
+                          "
+                        >
+
+                          <span
+                            className="
+                              mt-0.5
+                              flex
+                              h-6
+                              w-6
+                              shrink-0
+                              items-center
+                              justify-center
+                              rounded-full
+                              bg-blue-50
+                              text-xs
+                              font-bold
+                              text-blue-600
+                            "
+                          >
+                            {index + 1}
+                          </span>
+
+                          <span>
+                            {tip}
+                          </span>
+
+                        </div>
+                      )
+                    )}
+
+                  </div>
+
+                </div>
+              )}
+
+
+              {/* ПРОДАВЦУ */}
+
+              {currentCategory.sellerTips?.length > 0 && (
+                <div
+                  className="
+                    rounded-3xl
+                    bg-slate-900
+                    p-6
+                    text-white
+                  "
+                >
+
+                  <div className="flex items-center gap-3">
+
+                    <div
+                      className="
+                        flex
+                        h-11
+                        w-11
+                        items-center
+                        justify-center
+                        rounded-xl
+                        bg-white/10
+                        text-xl
+                      "
+                    >
+                      🚀
+                    </div>
+
+                    <div>
+
+                      <h2 className="text-lg font-bold">
+                        Советы продавцу
+                      </h2>
+
+                      <p className="mt-0.5 text-xs text-slate-400">
+                        Как получить больше откликов
+                      </p>
+
+                    </div>
+
+                  </div>
+
+
+                  <div className="mt-5 space-y-3">
+
+                    {currentCategory.sellerTips.map(
+                      (tip, index) => (
+                        <div
+                          key={`${tip}-${index}`}
+                          className="
+                            flex
+                            items-start
+                            gap-3
+                            text-sm
+                            text-slate-300
+                          "
+                        >
+
+                          <span
+                            className="
+                              mt-0.5
+                              flex
+                              h-6
+                              w-6
+                              shrink-0
+                              items-center
+                              justify-center
+                              rounded-full
+                              bg-white/10
+                              text-xs
+                              font-bold
+                            "
+                          >
+                            {index + 1}
+                          </span>
+
+                          <span>
+                            {tip}
+                          </span>
+
+                        </div>
+                      )
+                    )}
+
+                  </div>
+
+                </div>
+              )}
 
             </div>
 
-
-            {/* Продавцу */}
-
-            <div
-              className="
-                rounded-3xl
-                bg-slate-900
-                p-6
-                text-white
-              "
-            >
-
-              <div className="flex items-center gap-3">
-
-                <div
-                  className="
-                    flex
-                    h-11
-                    w-11
-                    items-center
-                    justify-center
-                    rounded-xl
-                    bg-white/10
-                    text-xl
-                  "
-                >
-                  🚀
-                </div>
-
-                <div>
-
-                  <h2 className="text-lg font-bold">
-                    Советы продавцу
-                  </h2>
-
-                  <p className="mt-0.5 text-xs text-slate-400">
-                    Как получить больше откликов
-                  </p>
-
-                </div>
-
-              </div>
-
-
-              <div className="mt-5 space-y-3">
-
-                {currentCategory.sellerTips?.map(
-                  (tip, index) => (
-                    <div
-                      key={tip}
-                      className="
-                        flex
-                        items-start
-                        gap-3
-                        text-sm
-                        text-slate-300
-                      "
-                    >
-
-                      <span
-                        className="
-                          mt-0.5
-                          flex
-                          h-6
-                          w-6
-                          shrink-0
-                          items-center
-                          justify-center
-                          rounded-full
-                          bg-white/10
-                          text-xs
-                          font-bold
-                        "
-                      >
-                        {index + 1}
-                      </span>
-
-                      <span>
-                        {tip}
-                      </span>
-
-                    </div>
-                  )
-                )}
-
-              </div>
-
-            </div>
-
-          </div>
-
-        </section>
+          </section>
+        )}
 
 
         {/* ==========================================
@@ -1185,13 +1531,13 @@ export default function CategoryPage() {
 
 
         {/* ==========================================
-    ОБЪЯВЛЕНИЯ
-========================================== */}
+            ОБЪЯВЛЕНИЯ
+        ========================================== */}
 
-<section
-  ref={listingSectionRef}
-  className="mt-8 scroll-mt-6"
->
+        <section
+          ref={listingSectionRef}
+          className="mt-8 scroll-mt-6"
+        >
 
           <div
             className="
@@ -1605,147 +1951,151 @@ export default function CategoryPage() {
             SEO-КОНТЕНТ
         ========================================== */}
 
-        <section
-          className="
-            mt-10
-            rounded-3xl
-            border
-            border-slate-100
-            bg-slate-50
-            p-6
-            md:p-8
-          "
-        >
+        {(currentCategory.seoText ||
+          currentCategory.faq?.length > 0) && (
 
-          <div className="max-w-4xl">
+          <section
+            className="
+              mt-10
+              rounded-3xl
+              border
+              border-slate-100
+              bg-slate-50
+              p-6
+              md:p-8
+            "
+          >
 
-            <h2
-              className="
-                text-xl
-                font-bold
-                text-slate-800
-                md:text-2xl
-              "
-            >
-              {currentCategory.shortTitle}
-            </h2>
-
-            <p
-              className="
-                mt-4
-                text-sm
-                leading-7
-                text-slate-600
-              "
-            >
-              {currentCategory.seoText}
-            </p>
-
-          </div>
-
-
-          {/* ==========================================
-              FAQ
-          ========================================== */}
-
-          {currentCategory.faq?.length > 0 && (
-
-            <div className="mt-8">
+            <div className="max-w-4xl">
 
               <h2
                 className="
                   text-xl
                   font-bold
                   text-slate-800
+                  md:text-2xl
                 "
               >
-                Частые вопросы
+                {currentCategory.shortTitle}
               </h2>
 
-
-              <div
+              <p
                 className="
                   mt-4
-                  grid
-                  grid-cols-1
-                  gap-3
-                  md:grid-cols-2
+                  text-sm
+                  leading-7
+                  text-slate-600
                 "
               >
-
-                {currentCategory.faq.map(
-                  (item) => (
-
-                    <details
-                      key={item.question}
-                      className="
-                        group
-                        overflow-hidden
-                        rounded-2xl
-                        border
-                        border-slate-100
-                        bg-white
-                      "
-                    >
-
-                      <summary
-                        className="
-                          flex
-                          cursor-pointer
-                          list-none
-                          items-center
-                          justify-between
-                          gap-4
-                          p-5
-                          text-sm
-                          font-semibold
-                          text-slate-800
-                        "
-                      >
-
-                        <span>
-                          {item.question}
-                        </span>
-
-                        <ChevronDown
-                          size={18}
-                          className="
-                            shrink-0
-                            text-slate-400
-                            transition
-                            group-open:rotate-180
-                          "
-                        />
-
-                      </summary>
-
-
-                      <div
-                        className="
-                          px-5
-                          pb-5
-                          text-sm
-                          leading-6
-                          text-slate-500
-                        "
-                      >
-                        {item.answer}
-                      </div>
-
-                    </details>
-
-                  )
-                )}
-
-              </div>
+                {currentCategory.seoText}
+              </p>
 
             </div>
 
-          )}
 
-        </section>
+            {/* FAQ */}
+
+            {currentCategory.faq?.length > 0 && (
+
+              <div className="mt-8">
+
+                <h2
+                  className="
+                    text-xl
+                    font-bold
+                    text-slate-800
+                  "
+                >
+                  Частые вопросы
+                </h2>
+
+
+                <div
+                  className="
+                    mt-4
+                    grid
+                    grid-cols-1
+                    gap-3
+                    md:grid-cols-2
+                  "
+                >
+
+                  {currentCategory.faq.map(
+                    (item) => (
+
+                      <details
+                        key={item.question}
+                        className="
+                          group
+                          overflow-hidden
+                          rounded-2xl
+                          border
+                          border-slate-100
+                          bg-white
+                        "
+                      >
+
+                        <summary
+                          className="
+                            flex
+                            cursor-pointer
+                            list-none
+                            items-center
+                            justify-between
+                            gap-4
+                            p-5
+                            text-sm
+                            font-semibold
+                            text-slate-800
+                          "
+                        >
+
+                          <span>
+                            {item.question}
+                          </span>
+
+                          <ChevronDown
+                            size={18}
+                            className="
+                              shrink-0
+                              text-slate-400
+                              transition
+                              group-open:rotate-180
+                            "
+                          />
+
+                        </summary>
+
+
+                        <div
+                          className="
+                            px-5
+                            pb-5
+                            text-sm
+                            leading-6
+                            text-slate-500
+                          "
+                        >
+                          {item.answer}
+                        </div>
+
+                      </details>
+
+                    )
+                  )}
+
+                </div>
+
+              </div>
+
+            )}
+
+          </section>
+
+        )}
 
       </MainLayout>
     </>
   );
 }
+

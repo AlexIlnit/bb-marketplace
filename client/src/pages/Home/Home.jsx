@@ -24,90 +24,125 @@ import {
   Sofa,
   Wrench,
 } from "lucide-react";
+import { useCategoryStore } from "../../store/categoryStore";
+import { categoryImages } from "../../data/categoryImages";
 
 import SearchBox from "../../components/search/SearchBox";
 
 const CategoriesBar = lazy(() => import("../../components/categories/CategoriesBar"));
 const FilterSidebar = lazy(() => import("../../components/filters/FilterSidebar"));
-const featuredCategories = [
-  {
-    title: "Авто",
-    slug: "avto",
-    description: "Машины, запчасти и аксессуары",
-    icon: Car,
-    image: "/featured-categories/avto.webp",
-    color: "bg-blue-50 text-blue-600",
-  },
 
-  {
-    title: "Недвижимость",
-    slug: "nedvizhimost",
-    description: "Квартиры, дома и участки",
-    icon: HomeIcon,
-    image: "/featured-categories/nedvizhimost.webp",
-    color: "bg-emerald-50 text-emerald-600",
-  },
-
-  {
-    title: "Электроника",
-    slug: "elektronika",
-    description: "Телефоны, техника и гаджеты",
-    icon: Smartphone,
-    image: "/featured-categories/elektronika.webp",
-    color: "bg-violet-50 text-violet-600",
-  },
-
-  {
-    title: "Работа",
-    slug: "rabota",
-    description: "Вакансии и предложения",
-    icon: BriefcaseBusiness,
-    image: "/featured-categories/rabota.webp",
-    color: "bg-amber-50 text-amber-600",
-  },
-
-  {
-    title: "Животные",
-    slug: "zhivotnye",
-    description: "Питомцы и всё для них",
-    icon: PawPrint,
-    image: "/featured-categories/zhivotnye.webp",
-    color: "bg-pink-50 text-pink-600",
-  },
-
-  {
-    title: "Одежда",
-    slug: "odezhda",
-    description: "Одежда, обувь и аксессуары",
-    icon: Shirt,
-    image: "/featured-categories/odezhda.webp",
-    color: "bg-rose-50 text-rose-600",
-  },
-
-  {
-    title: "Дом и сад",
-    slug: "dom-i-sad",
-    description: "Мебель, ремонт и дача",
-    icon: Sofa,
-    image: "/featured-categories/dom-i-sad.webp",
-    color: "bg-orange-50 text-orange-600",
-  },
-
-  {
-    title: "Услуги",
-    slug: "uslugi",
-    description: "Помощь специалистов рядом",
-    icon: Wrench,
-    image: "/featured-categories/uslugi.webp",
-    color: "bg-cyan-50 text-cyan-600",
-  },
-];
 export default function Home() {
-  
   const [page, setPage] = useState(1);
 
   const navigate = useNavigate();
-  
+
+  // =====================================================
+  // КАТЕГОРИИ
+  // =====================================================
+
+  const {
+    categories,
+    fetchCategories,
+  } = useCategoryStore();
+
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
+
+  // Иконки стандартных категорий
+  const categoryIcons = {
+    avto: Car,
+    nedvizhimost: HomeIcon,
+    elektronika: Smartphone,
+    rabota: BriefcaseBusiness,
+    zhivotnye: PawPrint,
+    odezhda: Shirt,
+    "dom-i-sad": Sofa,
+    uslugi: Wrench,
+  };
+
+  // Цвета стандартных категорий
+  const categoryColors = {
+    avto: "bg-blue-50 text-blue-600",
+    nedvizhimost:
+      "bg-emerald-50 text-emerald-600",
+    elektronika:
+      "bg-violet-50 text-violet-600",
+    rabota:
+      "bg-amber-50 text-amber-600",
+    zhivotnye:
+      "bg-pink-50 text-pink-600",
+    odezhda:
+      "bg-rose-50 text-rose-600",
+    "dom-i-sad":
+      "bg-orange-50 text-orange-600",
+    uslugi:
+      "bg-cyan-50 text-cyan-600",
+  };
+
+  // Описания стандартных категорий
+  const categoryDescriptions = {
+    avto:
+      "Машины, запчасти и аксессуары",
+
+    nedvizhimost:
+      "Квартиры, дома и участки",
+
+    elektronika:
+      "Телефоны, техника и гаджеты",
+
+    rabota:
+      "Вакансии и предложения",
+
+    zhivotnye:
+      "Питомцы и всё для них",
+
+    odezhda:
+      "Одежда, обувь и аксессуары",
+
+    "dom-i-sad":
+      "Мебель, ремонт и дача",
+
+    uslugi:
+      "Помощь специалистов рядом",
+  };
+
+  // =====================================================
+  // ДИНАМИЧЕСКИЕ ГЛАВНЫЕ КАТЕГОРИИ
+  // =====================================================
+
+  const featuredCategories = categories
+    .filter((category) => !category.parent)
+    .map((category) => {
+      const Icon =
+        categoryIcons[category.slug] || Sofa;
+
+      return {
+        ...category,
+
+        title: category.name,
+
+        description:
+          categoryDescriptions[category.slug] ||
+          "Товары и услуги в этом разделе",
+
+        icon: Icon,
+
+        image:
+          category.image ||
+          categoryImages[category.slug] ||
+          null,
+
+        color:
+          categoryColors[category.slug] ||
+          "bg-slate-50 text-slate-600",
+      };
+    });
+
+  // =====================================================
+  // ОБЪЯВЛЕНИЯ
+  // =====================================================
 
   const {
     listings,
@@ -120,8 +155,6 @@ export default function Home() {
     sellerType,
     city,
     totalPages,
-    setCity,
-    setSearch
   } = useListingStore();
 
   useEffect(() => {
@@ -134,8 +167,10 @@ export default function Home() {
     priceFrom,
     priceTo,
     condition,
-    sellerType
+    sellerType,
   ]);
+
+
     
 return (
   <MainLayout>
@@ -346,23 +381,7 @@ duration-500
       </h2>
     </div>
 
-    <button
-      type="button"
-      className="
-        hidden
-        sm:flex
-        items-center
-        gap-1
-        text-sm
-        font-semibold
-        text-blue-600
-        hover:text-blue-700
-        transition
-      "
-    >
-      Все категории
-      <ArrowRight size={17} />
-    </button>
+
 
   </div>
 
@@ -401,7 +420,10 @@ duration-500
 >
   {/* ФОТО */}
 
-  <div className="relative h-36 overflow-hidden">
+ 
+<div className="relative h-36 overflow-hidden bg-slate-100">
+
+  {item.image ? (
     <img
       src={item.image}
       alt={item.title}
@@ -415,76 +437,102 @@ duration-500
       "
       loading="lazy"
     />
-
-    {/* Затемнение снизу */}
-
+  ) : (
     <div
       className="
         absolute
         inset-0
-        bg-linear-to-t
-        from-black/45
-        via-black/5
-        to-transparent
-      "
-    />
-
-    {/* Иконка */}
-
-    <div
-      className={`
-        absolute
-        bottom-3
-        left-3
         flex
-        h-10
-        w-10
         items-center
         justify-center
-        rounded-xl
-        ${item.color}
-        shadow-lg
-        ring-2
-        ring-white/80
+        bg-linear-to-br
+        from-slate-200
+        to-slate-300
+      "
+    >
+      {(() => {
+        const Icon = item.icon;
+
+        return (
+          <Icon
+            size={54}
+            className="text-slate-500"
+          />
+        );
+      })()}
+    </div>
+  )}
+
+  <div
+    className="
+      absolute
+      inset-0
+      bg-linear-to-t
+      from-black/45
+      via-black/5
+      to-transparent
+    "
+  />
+
+  <div
+    className={`
+      absolute
+      bottom-3
+      left-3
+      flex
+      h-10
+      w-10
+      items-center
+      justify-center
+      rounded-xl
+      ${item.color}
+      shadow-lg
+      ring-2
+      ring-white/80
+      transition-transform
+      duration-300
+      group-hover:scale-110
+    `}
+  >
+    {(() => {
+      const Icon = item.icon;
+
+      return <Icon size={20} />;
+    })()}
+  </div>
+
+  <div
+    className="
+      absolute
+      right-3
+      top-3
+      flex
+      h-9
+      w-9
+      items-center
+      justify-center
+      rounded-xl
+      bg-white/15
+      text-white
+      backdrop-blur-md
+      transition-all
+      duration-300
+      group-hover:bg-white/25
+    "
+  >
+    <ArrowRight
+      size={17}
+      className="
         transition-transform
         duration-300
-        group-hover:scale-110
-      `}
-    >
-      <Icon size={20} />
-    </div>
-
-    {/* Стрелка */}
-
-    <div
-      className="
-        absolute
-        right-3
-        top-3
-        flex
-        h-9
-        w-9
-        items-center
-        justify-center
-        rounded-xl
-        bg-white/15
-        text-white
-        backdrop-blur-md
-        transition-all
-        duration-300
-        group-hover:bg-white/25
+        group-hover:translate-x-1
       "
-    >
-      <ArrowRight
-        size={17}
-        className="
-          transition-transform
-          duration-300
-          group-hover:translate-x-1
-        "
-      />
-    </div>
+    />
   </div>
+
+</div>
+
+
 
 
   {/* ТЕКСТ */}

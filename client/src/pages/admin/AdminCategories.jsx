@@ -149,7 +149,7 @@ export default function AdminCategories() {
 
       const input =
         document.getElementById(
-          "category-image-input"
+          "category-image"
         );
 
       if (input) {

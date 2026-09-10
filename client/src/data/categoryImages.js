@@ -103,7 +103,7 @@ export const categoryImages = {
   // =========================
 
   "women-clothes":
-    "https://images.unsplash.com/photo-1483985988355-763728e1935b",
+    "/featured-categories/clothes.webp",
 
   "men-clothes":
     "https://images.unsplash.com/photo-1617127365659-c47fa864d8bc",
