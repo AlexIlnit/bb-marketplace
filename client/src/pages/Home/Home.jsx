@@ -35,55 +35,70 @@ const featuredCategories = [
     slug: "avto",
     description: "Машины, запчасти и аксессуары",
     icon: Car,
+    image: "/featured-categories/avto.webp",
     color: "bg-blue-50 text-blue-600",
   },
+
   {
     title: "Недвижимость",
     slug: "nedvizhimost",
     description: "Квартиры, дома и участки",
     icon: HomeIcon,
+    image: "/featured-categories/nedvizhimost.webp",
     color: "bg-emerald-50 text-emerald-600",
   },
+
   {
     title: "Электроника",
     slug: "elektronika",
     description: "Телефоны, техника и гаджеты",
     icon: Smartphone,
+    image: "/featured-categories/elektronika.webp",
     color: "bg-violet-50 text-violet-600",
   },
+
   {
     title: "Работа",
     slug: "rabota",
     description: "Вакансии и предложения",
     icon: BriefcaseBusiness,
+    image: "/featured-categories/rabota.webp",
     color: "bg-amber-50 text-amber-600",
   },
+
   {
     title: "Животные",
     slug: "zhivotnye",
     description: "Питомцы и всё для них",
     icon: PawPrint,
+    image: "/featured-categories/zhivotnye.webp",
     color: "bg-pink-50 text-pink-600",
   },
+
   {
     title: "Одежда",
     slug: "odezhda",
     description: "Одежда, обувь и аксессуары",
     icon: Shirt,
+    image: "/featured-categories/odezhda.webp",
     color: "bg-rose-50 text-rose-600",
   },
+
   {
     title: "Дом и сад",
     slug: "dom-i-sad",
     description: "Мебель, ремонт и дача",
     icon: Sofa,
+    image: "/featured-categories/dom-i-sad.webp",
     color: "bg-orange-50 text-orange-600",
   },
+
   {
     title: "Услуги",
     slug: "uslugi",
     description: "Помощь специалистов рядом",
     icon: Wrench,
+    image: "/featured-categories/uslugi.webp",
     color: "bg-cyan-50 text-cyan-600",
   },
 ];
@@ -366,78 +381,140 @@ duration-500
 
       return (
         <button
-          key={item.title}
-          onClick={() => navigate(`/category/${item.slug}`)}
-          type="button"
-          className="
-            group
-            text-left
-            bg-white
-            rounded-2xl
-            p-4
-            border
-            border-slate-100
-            shadow-sm
-            hover:shadow-md
-            hover:-translate-y-1
-            transition-all
-            duration-300
-          "
-        >
+  key={item.title}
+  onClick={() => navigate(`/category/${item.slug}`)}
+  type="button"
+  className="
+    group
+    overflow-hidden
+    rounded-2xl
+    border
+    border-slate-100
+    bg-white
+    text-left
+    shadow-sm
+    transition-all
+    duration-300
+    hover:-translate-y-1
+    hover:shadow-lg
+  "
+>
+  {/* ФОТО */}
 
-          <div className="
-            flex
-            items-center
-            justify-between
-            gap-3
-          ">
+  <div className="relative h-36 overflow-hidden">
+    <img
+      src={item.image}
+      alt={item.title}
+      className="
+        h-full
+        w-full
+        object-cover
+        transition-transform
+        duration-500
+        group-hover:scale-110
+      "
+      loading="lazy"
+    />
 
-            <div className={`
-              w-11
-              h-11
-              rounded-xl
-              flex
-              items-center
-              justify-center
-              ${item.color}
-              group-hover:scale-110
-              transition
-            `}>
-              <Icon size={22} />
-            </div>
+    {/* Затемнение снизу */}
 
-            <ArrowRight
-              size={17}
-              className="
-                text-slate-300
-                group-hover:text-blue-500
-                group-hover:translate-x-1
-                transition
-              "
-            />
+    <div
+      className="
+        absolute
+        inset-0
+        bg-linear-to-t
+        from-black/45
+        via-black/5
+        to-transparent
+      "
+    />
 
-          </div>
+    {/* Иконка */}
+
+    <div
+      className={`
+        absolute
+        bottom-3
+        left-3
+        flex
+        h-10
+        w-10
+        items-center
+        justify-center
+        rounded-xl
+        ${item.color}
+        shadow-lg
+        ring-2
+        ring-white/80
+        transition-transform
+        duration-300
+        group-hover:scale-110
+      `}
+    >
+      <Icon size={20} />
+    </div>
+
+    {/* Стрелка */}
+
+    <div
+      className="
+        absolute
+        right-3
+        top-3
+        flex
+        h-9
+        w-9
+        items-center
+        justify-center
+        rounded-xl
+        bg-white/15
+        text-white
+        backdrop-blur-md
+        transition-all
+        duration-300
+        group-hover:bg-white/25
+      "
+    >
+      <ArrowRight
+        size={17}
+        className="
+          transition-transform
+          duration-300
+          group-hover:translate-x-1
+        "
+      />
+    </div>
+  </div>
 
 
-          <h3 className="
-            mt-4
-            font-bold
-            text-slate-800
-          ">
-            {item.title}
-          </h3>
+  {/* ТЕКСТ */}
 
+  <div className="p-4">
 
-          <p className="
-            mt-1
-            text-xs
-            leading-5
-            text-slate-500
-          ">
-            {item.description}
-          </p>
+    <h3
+      className="
+        font-bold
+        text-slate-800
+        transition-colors
+        group-hover:text-blue-600
+      "
+    >
+      {item.title}
+    </h3>
 
-        </button>
+    <p
+      className="
+        mt-1
+        text-xs
+        leading-5
+        text-slate-500
+      "
+    >
+      {item.description}
+    </p>
+
+  </div>
+</button>
       );
     })}
 

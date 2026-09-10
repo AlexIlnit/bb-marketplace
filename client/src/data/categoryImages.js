@@ -4,48 +4,46 @@ export const categoryImages = {
   // =========================
 
   avto:
-    "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7",
+    "/featured-categories/avto.webp",
 
   nedvizhimost:
-    "https://images.unsplash.com/photo-1600585154340-be6161a56a0c",
+    "/featured-categories/nedvizhimost.webp",
 
   elektronika:
-    "https://images.unsplash.com/photo-1498049794561-7780e7231661",
+    "/featured-categories/elektronika.webp",
 
   rabota:
-    "https://images.unsplash.com/photo-1497366754035-f200968a6e72",
+    "/featured-categories/rabota.webp",
 
   zhivotnye:
-    "https://images.unsplash.com/photo-1450778869180-41d0601e046e",
+    "/featured-categories/zhivotnye.webp",
 
   odezhda:
-    "https://images.unsplash.com/photo-1445205170230-053b83016050",
+    "/featured-categories/odezhda.webp",
 
   "dom-i-sad":
-    "https://images.unsplash.com/photo-1555041469-a586c61ea9bc",
+    "/featured-categories/dom-i-sad.webp",
 
   uslugi:
-    "https://images.unsplash.com/photo-1521737711867-e3b97375f902",
-
-
+    "/featured-categories/uslugi.webp",
   // =========================
   // АВТО
   // =========================
 
   "passenger-cars":
-    "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7",
+    "/featured-categories/avto.webp",
 
   trucks:
-    "https://images.unsplash.com/photo-1586191582151-f73872dfd183",
+    "/featured-categories/truck.webp",
 
   motorcycles:
-    "https://images.unsplash.com/photo-1558981806-ec527fa84c39",
+    "/featured-categories/moto.webp",
 
   "auto-parts":
-    "https://images.unsplash.com/photo-1487754180451-c456f719a1fc",
+    "/featured-categories/auto-parts.webp",
 
   "auto-accessories":
-    "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d",
+    "/featured-categories/auto-accessories.webp",
 
 
   // =========================
