@@ -97,11 +97,7 @@ const listing = await Listing.create({
   allowChat: allowChat !== "false",
   characteristics: parsedCharacteristics,
 });
-console.log("AFTER SAVE:", listing.characteristics);
-console.log(
-  "AFTER SAVE JSON:",
-  JSON.stringify(listing.characteristics, null, 2)
-);
+
 // =====================================
 // Уведомление продавцу
 // =====================================

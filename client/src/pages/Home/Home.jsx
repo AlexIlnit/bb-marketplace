@@ -147,6 +147,7 @@ export default function Home() {
   const {
     listings,
     fetchListings,
+    clearCategory,
     search,
     category,
     priceFrom,
@@ -157,18 +158,24 @@ export default function Home() {
     totalPages,
   } = useListingStore();
 
-  useEffect(() => {
-    fetchListings(page);
-  }, [
-    page,
-    search,
-    category,
-    city,
-    priceFrom,
-    priceTo,
-    condition,
-    sellerType,
-  ]);
+ useEffect(() => {
+  clearCategory();
+}, [clearCategory]);
+
+useEffect(() => {
+  fetchListings(page, {
+    category: "",
+  });
+}, [
+  page,
+  search,
+  city,
+  priceFrom,
+  priceTo,
+  condition,
+  sellerType,
+  fetchListings,
+]);
 
 
     

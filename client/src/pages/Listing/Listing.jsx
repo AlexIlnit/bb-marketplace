@@ -449,9 +449,18 @@ const characteristicConfig =
             {listing.title}
           </h1>
 
-          <p className="text-2xl font-bold text-blue-600 mb-6">
-            {listing.price} р.
-          </p>
+<p
+  className={`text-2xl font-bold mb-6 ${
+    Number(listing.price) === 0
+      ? "text-green-600"
+      : "text-blue-600"
+  }`}
+>
+  {Number(listing.price) === 0
+    ? "Бесплатно"
+    : `${Number(listing.price).toLocaleString("ru-RU")} BYN`}
+</p>
+
 
           <div className="space-y-3 text-gray-600">
 

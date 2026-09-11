@@ -298,9 +298,17 @@ function ListingCard({ listing, priority }) {
         <div>
 
           {/* Цена */}
-          <div className="text-blue-600 font-bold text-xl">
-            {listing.price} р.
-          </div>
+          <div
+  className={
+    listing.price === 0
+      ? "text-green-600 font-bold text-xl"
+      : "text-blue-600 font-bold text-xl"
+  }
+>
+  {Number(listing.price) === 0
+    ? "Бесплатно"
+    : `${Number(listing.price).toLocaleString("ru-RU")} BYN`}
+</div>
 
 
           {/* Название */}

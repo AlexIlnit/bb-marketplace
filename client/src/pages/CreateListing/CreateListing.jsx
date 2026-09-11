@@ -48,6 +48,8 @@ export default function CreateListing() {
 
  const [characteristics, setCharacteristics] = useState({});
 
+ const [isFree, setIsFree] = useState(false);
+
 const selectedCategory = categories.find(
   (cat) => String(cat._id) === String(form.category)
 );
@@ -517,7 +519,7 @@ const closeCategoryModal = () => {
 
     formData.append("title", form.title.trim());
     formData.append("description", form.description.trim());
-    formData.append("price", String(Number(form.price)));
+    formData.append("price",isFree ? "0" : String(Number(form.price)));
     formData.append("region", region);
     formData.append("city", city);
     formData.append("category", form.category);
@@ -1669,88 +1671,175 @@ className="bg-white border border-gray-200 rounded-3xl shadow-sm">
             </div>
           </section>
 
+{/* 7. ЦЕНА */}
+<section
+  ref={stepRefs[6]}
+  className="bg-white border border-gray-200 rounded-3xl shadow-sm"
+>
+  <div className="p-5 sm:p-7">
 
-          {/* 7. ЦЕНА */}
-          <section 
-          ref={stepRefs[6]}
-          className="bg-white border border-gray-200 rounded-3xl shadow-sm">
-            <div className="p-5 sm:p-7">
+    <div className="flex items-start gap-4 mb-6">
 
-              <div className="flex items-start gap-4 mb-6">
+      <div
+        className="
+          shrink-0
+          w-10
+          h-10
+          rounded-xl
+          bg-blue-50
+          text-blue-600
+          flex
+          items-center
+          justify-center
+          font-bold
+        "
+      >
+        7
+      </div>
 
-                <div className="
-                  shrink-0
-                  w-10
-                  h-10
-                  rounded-xl
-                  bg-blue-50
-                  text-blue-600
-                  flex
-                  items-center
-                  justify-center
-                  font-bold
-                ">
-                  7
-                </div>
+      <div>
+        <h2 className="text-lg font-bold">
+          Цена
+        </h2>
 
-                <div>
-                  <h2 className="text-lg font-bold">
-                    Цена
-                  </h2>
+        <p className="text-sm text-gray-500 mt-1">
+          Укажите стоимость товара
+        </p>
+      </div>
 
-                  <p className="text-sm text-gray-500 mt-1">
-                    Укажите стоимость товара
-                  </p>
-                </div>
+    </div>
 
-              </div>
+    {/* Переключатель Бесплатно */}
+    <label
+      className="
+        flex
+        items-center
+        justify-between
+        gap-4
+        mb-5
+        p-4
+        rounded-2xl
+        border
+        border-gray-200
+        bg-gray-50
+        cursor-pointer
+        transition
+        hover:bg-gray-100
+      "
+    >
+      <div>
+        <div className="font-semibold text-gray-900">
+          Бесплатно
+        </div>
 
+        <div className="text-sm text-gray-500 mt-0.5">
+          Отдать товар бесплатно
+        </div>
+      </div>
 
-              <div className="relative">
+      <input
+        type="checkbox"
+        checked={isFree}
+        onChange={(e) => {
+          const checked = e.target.checked;
 
-                <input
-                  name="price"
-                  value={form.price}
-                  onChange={handleChange}
-                  placeholder="0"
-                  type="number"
-                  min="0"
-                  required
-                  className="
-                    w-full
-                    h-16
-                    px-5
-                    pr-20
-                    rounded-2xl
-                    border
-                    border-gray-200
-                    bg-gray-50
-                    text-2xl
-                    font-bold
-                    outline-none
-                    transition
-                    focus:bg-white
-                    focus:border-blue-500
-                    focus:ring-4
-                    focus:ring-blue-500/10
-                  "
-                />
+          setIsFree(checked);
 
-                <span className="
-                  absolute
-                  right-5
-                  top-1/2
-                  -translate-y-1/2
-                  font-semibold
-                  text-gray-400
-                ">
-                  BYN
-                </span>
+          if (checked) {
+            setForm((prev) => ({
+              ...prev,
+              price: "0",
+            }));
+          } else {
+            setForm((prev) => ({
+              ...prev,
+              price: "",
+            }));
+          }
+        }}
+        className="
+          h-5
+          w-5
+          rounded
+          border-gray-300
+          text-blue-600
+          focus:ring-blue-500
+        "
+      />
+    </label>
 
-              </div>
+    {/* Цена */}
+    {!isFree && (
+      <div className="relative">
 
-            </div>
-          </section>
+        <input
+          name="price"
+          value={form.price}
+          onChange={handleChange}
+          placeholder="0"
+          type="number"
+          min="0"
+          required={!isFree}
+          className="
+            w-full
+            h-16
+            px-5
+            pr-20
+            rounded-2xl
+            border
+            border-gray-200
+            bg-gray-50
+            text-2xl
+            font-bold
+            outline-none
+            transition
+            focus:bg-white
+            focus:border-blue-500
+            focus:ring-4
+            focus:ring-blue-500/10
+          "
+        />
+
+        <span
+          className="
+            absolute
+            right-5
+            top-1/2
+            -translate-y-1/2
+            font-semibold
+            text-gray-400
+          "
+        >
+          BYN
+        </span>
+
+      </div>
+    )}
+
+    {/* Сообщение вместо цены */}
+    {isFree && (
+      <div
+        className="
+          h-16
+          flex
+          items-center
+          justify-center
+          rounded-2xl
+          border
+          border-green-200
+          bg-green-50
+          text-green-700
+          text-xl
+          font-bold
+        "
+      >
+        Бесплатно
+      </div>
+    )}
+
+  </div>
+</section>
+
 
 
           {/* 8. МЕСТОПОЛОЖЕНИЕ */}

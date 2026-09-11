@@ -28,6 +28,8 @@ export const useListingStore = create((set, get) => ({
 
   setCategory: (value) => set({ category: value }),
 
+  clearCategory: () => set({ category: "", characteristics: {}, }),
+
   setPriceFrom: (value) => set({ priceFrom: value }),
 
   setPriceTo: (value) => set({ priceTo: value }),
