@@ -112,7 +112,14 @@ export default function Footer() {
         Правила размещения объявлений
       </Link>
     </li>
-
+<li>
+    <Link
+  to="/copyright"
+  className="text-gray-300 hover:text-white transition"
+>
+  Для правообладателей
+</Link>
+</li>
   </ul>
 </div>
 

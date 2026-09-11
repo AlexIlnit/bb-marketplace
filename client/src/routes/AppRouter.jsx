@@ -27,6 +27,7 @@ const Privacy = lazy(() => import("../pages/Privacy"));
 const Terms = lazy(() => import("../pages/Terms"));
 const Offer = lazy(() => import("../pages/Offer"));
 const Rules = lazy(() => import("../pages/Rules"));
+const Copyright = lazy(() => import("../pages/Copyright"));
 
 const CategoryPage = lazy(() => import("../pages/category/CategoryPage"));
 const SubCategoryPage = lazy(() => import("../pages/category/SubCategoryPage"));
@@ -102,6 +103,7 @@ export default function AppRouter() {
         <Route path="/personal-data" element={<PersonalData />}/>
         <Route path="/offer" element={<Offer />}/>
         <Route path="/rules" element={<Rules />}/>
+        <Route path="/copyright" element={<Copyright />}/>
 
         <Route
           path="/admin"
