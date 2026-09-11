@@ -1297,6 +1297,189 @@ export default function SubCategoryPage() {
 
           )}
 
+{/* ==========================================
+    SEO / ИНФОРМАЦИОННЫЙ ТЕКСТ
+========================================== */}
+
+{subcategory.seoText?.trim() && (
+  <section
+    className="
+      mt-14
+      overflow-hidden
+      rounded-3xl
+      border
+      border-gray-200
+      bg-white
+      shadow-sm
+    "
+  >
+
+    {/* HEADER */}
+
+    <div
+      className="
+        border-b
+        border-gray-100
+        bg-gray-50
+        px-6
+        py-5
+        md:px-10
+      "
+    >
+      <h2
+        className="
+          text-xl
+          font-bold
+          text-gray-900
+          md:text-2xl
+        "
+      >
+        {subcategory.name}
+      </h2>
+
+      <p className="mt-1 text-sm text-gray-500">
+        Полезно знать
+      </p>
+    </div>
+
+
+    {/* SEO CONTENT */}
+
+    <div
+      className="
+        px-6
+        py-8
+        md:px-10
+        md:py-10
+      "
+    >
+
+      <div
+        className="
+          max-w-none
+          text-[15px]
+          leading-7
+          text-gray-700
+
+          [&_h1]:mb-5
+          [&_h1]:mt-8
+          [&_h1]:text-3xl
+          [&_h1]:font-bold
+          [&_h1]:leading-tight
+          [&_h1]:text-gray-900
+
+          [&_h2]:mb-4
+          [&_h2]:mt-8
+          [&_h2]:text-2xl
+          [&_h2]:font-bold
+          [&_h2]:leading-tight
+          [&_h2]:text-gray-900
+
+          [&_h3]:mb-3
+          [&_h3]:mt-7
+          [&_h3]:text-xl
+          [&_h3]:font-bold
+          [&_h3]:leading-tight
+          [&_h3]:text-gray-900
+
+          [&_h4]:mb-2
+          [&_h4]:mt-5
+          [&_h4]:text-lg
+          [&_h4]:font-bold
+          [&_h4]:text-gray-900
+
+          [&_p]:mb-4
+
+          [&_strong]:font-bold
+          [&_b]:font-bold
+
+          [&_em]:italic
+          [&_i]:italic
+
+          [&_u]:underline
+
+          [&_s]:line-through
+          [&_strike]:line-through
+
+          [&_ul]:my-5
+          [&_ul]:list-disc
+          [&_ul]:pl-6
+
+          [&_ol]:my-5
+          [&_ol]:list-decimal
+          [&_ol]:pl-6
+
+          [&_li]:mb-2
+
+          [&_a]:font-medium
+          [&_a]:text-blue-600
+          [&_a]:underline
+          [&_a]:underline-offset-2
+          [&_a]:transition
+          hover:[&_a]:text-blue-800
+
+          [&_blockquote]:my-6
+          [&_blockquote]:border-l-4
+          [&_blockquote]:border-blue-300
+          [&_blockquote]:bg-blue-50
+          [&_blockquote]:px-5
+          [&_blockquote]:py-4
+          [&_blockquote]:italic
+          [&_blockquote]:text-gray-700
+
+          [&_hr]:my-8
+          [&_hr]:border-gray-200
+
+          [&_table]:my-6
+          [&_table]:w-full
+          [&_table]:border-collapse
+          [&_table]:overflow-hidden
+
+          [&_thead]:bg-gray-50
+
+          [&_th]:border
+          [&_th]:border-gray-200
+          [&_th]:px-4
+          [&_th]:py-3
+          [&_th]:text-left
+          [&_th]:font-semibold
+          [&_th]:text-gray-900
+
+          [&_td]:border
+          [&_td]:border-gray-200
+          [&_td]:px-4
+          [&_td]:py-3
+
+          [&_img]:my-6
+          [&_img]:max-w-full
+          [&_img]:rounded-xl
+
+          [&_code]:rounded
+          [&_code]:bg-gray-100
+          [&_code]:px-1.5
+          [&_code]:py-0.5
+          [&_code]:font-mono
+          [&_code]:text-sm
+
+          [&_pre]:my-6
+          [&_pre]:overflow-x-auto
+          [&_pre]:rounded-xl
+          [&_pre]:bg-gray-900
+          [&_pre]:p-5
+          [&_pre]:font-mono
+          [&_pre]:text-sm
+          [&_pre]:text-gray-100
+        "
+        dangerouslySetInnerHTML={{
+          __html: subcategory.seoText,
+        }}
+      />
+
+    </div>
+
+  </section>
+)}
+
       </div>
 
     </MainLayout>

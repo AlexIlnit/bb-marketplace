@@ -102,6 +102,7 @@ export const createCategory = async (req, res) => {
       icon,
       image,
       parent,
+      seoText,
     } = req.body;
 
     if (!name?.trim()) {
@@ -176,6 +177,7 @@ export const createCategory = async (req, res) => {
       slug,
       icon: icon || "box",
       image: image || "",
+      seoText: seoText || "",
       parent: parentCategory
         ? parentCategory._id
         : null,
@@ -208,6 +210,7 @@ export const updateCategory = async (req, res) => {
       icon,
       image,
       parent,
+      seoText,
     } = req.body;
 
     // -------------------------------------------------
@@ -363,6 +366,10 @@ export const updateCategory = async (req, res) => {
 
     if (image !== undefined) {
       category.image = image;
+    }
+
+    if (seoText !== undefined) {
+    category.seoText = seoText;
     }
 
     // -------------------------------------------------

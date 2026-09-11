@@ -26,6 +26,12 @@ const categorySchema = new mongoose.Schema(
       default: "",
     },
 
+     seoText: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+
     // null = главная категория
     // ObjectId = подкатегория
     parent: {

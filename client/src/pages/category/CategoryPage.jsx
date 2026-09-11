@@ -153,9 +153,12 @@ export default function CategoryPage() {
           staticCategory?.seoDescription ||
           `Объявления в категории «${mongoCategory.name}» на BB. Покупайте и продавайте товары и услуги.`,
 
-        seoText:
-          staticCategory?.seoText ||
-          `На BB вы можете найти объявления в категории «${mongoCategory.name}». Просматривайте предложения, сравнивайте цены и связывайтесь с продавцами напрямую.`,
+        
+seoText:
+  mongoCategory.seoText?.trim() ||
+  staticCategory?.seoText ||
+  `На BB вы можете найти объявления в категории «${mongoCategory.name}». Просматривайте предложения, сравнивайте цены и связывайтесь с продавцами напрямую.`,
+
 
         gradient:
           staticCategory?.gradient ||
@@ -2093,6 +2096,9 @@ export default function CategoryPage() {
           </section>
 
         )}
+
+        
+        
 
       </MainLayout>
     </>
