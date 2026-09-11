@@ -124,14 +124,14 @@ export default function AdminCategories() {
     setCreating(true);
 
     try {
-      let imageUrl = "";
+      
+let imageUrl = "";
 
-      // Картинка нужна только главной категории
-      if (!parentId && image) {
-        const response = await uploadImage(image);
+if (image) {
+  const response = await uploadImage(image);
 
-        imageUrl = response.data.url;
-      }
+  imageUrl = response.data.url;
+}
 
       const { data } = await createCategory({
         name: categoryName,
@@ -221,49 +221,103 @@ export default function AdminCategories() {
   // СОХРАНЕНИЕ
   // =====================================================
 
-  const handleEditSave = async (id) => {
-    const cleanName = editingName.trim();
+ const handleEditSave = async (id) => {
+const cleanName = editingName.trim();
 
-    if (!cleanName) {
-      alert("Введите название");
-      return;
-    }
+if (!cleanName) {
+alert("Введите название");
+return;
+}
 
-    setSavingEdit(true);
+setSavingEdit(true);
 
-    try {
-      let imageUrl = editingPreview;
+try {
+let imageUrl = editingPreview;
 
-      if (editingImage) {
-        const response = await uploadImage(
-          editingImage
-        );
+// -------------------------------------------------
+// Загружаем новое изображение
+// -------------------------------------------------
 
-        imageUrl = response.data.url;
-      }
+if (editingImage) {
+  const response = await uploadImage(editingImage);
 
-      const { data } = await updateCategory(id, {
-        name: cleanName,
-        image: imageUrl,
-      });
+  imageUrl = response.data.url;
+}
 
-      updateCategoryStore(data);
+// -------------------------------------------------
+// Находим текущую категорию
+// -------------------------------------------------
 
-      handleEditCancel();
-    } catch (error) {
-      console.error(
-        "Ошибка изменения категории:",
-        error
-      );
+const category = categories.find(
+  (item) => String(item._id) === String(id)
+);
 
-      alert(
-        error?.response?.data?.message ||
-          "Не удалось изменить категорию"
-      );
-    } finally {
-      setSavingEdit(false);
-    }
-  };
+if (!category) {
+  throw new Error(
+    "Категория не найдена в списке"
+  );
+}
+
+// -------------------------------------------------
+// Получаем существующего родителя
+// -------------------------------------------------
+
+const parentId =
+  category.parent?._id ||
+  category.parent ||
+  null;
+
+// -------------------------------------------------
+// Сохраняем
+// -------------------------------------------------
+
+const { data } = await updateCategory(id, {
+  name: cleanName,
+  image: imageUrl,
+  parent: parentId,
+});
+
+// -------------------------------------------------
+// Обновляем store
+// -------------------------------------------------
+
+updateCategoryStore(data);
+
+// -------------------------------------------------
+// Если это подкатегория —
+// оставляем родителя открытым
+// -------------------------------------------------
+
+if (parentId) {
+  setOpenCategories((prev) => ({
+    ...prev,
+    [parentId]: true,
+  }));
+}
+
+handleEditCancel();
+
+
+} catch (error) {
+console.error(
+"Ошибка изменения категории:",
+error
+);
+
+
+alert(
+  error?.response?.data?.message ||
+    error?.message ||
+    "Не удалось изменить категорию"
+);
+
+
+} finally {
+setSavingEdit(false);
+}
+};
+
+
 
   // =====================================================
   // УДАЛЕНИЕ
@@ -460,20 +514,23 @@ export default function AdminCategories() {
 
           {/* ИЗОБРАЖЕНИЕ */}
 
-          {!parentId && (
+          
             <div>
 
-              <label 
-              htmlFor="category-image"
-              className="
-                block
-                text-sm
-                font-medium
-                text-gray-700
-                mb-2
-              ">
-                Изображение главной категории
-              </label>
+              <label
+  htmlFor="category-image"
+  className="
+    block
+    text-sm
+    font-medium
+    text-gray-700
+    mb-2
+  "
+>
+  {parentId
+    ? "Изображение подкатегории"
+    : "Изображение главной категории"}
+</label>
 
               <input
                 id="category-image"
@@ -499,7 +556,7 @@ export default function AdminCategories() {
               )}
 
             </div>
-          )}
+          
 
           {/* КНОПКА */}
 
@@ -927,202 +984,229 @@ export default function AdminCategories() {
                         border-gray-200
                       ">
 
-                        {children.map(
-                          (child) => (
+                        {children.map((child) => (
 
-                            <div
-                              key={child._id}
-                              className="
-                                flex
-                                items-center
-                                gap-4
-                                px-5
-                                py-3
-                                border-b
-                                last:border-b-0
-                                border-gray-100
-                              "
-                            >
+  <div
+    key={child._id}
+    className="
+      flex
+      items-center
+      gap-4
+      px-5
+      py-3
+      border-b
+      last:border-b-0
+      border-gray-100
+    "
+  >
+    {/* СТРЕЛКА */}
+    <div
+      className="
+        w-8
+        text-center
+        text-gray-300
+        text-lg
+        shrink-0
+      "
+    >
+      ↳
+    </div>
 
-                              <div className="
-                                w-8
-                                text-center
-                                text-gray-300
-                                text-lg
-                              ">
-                                ↳
-                              </div>
+{/* ФОТО ПОДКАТЕГОРИИ */}
+{child.image ? (
+  <img
+    src={child.image}
+    alt={child.name}
+    className="
+      w-16
+      h-12
+      rounded-lg
+      object-cover
+      border
+      border-gray-200
+      shrink-0
+    "
+  />
+) : (
+  <div
+    className="
+      w-16
+      h-12
+      rounded-lg
+      bg-gray-100
+      text-gray-500
+      flex
+      items-center
+      justify-center
+      font-bold
+      text-lg
+      shrink-0
+    "
+  >
+    {child.name
+      .charAt(0)
+      .toUpperCase()}
+  </div>
+)}
 
-                              <div className="
-                                flex-1
-                                min-w-0
-                              ">
+{/* НАЗВАНИЕ */}
+<div className="flex-1 min-w-0">
+  {editingId === child._id ? (
+    <div className="space-y-3">
+      <input
+        value={editingName}
+        onChange={(e) =>
+          setEditingName(e.target.value)
+        }
+        className="
+          w-full
+          h-10
+          px-3
+          rounded-lg
+          border
+          border-blue-300
+          outline-none
+          focus:border-blue-500
+        "
+      />
 
-                                {editingId ===
-                                child._id ? (
+      {/* НОВОЕ ФОТО ПОДКАТЕГОРИИ */}
+      <input
+        type="file"
+        accept="image/*"
+        onChange={handleEditImageChange}
+        className="
+          block
+          w-full
+          text-sm
+        "
+      />
 
-                                  <input
-                                    value={
-                                      editingName
-                                    }
-                                    onChange={(e) =>
-                                      setEditingName(
-                                        e.target.value
-                                      )
-                                    }
-                                    className="
-                                      w-full
-                                      h-10
-                                      px-3
-                                      rounded-lg
-                                      border
-                                      border-blue-300
-                                    "
-                                  />
+      {editingPreview && (
+        <img
+          src={editingPreview}
+          alt=""
+          className="
+            w-40
+            h-24
+            rounded-xl
+            object-cover
+            border
+          "
+        />
+      )}
+    </div>
+  ) : (
+    <div className="flex items-center gap-2">
+      <span
+        className="
+          font-medium
+          text-gray-800
+        "
+      >
+        {child.name}
+      </span>
 
-                                ) : (
+      <span
+        className="
+          px-2
+          py-1
+          rounded-md
+          bg-gray-100
+          text-gray-500
+          text-[10px]
+        "
+      >
+        ПОДКАТЕГОРИЯ
+      </span>
+    </div>
+  )}
+</div>
 
-                                  <div className="
-                                    flex
-                                    items-center
-                                    gap-2
-                                  ">
+{/* КНОПКИ */}
+{editingId === child._id ? (
+  <div className="flex gap-2 shrink-0">
+    <button
+      type="button"
+      disabled={savingEdit}
+      onClick={() =>
+        handleEditSave(child._id)
+      }
+      className="
+        px-3
+        py-2
+        rounded-xl
+        bg-green-600
+        text-white
+        text-sm
+      "
+    >
+      {savingEdit
+        ? "..."
+        : "Сохранить"}
+    </button>
 
-                                    <span className="
-                                      font-medium
-                                      text-gray-800
-                                    ">
-                                      {child.name}
-                                    </span>
+    <button
+      type="button"
+      disabled={savingEdit}
+      onClick={handleEditCancel}
+      className="
+        px-3
+        py-2
+        rounded-xl
+        bg-gray-100
+        text-gray-700
+        text-sm
+      "
+    >
+      Отмена
+    </button>
+  </div>
+) : (
+  <div className="flex gap-2 shrink-0">
+    <button
+      type="button"
+      onClick={() =>
+        handleEditStart(child)
+      }
+      className="
+        px-3
+        py-2
+        rounded-xl
+        bg-blue-50
+        text-blue-600
+        text-sm
+      "
+    >
+      Изменить
+    </button>
 
-                                    <span className="
-                                      px-2
-                                      py-1
-                                      rounded-md
-                                      bg-gray-100
-                                      text-gray-500
-                                      text-[10px]
-                                    ">
-                                      ПОДКАТЕГОРИЯ
-                                    </span>
+    <button
+      type="button"
+      onClick={() =>
+        handleDelete(
+          child._id,
+          child.name
+        )
+      }
+      className="
+        px-3
+        py-2
+        rounded-xl
+        bg-red-50
+        text-red-600
+        text-sm
+      "
+    >
+      Удалить
+    </button>
+  </div>
+)}
 
-                                  </div>
 
-                                )}
+  </div>
+))}
 
-                              </div>
-
-
-                              {/* КНОПКИ */}
-
-                              {editingId ===
-                              child._id ? (
-
-                                <div className="
-                                  flex
-                                  gap-2
-                                ">
-
-                                  <button
-                                    type="button"
-                                    disabled={
-                                      savingEdit
-                                    }
-                                    onClick={() =>
-                                      handleEditSave(
-                                        child._id
-                                      )
-                                    }
-                                    className="
-                                      px-3
-                                      py-2
-                                      rounded-xl
-                                      bg-green-600
-                                      text-white
-                                      text-sm
-                                    "
-                                  >
-                                    {savingEdit
-                                      ? "..."
-                                      : "Сохранить"}
-                                  </button>
-
-                                  <button
-                                    type="button"
-                                    disabled={
-                                      savingEdit
-                                    }
-                                    onClick={
-                                      handleEditCancel
-                                    }
-                                    className="
-                                      px-3
-                                      py-2
-                                      rounded-xl
-                                      bg-gray-100
-                                      text-gray-700
-                                      text-sm
-                                    "
-                                  >
-                                    Отмена
-                                  </button>
-
-                                </div>
-
-                              ) : (
-
-                                <div className="
-                                  flex
-                                  gap-2
-                                ">
-
-                                  <button
-                                    type="button"
-                                    onClick={() =>
-                                      handleEditStart(
-                                        child
-                                      )
-                                    }
-                                    className="
-                                      px-3
-                                      py-2
-                                      rounded-xl
-                                      bg-blue-50
-                                      text-blue-600
-                                      text-sm
-                                    "
-                                  >
-                                    Изменить
-                                  </button>
-
-                                  <button
-                                    type="button"
-                                    onClick={() =>
-                                      handleDelete(
-                                        child._id,
-                                        child.name
-                                      )
-                                    }
-                                    className="
-                                      px-3
-                                      py-2
-                                      rounded-xl
-                                      bg-red-50
-                                      text-red-600
-                                      text-sm
-                                    "
-                                  >
-                                    Удалить
-                                  </button>
-
-                                </div>
-
-                              )}
-
-                            </div>
-
-                          )
-                        )}
 
                       </div>
                     )}

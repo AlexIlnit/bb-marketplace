@@ -195,7 +195,6 @@ export const createCategory = async (req, res) => {
   }
 };
 
-
 // =====================================================
 // Редактировать категорию
 // =====================================================
@@ -211,6 +210,10 @@ export const updateCategory = async (req, res) => {
       parent,
     } = req.body;
 
+    // -------------------------------------------------
+    // Проверка названия
+    // -------------------------------------------------
+
     if (!name?.trim()) {
       return res.status(400).json({
         message: "Введите название категории",
@@ -218,6 +221,10 @@ export const updateCategory = async (req, res) => {
     }
 
     const cleanName = name.trim();
+
+    // -------------------------------------------------
+    // Находим категорию
+    // -------------------------------------------------
 
     const category = await Category.findById(id);
 
@@ -228,12 +235,43 @@ export const updateCategory = async (req, res) => {
     }
 
     // -------------------------------------------------
+    // Определяем родителя
+    // -------------------------------------------------
+
+    let parentCategory;
+
+    if (parent === undefined) {
+      // Родитель не передан —
+      // оставляем существующего
+
+      parentCategory = category.parent
+        ? await Category.findById(category.parent)
+        : null;
+
+    } else if (parent === null || parent === "") {
+      // Явно сделали главной
+
+      parentCategory = null;
+
+    } else {
+      // Указан новый родитель
+
+      parentCategory = await Category.findById(parent);
+
+      if (!parentCategory) {
+        return res.status(400).json({
+          message: "Родительская категория не найдена",
+        });
+      }
+    }
+
+    // -------------------------------------------------
     // Нельзя сделать категорию родителем самой себя
     // -------------------------------------------------
 
     if (
-      parent &&
-      String(parent) === String(id)
+      parentCategory &&
+      String(parentCategory._id) === String(id)
     ) {
       return res.status(400).json({
         message:
@@ -242,33 +280,22 @@ export const updateCategory = async (req, res) => {
     }
 
     // -------------------------------------------------
-    // Проверяем родителя
+    // Не разрешаем:
+    // категория → подкатегория → подкатегория
     // -------------------------------------------------
 
-    let parentCategory = null;
-
-    if (parent) {
-      parentCategory = await Category.findById(parent);
-
-      if (!parentCategory) {
-        return res.status(400).json({
-          message:
-            "Родительская категория не найдена",
-        });
-      }
-
-      // Не разрешаем делать подкатегорию
-      // дочерней подкатегории
-      if (parentCategory.parent) {
-        return res.status(400).json({
-          message:
-            "Нельзя создавать подкатегорию внутри подкатегории",
-        });
-      }
+    if (
+      parentCategory &&
+      parentCategory.parent
+    ) {
+      return res.status(400).json({
+        message:
+          "Нельзя создавать подкатегорию внутри подкатегории",
+      });
     }
 
     // -------------------------------------------------
-    // Проверка дубликата
+    // Проверка дубликата названия
     // -------------------------------------------------
 
     const duplicate = await Category.findOne({
@@ -292,29 +319,39 @@ export const updateCategory = async (req, res) => {
     }
 
     // -------------------------------------------------
-    // Slug
+    // ВАЖНО:
+    // SLUG НЕ ПЕРЕСОЗДАЁМ
+    //
+    // Он был создан при создании категории
+    // и должен оставаться стабильным.
     // -------------------------------------------------
 
-    const slug = createSlug(cleanName);
+    if (!category.slug) {
+      // Защита для старых категорий,
+      // у которых slug почему-то отсутствует
 
-    const duplicateSlug = await Category.findOne({
-      _id: { $ne: id },
-      slug,
-    });
+      const newSlug = createSlug(cleanName);
 
-    if (duplicateSlug) {
-      return res.status(400).json({
-        message:
-          "Категория с таким адресом уже существует",
+      const duplicateSlug = await Category.findOne({
+        _id: { $ne: id },
+        slug: newSlug,
       });
+
+      if (duplicateSlug) {
+        return res.status(400).json({
+          message:
+            "Категория с таким адресом уже существует",
+        });
+      }
+
+      category.slug = newSlug;
     }
 
     // -------------------------------------------------
-    // Обновление
+    // Обновляем только необходимые поля
     // -------------------------------------------------
 
     category.name = cleanName;
-    category.slug = slug;
 
     category.parent = parentCategory
       ? parentCategory._id
@@ -327,6 +364,10 @@ export const updateCategory = async (req, res) => {
     if (image !== undefined) {
       category.image = image;
     }
+
+    // -------------------------------------------------
+    // Сохраняем
+    // -------------------------------------------------
 
     await category.save();
 
@@ -343,7 +384,6 @@ export const updateCategory = async (req, res) => {
     });
   }
 };
-
 
 // =====================================================
 // Удалить категорию
